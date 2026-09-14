@@ -41,6 +41,7 @@ SCHEDULE_IMAGE = os.path.join(REPO_ROOT, "schedule.jpg")
 SCHEDULE_META = os.path.join(REPO_ROOT, "schedule-meta.json")
 EVENTS_FILE = os.path.join(REPO_ROOT, "events.json")
 EVENTS_META = os.path.join(REPO_ROOT, "events-meta.json")
+SUBSCRIBERS_FILE = os.path.join(REPO_ROOT, "subscribers.json")
 MAX_EVENTS = 6
 
 MONTHS_RU = [
@@ -121,6 +122,21 @@ def build_event_card(text, date_ts):
     }
 
 
+def update_subscriber_count(token, channel):
+    """Запрашивает у Telegram текущее число участников канала и сохраняет его."""
+    try:
+        count = api_call(token, "getChatMemberCount", {"chat_id": channel})
+    except Exception as e:
+        print(f"Не удалось получить число подписчиков: {e}", file=sys.stderr)
+        return
+    with open(SUBSCRIBERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            {"count": count, "updated": datetime.now(timezone.utc).isoformat()},
+            f, ensure_ascii=False, indent=2,
+        )
+    print(f"Подписчиков в канале: {count}")
+
+
 def load_events():
     if os.path.exists(EVENTS_FILE):
         with open(EVENTS_FILE, "r", encoding="utf-8") as f:
@@ -143,6 +159,8 @@ def main():
         print("Не заданы TELEGRAM_BOT_TOKEN и/или TELEGRAM_CHANNEL", file=sys.stderr)
         sys.exit(1)
     channel = normalize_channel(channel)
+
+    update_subscriber_count(token, channel)
 
     offset = read_offset()
     params = {"timeout": 0, "allowed_updates": json.dumps(["channel_post"])}
