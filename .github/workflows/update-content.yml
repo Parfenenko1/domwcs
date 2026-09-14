@@ -1,18 +1,16 @@
-name: Обновление расписания из Telegram
+name: Обновление расписания и новостей из Telegram
 
 on:
   schedule:
-    # Каждый день в 09:00 по Москве (06:00 UTC).
-    # Если расписание выкладывают в конкретный день недели — можно сузить,
-    # но ежедневная проверка ничего не сломает и не требует докрутки.
-    - cron: "0 6 * * *"
+    # Дважды в день: 06:00 и 18:00 по Москве (03:00 и 15:00 UTC).
+    - cron: "0 3,15 * * *"
   workflow_dispatch: {}   # кнопка "Run workflow" в интерфейсе GitHub — запустить вручную
 
 permissions:
   contents: write
 
 jobs:
-  update-schedule:
+  update-content:
     runs-on: ubuntu-latest
     steps:
       - name: Скачать репозиторий
@@ -27,13 +25,13 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
-        run: python scripts/update_schedule.py
+        run: python scripts/update_content.py
 
       - name: Закоммитить изменения, если они есть
         run: |
-          git config user.name "schedule-bot"
-          git config user.email "schedule-bot@users.noreply.github.com"
-          for f in schedule.jpg schedule-meta.json scripts/telegram_offset.txt; do
+          git config user.name "content-bot"
+          git config user.email "content-bot@users.noreply.github.com"
+          for f in schedule.jpg schedule-meta.json events.json events-meta.json scripts/telegram_offset.txt; do
             if [ -f "$f" ]; then
               git add "$f"
             fi
@@ -41,6 +39,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Изменений нет, коммит не нужен."
           else
-            git commit -m "Автообновление расписания"
+            git commit -m "Автообновление расписания и новостей"
             git push
           fi
