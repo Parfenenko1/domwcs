@@ -431,7 +431,10 @@
     font-size:12px; color:var(--terracotta);
     border:1px solid rgba(193,102,12,.45); padding:5px 10px;
     white-space:nowrap; border-radius:var(--radius);
+    text-decoration:none; display:inline-block;
+    transition:border-color .15s ease, background .15s ease;
   }
+  a.event-tag:hover{border-color:var(--terracotta); background:rgba(193,102,12,.1);}
   @media (max-width:640px){
     .event-row{grid-template-columns:70px 1fr; }
     .event-tag{grid-column:2; justify-self:start;}
@@ -800,7 +803,7 @@
       row.innerHTML =
         '<div class="event-date"><span class="day">' + ev.day + '</span><span class="mon">' + ev.mon + '</span></div>' +
         '<div><p class="event-name">' + ev.name + '</p><p class="event-desc">' + ev.desc + '</p></div>' +
-        '<span class="event-tag">' + ev.tag + '</span>';
+        '<a class="event-tag" href="https://t.me/domwcs" target="_blank" rel="noopener">' + ev.tag + '</a>';
       list.appendChild(row);
     });
   }
@@ -838,7 +841,7 @@
     <div>
       <div class="map-frame" style="padding:0; position:relative;">
         <iframe
-                    src="https://yandex.ru/map-widget/v1/?ll=30.351071%2C59.922783&z=17&pt=30.351071%2C59.922783%2Cpm2rdm"
+          src="https://yandex.ru/map-widget/v1/?ll=30.351071%2C59.922783&z=17&pt=30.351071%2C59.922783%2Cpm2rdm"
           style="position:absolute; inset:0; width:100%; height:100%; border:0;"
           loading="lazy"
           allowfullscreen>
