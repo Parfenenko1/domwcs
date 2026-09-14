@@ -827,42 +827,43 @@
     <p class="kicker">Не пропустите</p>
     <h2 class="section-title">Ближайшие мероприятия</h2>
     <p class="section-lede">Мастер-классы приглашённых педагогов, опены и вечеринки — следите за анонсами в Telegram, здесь публикуем ближайшие.</p>
-    <div class="events-list">
-      <div class="event-row">
-        <div class="event-date"><span class="day">18</span><span class="mon">сентября</span></div>
-        <div>
-          <p class="event-name">Подготовка к International WCS Rally</p>
-          <p class="event-desc">Разучиваем общую хореографию мирового флешмоба West Coast Swing</p>
-        </div>
-        <span class="event-tag">18:00–19:00</span>
-      </div>
-      <div class="event-row">
-        <div class="event-date"><span class="day">23</span><span class="mon">сентября</span></div>
-        <div>
-          <p class="event-name">Репетиция хореографии Rally</p>
-          <p class="event-desc">Продолжаем разучивать связки перед общей съёмкой</p>
-        </div>
-        <span class="event-tag">20:30–22:00</span>
-      </div>
-      <div class="event-row">
-        <div class="event-date"><span class="day">26</span><span class="mon">сентября</span></div>
-        <div>
-          <p class="event-name">Съёмка International WCS Rally</p>
-          <p class="event-desc">Записываем общую хореографию вместе с танцорами со всего мира</p>
-        </div>
-        <span class="event-tag">Участие — 500 ₽</span>
-      </div>
-      <div class="event-row">
-        <div class="event-date"><span class="day">·</span><span class="mon">по анонсу</span></div>
-        <div>
-          <p class="event-name">Мастер-класс приглашённого педагога</p>
-          <p class="event-desc">Следите за расписанием в Telegram — анонсируем за несколько дней</p>
-        </div>
-        <span class="event-tag">Запись обязательна</span>
-      </div>
-    </div>
+    <div class="events-list" id="eventsList"></div>
   </div>
 </section>
+
+<script>
+(function () {
+  var fallbackEvents = [
+    { day: "18", mon: "сентября", name: "Подготовка к International WCS Rally", desc: "Разучиваем общую хореографию мирового флешмоба West Coast Swing", tag: "18:00–19:00" },
+    { day: "23", mon: "сентября", name: "Репетиция хореографии Rally", desc: "Продолжаем разучивать связки перед общей съёмкой", tag: "20:30–22:00" },
+    { day: "26", mon: "сентября", name: "Съёмка International WCS Rally", desc: "Записываем общую хореографию вместе с танцорами со всего мира", tag: "Участие — 500 ₽" },
+    { day: "·", mon: "по анонсу", name: "Мастер-класс приглашённого педагога", desc: "Следите за расписанием в Telegram — анонсируем за несколько дней", tag: "Запись обязательна" }
+  ];
+
+  function renderEvents(events) {
+    var list = document.getElementById('eventsList');
+    list.innerHTML = '';
+    events.forEach(function (ev) {
+      var row = document.createElement('div');
+      row.className = 'event-row';
+      row.innerHTML =
+        '<div class="event-date"><span class="day">' + ev.day + '</span><span class="mon">' + ev.mon + '</span></div>' +
+        '<div><p class="event-name">' + ev.name + '</p><p class="event-desc">' + ev.desc + '</p></div>' +
+        '<span class="event-tag">' + ev.tag + '</span>';
+      list.appendChild(row);
+    });
+  }
+
+  fetch('events.json', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (events) {
+      renderEvents(events && events.length ? events : fallbackEvents);
+    })
+    .catch(function () {
+      renderEvents(fallbackEvents);
+    });
+})();
+</script>
 
 <section id="contact">
   <div class="wrap contact-grid">
