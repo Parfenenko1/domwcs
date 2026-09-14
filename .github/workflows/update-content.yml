@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "content-bot"
           git config user.email "content-bot@users.noreply.github.com"
-          for f in schedule.jpg schedule-meta.json events.json events-meta.json scripts/telegram_offset.txt; do
+          for f in schedule.jpg schedule-meta.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt; do
             if [ -f "$f" ]; then
               git add "$f"
             fi
