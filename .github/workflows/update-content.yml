@@ -40,5 +40,12 @@ jobs:
             echo "Изменений нет, коммит не нужен."
           else
             git commit -m "Автообновление расписания и новостей"
-            git push
+            for i in 1 2 3 4 5; do
+              if git push; then
+                break
+              fi
+              echo "Пуш отклонён (кто-то успел закоммитить раньше), подтягиваю свежие изменения и пробую снова..."
+              git pull --rebase origin main
+              sleep 3
+            done
           fi
