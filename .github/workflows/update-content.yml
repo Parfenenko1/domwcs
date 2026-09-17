@@ -3,7 +3,7 @@ name: Обновление расписания и новостей из Telegra
 on:
   schedule:
     # Дважды в день: 06:00 и 18:00 по Москве (03:00 и 15:00 UTC).
-   - cron: "0 3 * * *"
+   - cron: "0 9 * * *"
   workflow_dispatch: {}   # кнопка "Run workflow" в интерфейсе GitHub — запустить вручную
 
 permissions:
