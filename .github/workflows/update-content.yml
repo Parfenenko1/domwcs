@@ -2,8 +2,8 @@ name: Обновление расписания и новостей из Telegra
 
 on:
   schedule:
-    # Дважды в день: 06:00 и 18:00 по Москве (03:00 и 15:00 UTC).
-   - cron: "0 9 * * *"
+    # Дважды в сутки: 12:00 и 00:00 по Москве (09:00 и 21:00 UTC).
+   - cron: "0 9,21 * * *"
   workflow_dispatch: {}   # кнопка "Run workflow" в интерфейсе GitHub — запустить вручную
 
 permissions:
@@ -27,11 +27,22 @@ jobs:
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
         run: python scripts/update_content.py
 
+      - name: Распознать неделю по картинке расписания (для блока «Неделя в Доме»)
+        run: |
+          if [ "$(python scripts/update_week.py --need)" = "yes" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-rus > /dev/null
+            pip install --quiet pillow
+            python scripts/update_week.py || echo "Неделю распознать не получилось — сайт покажет обычное расписание."
+          else
+            echo "Картинка расписания не менялась — распознавать нечего."
+          fi
+
       - name: Закоммитить изменения, если они есть
         run: |
           git config user.name "content-bot"
           git config user.email "content-bot@users.noreply.github.com"
-          for f in schedule.jpg schedule-meta.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt; do
+          for f in schedule.jpg schedule-meta.json week.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt; do
             if [ -f "$f" ]; then
               git add "$f"
             fi
