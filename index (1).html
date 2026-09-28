@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Дом танца WCS — школа West Coast Swing в Санкт-Петербурге</title>
+<meta name="description" content="Дом танца WCS — школа West Coast Swing в Санкт-Петербурге. Новые группы с нуля, свитч, вечеринки по воскресеньям. Ул. Разъезжая, 36, м. Лиговский проспект.">
+<meta property="og:title" content="Дом танца WCS — здесь живёт танец">
+<meta property="og:description" content="Школа West Coast Swing на Разъезжей, 36. Приходите на пробное занятие — можно без пары и без опыта.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://domwcs.netlify.app/">
+<meta property="og:image" content="https://domwcs.netlify.app/og-image.jpg">
+<meta name="theme-color" content="#1b1310">
+<link rel="icon" type="image/png" href="favicon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"DanceSchool","name":"Дом танца WCS","description":"Школа West Coast Swing в Санкт-Петербурге",
+ "address":{"@type":"PostalAddress","streetAddress":"ул. Разъезжая, 36","addressLocality":"Санкт-Петербург","addressCountry":"RU"},
+ "telephone":"+79934753064","sameAs":["https://t.me/domwcs","https://vk.ru/wcs_spb"]}
+</script>
+<style>
+  @font-face{font-family:'Nauryz Red Keds'; src:url('nauryz.woff') format('woff'); font-weight:400 700; font-display:swap;}
+  @font-face{font-family:'Fira Sans Condensed'; src:url('fira-sans-condensed-regular.woff') format('woff'); font-weight:400; font-display:swap;}
+  @font-face{font-family:'Fira Sans Condensed'; src:url('fira-sans-condensed-medium.woff') format('woff'); font-weight:500 700; font-display:swap;}
+
+  :root{
+    color-scheme: dark;
+    interpolate-size: allow-keywords;
+    /* night — the walls of the house */
+    --night:#1b1310; --night-2:#231914; --night-3:#2d2019;
+    --cream:#f2e7d3; --cream-dim:#cdbca4; --cream-faint:#a89582;
+    --line-n:rgba(242,231,211,.13);
+    /* paper — notes on the door */
+    --paper:#efe3cc; --paper-2:#e6d8bd;
+    --ink:#241812; --ink-dim:#5b4737; --ink-faint:#6e5b4a;
+    --line-p:rgba(36,24,18,.16);
+    /* the logo's own inks */
+    --terra:#bc5800; --terra-btn:#a64e07; --terra-deep:#9a4806; --terra-on-night:#e07a24; --terra-on-paper:#9e4704;
+    --olive:#8c8a2e; --olive-on-night:#b9b653; --olive-on-paper:#5e5b0e;
+
+    --display:'Nauryz Red Keds','Fira Sans Condensed',Georgia,serif;
+    --text:'Fira Sans Condensed','Arial Narrow',-apple-system,'Segoe UI',sans-serif;
+    --r:12px;
+    --wrap:1200px;
+  }
+
+  /* each band sets its own ink so components work on night and on paper */
+  .night{ --bg:var(--night); --card:var(--night-2); --card-2:var(--night-3); --fg:var(--cream); --fg-dim:var(--cream-dim); --fg-faint:var(--cream-faint); --rule:var(--line-n); --accent:var(--terra-on-night); --roof:var(--olive); --chip:var(--olive-on-night); background:var(--bg); color:var(--fg); }
+  .paper{ --bg:var(--paper); --card:var(--paper-2); --card-2:#dccaa9; --fg:var(--ink); --fg-dim:var(--ink-dim); --fg-faint:var(--ink-faint); --rule:var(--line-p); --accent:var(--terra-on-paper); --roof:var(--olive-on-paper); --chip:var(--olive-on-paper); background:var(--bg); color:var(--fg); color-scheme:light; }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:80px;}
+  body{margin:0; background:var(--night); color:var(--cream); font-family:var(--text); font-size:16.5px; line-height:1.55; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+  /* linocut grain, like the print texture of the logo */
+  body::after{content:""; position:fixed; inset:0; z-index:90; pointer-events:none; opacity:.09; mix-blend-mode:soft-light;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  a{color:inherit;}
+  button{font:inherit; color:inherit;}
+  img{display:block; max-width:100%;}
+  ::selection{background:var(--terra); color:#fff4e6;}
+  :focus-visible{outline:2px solid var(--terra-on-night); outline-offset:3px; border-radius:4px;}
+  .paper :focus-visible{outline-color:var(--terra-on-paper);}
+  .wrap{max-width:var(--wrap); margin:0 auto; padding-inline:32px;}
+  @media (max-width:600px){ .wrap{padding-inline:18px;} }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *,*::before,*::after{animation:none!important; transition:none!important;} }
+
+  /* ---------- shared type ---------- */
+  h1,h2{font-family:var(--display); font-weight:700; margin:0; text-wrap:balance;}
+  /* numbers and addresses stay in the text face: Nauryz draws «1» as a slash */
+  .num{font-family:var(--text); font-weight:400; letter-spacing:-.01em;}
+  h3{font-weight:400; margin:0;}
+  .head{margin-bottom:48px; max-width:760px;}
+  .kicker{display:flex; align-items:center; gap:12px; margin:0 0 16px; font-size:13px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-dim);}
+  .kicker svg{width:34px; height:15px; flex:none; color:var(--roof);}
+  h2{font-size:clamp(34px,4.6vw,58px); line-height:1.02; letter-spacing:.005em;}
+  .lede{margin:20px 0 0; font-size:18.5px; color:var(--fg-dim); max-width:56ch;}
+  .band{padding-block:112px;}
+  @media (max-width:700px){ .band{padding-block:76px;} .head{margin-bottom:36px;} }
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:50px; padding:0 24px; border-radius:999px; border:1.5px solid transparent;
+       font-size:14.5px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; text-decoration:none; cursor:pointer; white-space:nowrap;
+       transition:background .18s, color .18s, border-color .18s, transform .18s;}
+  .btn-terra{background:var(--terra-btn); color:#fff4e6;}
+  .btn-terra:hover{background:var(--terra); transform:translateY(-1px);}
+  .btn-line{border-color:var(--rule); color:var(--fg); background:transparent;}
+  .btn-line:hover{border-color:var(--accent); color:var(--accent);}
+  .btn-sm{min-height:42px; padding:0 18px; font-size:13.5px;}
+  .roof-i{width:18px; height:11px; flex:none;}
+
+  /* ---------- header ---------- */
+  .top{position:sticky; top:env(safe-area-inset-top,0px); z-index:50; background:rgba(27,19,16,.86); backdrop-filter:blur(12px) saturate(1.2); border-bottom:1px solid var(--line-n);}
+  .top .wrap{display:flex; align-items:center; gap:24px; min-height:68px;}
+  .brand{display:flex; align-items:center; gap:10px; text-decoration:none; margin-right:auto;}
+  .brand img{height:38px; width:auto;}
+  .brand span{font-family:var(--display); font-size:19px; white-space:nowrap;}
+  .brand em{font-style:normal; color:var(--terra-on-night);}
+  .menu{display:flex; gap:22px;}
+  .menu a{text-decoration:none; color:var(--cream-dim); font-size:15px; transition:color .15s;}
+  .menu a:hover{color:var(--cream);}
+  .menu-btn{display:none; border:1.5px solid var(--line-n); background:none; border-radius:999px; padding:9px 16px; font-size:14px; cursor:pointer;}
+  @media (max-width:1020px){
+    .menu{position:fixed; inset:68px 0 auto 0; flex-direction:column; gap:0; padding:8px 18px 22px; background:var(--night); border-bottom:1px solid var(--line-n);
+          opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity .2s, transform .2s, visibility .2s;}
+    .menu.open{opacity:1; visibility:visible; transform:none;}
+    .menu a{padding:15px 4px; border-bottom:1px solid var(--line-n); font-size:19px; color:var(--cream);}
+    .menu-btn{display:block;}
+    .top .btn{display:none;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding-block:72px 64px; position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; width:900px; height:900px; right:-260px; top:-280px; border-radius:50%;
+                background:radial-gradient(circle, rgba(188,88,0,.20), rgba(140,138,46,.07) 45%, transparent 68%); pointer-events:none;}
+  .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:40px; align-items:center; position:relative;}
+  .eyebrow{display:flex; align-items:center; gap:10px; margin:0 0 26px; color:var(--cream-dim); font-size:15px; letter-spacing:.04em;}
+  .eyebrow i{width:8px; height:8px; border-radius:50%; background:var(--olive-on-night); box-shadow:0 0 0 4px rgba(185,182,83,.16);}
+  .hero h1{font-size:clamp(58px,10.5vw,148px); line-height:.9; letter-spacing:-.005em;}
+  .hero h1 span{display:block; animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
+  .hero h1 span:nth-child(2){animation-delay:.08s;}
+  .hero h1 span:nth-child(3){animation-delay:.16s; color:var(--terra-on-night);}
+  .hero-lede{margin:30px 0 34px; font-size:20px; color:var(--cream-dim); max-width:36ch;}
+  .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
+  .hero-mark{margin:0; justify-self:end; width:min(470px,100%); animation:rise 1s .12s cubic-bezier(.2,.7,.2,1) both;}
+  .hero-mark img{width:100%; height:auto; filter:drop-shadow(0 30px 40px rgba(0,0,0,.35));}
+  @keyframes rise{from{transform:translateY(22px);} to{transform:none;}}
+  @media (max-width:900px){
+    .hero{padding-top:40px;}
+    .hero-grid{grid-template-columns:1fr; gap:10px;}
+    .hero-mark{order:-1; justify-self:start; width:min(230px,58vw);}
+  }
+
+  /* the note on the door: nearest new group */
+  .door-note{position:relative; margin-top:64px; background:var(--paper); color:var(--ink); border-radius:var(--r); padding:8px 26px 18px; box-shadow:0 18px 40px rgba(0,0,0,.28);}
+  .dn-row{display:grid; grid-template-columns:150px 1fr auto; gap:28px; align-items:center; padding:16px 0;}
+  .dn-today{border-top:1.5px dashed var(--line-p); align-items:start;}
+  .today-list{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px 10px; grid-column:2 / -1;}
+  .today-list li{display:inline-flex; align-items:baseline; gap:8px; padding:8px 14px; border-radius:999px; background:var(--paper-2); font-size:16px;}
+  .today-list .tt{font-weight:500; color:var(--terra-on-paper); font-variant-numeric:tabular-nums;}
+  .today-list .who{color:var(--ink-faint); font-size:14.5px;}
+  .today-list .live{font-style:normal; font-size:11.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:#fff4e6; background:var(--terra-btn); padding:2px 8px; border-radius:999px;}
+  .today-list li.past{opacity:.5;}
+  .today-list li.quiet{background:none; padding:8px 0; color:var(--ink-dim);}
+  .door-note::before{content:""; position:absolute; left:50%; top:-10px; width:92px; height:20px; transform:translateX(-50%) rotate(-2deg); background:rgba(214,196,160,.9); border-radius:2px; box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .dn-label{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); line-height:1.3;}
+  .dn-label b{display:block; font-weight:400; color:var(--olive-on-paper);}
+  .dn-main{display:flex; align-items:baseline; gap:10px 22px; flex-wrap:wrap;}
+  .dn-when{font-size:clamp(28px,3.2vw,40px); line-height:1.05; letter-spacing:-.01em;}
+  .dn-who{font-size:18px; color:var(--ink-dim);}
+  .dn-side{display:flex; align-items:center; gap:18px;}
+  .dn-price{font-size:15px; color:var(--ink-dim); text-align:right; line-height:1.3;}
+  .dn-price b{display:block; font-weight:400; font-size:26px; color:var(--terra-on-paper);}
+  .dn-foot{margin:2px 0 0; font-size:14px; color:var(--ink-faint);}
+  .dn-foot a{color:var(--terra-on-paper);}
+  @media (max-width:820px){
+    .door-note{margin-top:44px; padding:6px 20px 18px;}
+    .dn-row{grid-template-columns:1fr; gap:12px;}
+    .today-list{grid-column:auto;}
+    .dn-side{justify-content:space-between;}
+    .dn-price{text-align:left;}
+  }
+
+  /* ---------- faq (paper) ---------- */
+  .faq-grid{display:grid; grid-template-columns:.82fr 1.18fr; gap:72px; align-items:start;}
+  .faq-side{position:sticky; top:104px;}
+  .faq-side .head{margin-bottom:34px;}
+  .ask{border-top:1.5px solid var(--ink); padding-top:22px;}
+  .ask p{margin:0 0 16px; color:var(--ink-dim); font-size:17px;}
+  .ask .ask-row{display:flex; flex-wrap:wrap; gap:12px 18px; align-items:center;}
+  .copy{display:inline-flex; align-items:center; gap:8px; border:none; background:none; padding:0; cursor:pointer; color:var(--ink); font-size:17px;}
+  .copy small{font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--terra-on-paper); border-bottom:1px solid currentColor;}
+  .qa{border-top:1.5px solid var(--ink);}
+  .qa details{border-bottom:1px solid var(--line-p);}
+  .qa summary{list-style:none; cursor:pointer; display:grid; grid-template-columns:1fr 36px; gap:20px; align-items:center; padding:24px 0; font-size:clamp(19px,2vw,22px); line-height:1.28;}
+  .qa summary::-webkit-details-marker{display:none;}
+  .qa summary:hover .q{color:var(--terra-on-paper);}
+  .q{transition:color .15s;}
+  .plus{position:relative; width:36px; height:36px; border-radius:50%; border:1.5px solid var(--line-p); transition:background .2s, border-color .2s;}
+  .plus::before,.plus::after{content:""; position:absolute; left:50%; top:50%; width:13px; height:1.75px; background:var(--ink); transform:translate(-50%,-50%); transition:transform .25s, background .2s;}
+  .plus::after{transform:translate(-50%,-50%) rotate(90deg);}
+  .qa details[open] .plus{background:var(--terra-btn); border-color:var(--terra-btn);}
+  .qa details[open] .plus::before,.qa details[open] .plus::after{background:#fff4e6;}
+  .qa details[open] .plus::after{transform:translate(-50%,-50%) rotate(0);}
+  .qa .a{margin:0; padding:0 56px 28px 0; color:var(--ink-dim); font-size:17.5px; max-width:62ch;}
+  .qa details::details-content{block-size:0; overflow:hidden; transition:block-size .32s ease, content-visibility .32s allow-discrete;}
+  .qa details[open]::details-content{block-size:auto;}
+  @media (max-width:900px){ .faq-grid{grid-template-columns:1fr; gap:10px;} .faq-side{position:static;} .faq-side .ask{display:none;} .qa .a{padding-right:0;} }
+  .ask-mobile{display:none; margin-top:34px;}
+  @media (max-width:900px){ .ask-mobile{display:block;} }
+
+  /* ---------- about ---------- */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:start;}
+  .quote{margin:34px 0 0; font-size:clamp(22px,2.4vw,28px); line-height:1.4; color:var(--cream);}
+  .quote::before{content:"“"; display:block; font-family:var(--display); font-size:80px; line-height:.6; color:var(--terra-on-night); margin-bottom:14px;}
+  .quote cite{display:block; margin-top:14px; font-style:normal; font-size:15px; color:var(--cream-faint);}
+  .about-text{margin:0 0 34px; font-size:18px; color:var(--cream-dim);}
+  .week-wrap{margin-top:64px;}
+  .week-title{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--cream-faint); margin:0 0 14px;}
+  .week{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin:0; padding:0; list-style:none;}
+  .week li{background:var(--night-2); border-radius:10px; padding:16px 16px 18px; min-height:128px; display:flex; flex-direction:column; gap:8px;}
+  .week .d{font-size:14px; letter-spacing:.12em; text-transform:uppercase; color:var(--cream);}
+  .week .e{font-size:15.5px; line-height:1.3; color:var(--cream-dim);}
+  .week .e.hot{color:var(--terra-on-night);}
+  .week li.today{background:linear-gradient(180deg, rgba(188,88,0,.30), var(--night-2)); box-shadow:inset 0 0 0 1.5px rgba(224,122,36,.55);}
+  .week .today-tag{display:block; margin-top:3px; font-style:normal; font-size:11px; letter-spacing:.1em; color:var(--terra-on-night);}
+  .facts{display:grid; grid-template-columns:repeat(4,1fr); margin-top:64px; border-top:1px solid var(--line-n);}
+  .fact{padding:26px 24px 0 0;}
+  .fact + .fact{padding-left:24px; border-left:1px solid var(--line-n);}
+  .fact .num{display:block; font-size:clamp(40px,4.2vw,56px); line-height:1; color:var(--cream); font-variant-numeric:tabular-nums;}
+  .fact span{display:block; margin-top:10px; color:var(--cream-dim); font-size:15.5px;}
+  @media (max-width:980px){
+    .about-grid{grid-template-columns:1fr; gap:48px;}
+    .week{grid-template-columns:1fr; gap:0; border-top:1px solid var(--line-n);}
+    .week li{flex-direction:row; align-items:baseline; min-height:0; background:none; border-radius:0; padding:12px 0; border-bottom:1px solid var(--line-n); gap:16px;}
+    .week li.today{background:none; box-shadow:none;}
+    .week li.today .d{color:var(--terra-on-night);}
+    .week .today-tag{display:inline; margin:0 0 0 6px;}
+    .week .d{flex:0 0 96px;}
+    .week .e + .e::before{content:"· "; color:var(--cream-faint);}
+    .facts{grid-template-columns:1fr 1fr; margin-top:56px;}
+    .fact:nth-child(3){padding-left:0; border-left:none;}
+    .fact:nth-child(n+3){margin-top:26px; border-top:1px solid var(--line-n);}
+  }
+
+  /* ---------- teachers ---------- */
+  .team{display:grid; grid-template-columns:repeat(6,1fr); gap:16px;}
+  .t{grid-column:span 2; background:var(--night-2); border-radius:var(--r); padding:28px; display:flex; flex-direction:column; gap:16px; position:relative; overflow:hidden;}
+  .t.solo{grid-column:span 2;}
+  .pair{display:flex; margin-bottom:6px;}
+  .pair i{width:76px; height:76px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:21px; letter-spacing:.06em; box-shadow:0 0 0 4px var(--night-2);}
+  .pair i + i{margin-left:-18px;}
+  .pair .o{background:var(--olive); color:#fbf6d6;}
+  .pair .t1{background:var(--terra); color:#fff4e6;}
+  .pair .c{background:var(--cream-dim); color:var(--night);}
+  .t h3{font-size:27px; line-height:1.1;}
+  .t .names{margin:-8px 0 0; color:var(--cream-faint); font-size:15.5px;}
+  .slots{list-style:none; margin:auto 0 0; padding:14px 0 0; border-top:1px solid var(--line-n); display:flex; flex-direction:column; gap:8px;}
+  .slots li{display:flex; justify-content:space-between; gap:12px; font-size:15.5px;}
+  .slots b{font-weight:400; color:var(--olive-on-night);}
+  .slots span{color:var(--cream-dim); white-space:nowrap; font-variant-numeric:tabular-nums;}
+  .t.help{background:transparent; border:1.5px dashed var(--line-n); justify-content:center;}
+  .t.help p{margin:0; color:var(--cream-dim);}
+  @media (max-width:980px){ .team{grid-template-columns:1fr 1fr;} .t,.t.solo{grid-column:span 1;} }
+  @media (max-width:620px){ .team{grid-template-columns:1fr;} }
+
+  /* ---------- schedule ---------- */
+  .poster-wrap{position:relative; padding-top:14px;}
+  .poster{display:block; width:100%; padding:0; border:0; background:none; cursor:zoom-in; position:relative; transform:rotate(-.7deg); transition:transform .35s cubic-bezier(.2,.7,.2,1);}
+  .poster:hover{transform:rotate(0) translateY(-3px);}
+  .poster img{width:100%; height:auto; border-radius:6px; box-shadow:0 30px 60px rgba(0,0,0,.45), 0 2px 0 rgba(255,255,255,.06);}
+  .poster::before,.poster::after{content:""; position:absolute; top:-12px; width:110px; height:26px; background:rgba(214,196,160,.82); box-shadow:0 1px 2px rgba(0,0,0,.25); z-index:2;}
+  .poster::before{left:8%; transform:rotate(-4deg);}
+  .poster::after{right:8%; transform:rotate(3deg);}
+  .poster .zoom{position:absolute; right:16px; bottom:16px; z-index:3; background:rgba(27,19,16,.88); color:var(--cream); font-size:13px; letter-spacing:.08em; text-transform:uppercase; padding:10px 14px; border-radius:999px;}
+  .sched-meta{display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:26px; color:var(--cream-faint); font-size:15px;}
+  .sched-meta a{color:var(--terra-on-night);}
+  .sched-fallback{display:none; padding:48px 24px; text-align:center; background:var(--night-2); border-radius:var(--r); color:var(--cream-dim);}
+  .sched-fallback a{color:var(--terra-on-night);}
+  .lightbox{position:fixed; inset:0; z-index:95; background:rgba(14,9,7,.96); display:flex; flex-direction:column; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);}
+  .lightbox[hidden]{display:none;}
+  .lb-bar{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 18px; color:var(--cream-dim); font-size:14.5px;}
+  .lb-scroll{flex:1; overflow:auto; -webkit-overflow-scrolling:touch; padding:0 12px 18px;}
+  .lb-scroll img{width:max(100%,1180px); max-width:none; height:auto; margin:0 auto; border-radius:6px;}
+
+  /* ---------- pricing (paper) ---------- */
+  .intro-prices{display:flex; flex-wrap:wrap; gap:12px; margin:-14px 0 40px;}
+  .pill{display:inline-flex; gap:8px; align-items:baseline; padding:10px 16px; border-radius:999px; background:var(--paper-2); font-size:16px;}
+  .pill b{font-weight:400; color:var(--terra-on-paper); font-size:21px; white-space:nowrap;}
+  .pill span{color:var(--ink-dim);}
+  .plans{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .plan{background:var(--paper-2); border-radius:var(--r); padding:30px 28px 28px; display:flex; flex-direction:column;}
+  .plan.mid{background:var(--ink); color:var(--cream);}
+  .plan .k{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint);}
+  .plan.mid .k{color:var(--cream-faint);}
+  .plan h3{font-size:28px; margin:10px 0 22px;}
+  .plan .price{font-size:clamp(46px,4.4vw,58px); line-height:1; letter-spacing:-.01em; color:var(--terra-on-paper);}
+  .plan.mid .price{color:var(--terra-on-night);}
+  .plan .term{margin-top:8px; color:var(--ink-dim); font-size:15.5px;}
+  .plan.mid .term{color:var(--cream-dim);}
+  .plan ul{list-style:none; margin:24px 0 26px; padding:0;}
+  .plan li{padding:10px 0; border-top:1px solid var(--line-p);}
+  .plan.mid li{border-color:var(--line-n);}
+  .plan .btn{margin-top:auto;}
+  .plan:not(.mid) .btn-line{border-color:var(--line-p);}
+  .plan.mid .btn-line{--rule:var(--line-n); --fg:var(--cream);}
+  .price-lower{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; margin-top:64px; align-items:start;}
+  .chart h3{font-size:24px;}
+  .chart .sub{margin:6px 0 22px; color:var(--ink-dim); font-size:16px;}
+  .bars{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px;}
+  .bars li{display:grid; grid-template-columns:150px 1fr 70px; gap:14px; align-items:center; padding:7px 0; position:relative; cursor:default; border-radius:6px;}
+  .bars .lbl{font-size:15.5px; color:var(--ink);}
+  .bars .track{height:14px; position:relative;}
+  .bars .fill{position:absolute; left:0; top:0; bottom:0; background:var(--terra-on-paper); border-radius:0 4px 4px 0; transition:filter .15s;}
+  .bars .val{font-variant-numeric:tabular-nums; text-align:right; font-size:15.5px; color:var(--ink);}
+  .bars li:hover .fill, .bars li:focus-visible .fill{filter:brightness(1.18);}
+  .bars li:hover{background:rgba(36,24,18,.05);}
+  .bars .tip{position:absolute; left:164px; bottom:calc(100% + 4px); z-index:5; background:var(--ink); color:var(--cream); font-size:14px; line-height:1.4; padding:10px 12px; border-radius:8px; width:max-content; max-width:280px; opacity:0; transform:translateY(4px); pointer-events:none; transition:opacity .15s, transform .15s;}
+  .bars li:hover .tip, .bars li:focus-visible .tip{opacity:1; transform:none;}
+  .chart .axis{display:grid; grid-template-columns:150px 1fr 70px; gap:14px; margin-top:6px; font-size:13px; color:var(--ink-faint);}
+  .chart .axis span:nth-child(2){display:flex; justify-content:space-between;}
+  .all{border-top:1.5px solid var(--ink);}
+  .all summary{list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:20px 0; font-size:20px;}
+  .all summary::-webkit-details-marker{display:none;}
+  .all summary .plus{flex:none;}
+  .all[open] summary .plus{background:var(--terra-btn); border-color:var(--terra-btn);}
+  .all[open] summary .plus::before,.all[open] summary .plus::after{background:#fff4e6;}
+  .all[open] summary .plus::after{transform:translate(-50%,-50%) rotate(0);}
+  .table-wrap{overflow-x:auto; margin-bottom:10px;}
+  table{width:100%; border-collapse:collapse; font-size:15px; min-width:560px;}
+  th{text-align:left; font-weight:400; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); padding:0 14px 10px 0; border-bottom:1px solid var(--line-p);}
+  td{padding:11px 14px 11px 0; border-bottom:1px solid var(--line-p); vertical-align:top;}
+  td.time{color:var(--terra-on-paper); white-space:nowrap;}
+  .note{margin:18px 0 0; font-size:15px; color:var(--ink-dim);}
+  @media (max-width:980px){ .plans{grid-template-columns:1fr;} .price-lower{grid-template-columns:1fr; gap:48px;} }
+  @media (max-width:520px){ .bars li,.chart .axis{grid-template-columns:112px 1fr 58px; gap:10px;} .bars .lbl{font-size:14.5px;} .bars .tip{left:0;} }
+
+  /* ---------- news ---------- */
+  .news-head{display:flex; justify-content:space-between; align-items:end; gap:24px; flex-wrap:wrap; margin-bottom:48px;}
+  .news-head .head{margin-bottom:0;}
+  .channel{display:flex; align-items:center; gap:14px; text-decoration:none; padding:12px 18px 12px 12px; border-radius:999px; background:var(--night-2); transition:background .15s;}
+  .channel:hover{background:var(--night-3);}
+  .channel .num{font-size:26px; color:var(--cream); padding:0 4px;}
+  .channel span{font-size:14.5px; color:var(--cream-dim); line-height:1.25;}
+  .posts{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .post{display:flex; flex-direction:column; gap:14px; padding:28px; border-radius:var(--r); background:var(--night-2); text-decoration:none; transition:transform .2s, background .2s;}
+  .post:hover{transform:translateY(-3px); background:var(--night-3);}
+  .post .date{display:flex; align-items:baseline; gap:10px;}
+  .post .date .num{font-size:50px; line-height:.9; color:var(--terra-on-night);}
+  .post .date span{color:var(--cream-faint); font-size:15px;}
+  .post h3{font-size:19px; line-height:1.35; color:var(--cream);}
+  .post p{margin:0; color:var(--cream-faint); font-size:15.5px;}
+  .post .more{margin-top:auto; padding-top:6px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--terra-on-night);}
+  @media (max-width:980px){ .posts{grid-template-columns:1fr;} }
+
+  /* ---------- visit (terracotta) ---------- */
+  .visit{background:var(--terra-deep); color:#fff4e6; --fg:#fff4e6; --fg-dim:#f6dcc2; --rule:rgba(255,244,230,.28); --roof:#e3e17a; --accent:#fff4e6;}
+  .visit-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:stretch;}
+  .visit .kicker{color:var(--fg-dim);}
+  .addr{font-size:clamp(52px,7.4vw,104px); line-height:.9; letter-spacing:-.01em; text-transform:uppercase; margin:4px 0 26px;}
+  .visit dl{display:grid; grid-template-columns:auto 1fr; gap:10px 22px; margin:0 0 34px; font-size:18px;}
+  .visit dt{color:var(--fg-dim); font-size:13px; letter-spacing:.12em; text-transform:uppercase; padding-top:4px;}
+  .visit dd{margin:0;}
+  .visit .copy{color:#fff4e6;}
+  .visit .copy small{color:#fff4e6;}
+  .visit .btn-line:hover{background:#fff4e6; color:var(--terra-deep); border-color:#fff4e6;}
+  .visit-actions{display:flex; flex-wrap:wrap; gap:12px;}
+  .map{position:relative; min-height:380px; border-radius:var(--r); overflow:hidden; background:#2a1a10;}
+  .map-card{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; gap:6px; padding:28px; color:var(--cream);
+            background:
+              radial-gradient(circle at 62% 42%, var(--terra) 0 9px, rgba(188,88,0,.35) 10px 26px, transparent 27px),
+              repeating-linear-gradient(28deg, transparent 0 46px, rgba(242,231,211,.07) 46px 48px),
+              repeating-linear-gradient(-62deg, transparent 0 70px, rgba(242,231,211,.06) 70px 73px),
+              #231710;}
+  .map-card b{font-size:26px; font-weight:400;}
+  .map-card span{color:var(--cream-dim);}
+  .map-card a{color:var(--terra-on-night); margin-top:6px;}
+  @media (max-width:900px){ .visit-grid{grid-template-columns:1fr; gap:40px;} .map{min-height:300px;} }
+
+  footer{padding-block:40px 30px; border-top:1px solid var(--line-n);}
+  .foot{display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; color:var(--cream-faint); font-size:14.5px;}
+  .foot img{height:34px; width:auto;}
+  .foot-brand{display:flex; align-items:center; gap:10px; color:var(--cream-dim);}
+  .footnote{margin:18px 0 0; font-size:13px; color:var(--cream-faint);}
+
+  /* ---------- persistent «Записаться» ---------- */
+  .dock{position:fixed; right:28px; bottom:calc(28px + env(safe-area-inset-bottom,0px)); z-index:60; opacity:0; transform:translateY(14px); pointer-events:none; transition:opacity .25s, transform .25s;}
+  .dock.show{opacity:1; transform:none; pointer-events:auto;}
+  .dock .btn{box-shadow:0 14px 34px rgba(0,0,0,.45); min-height:56px; padding:0 28px;}
+  @media (max-width:1020px){
+    .dock{left:0; right:0; bottom:0; opacity:1; transform:none; pointer-events:auto; padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+          background:rgba(27,19,16,.9); backdrop-filter:blur(12px); border-top:1px solid var(--line-n);}
+    .dock .btn{width:100%; box-shadow:none;}
+    body{padding-bottom:80px;}
+  }
+
+  /* ---------- sign-up sheet ---------- */
+  dialog.sheet{overflow:auto; overscroll-behavior:contain; color-scheme:light; border:0; padding:0; margin:auto; width:min(560px, calc(100% - 24px)); max-height:calc(100% - 24px); border-radius:18px; background:var(--paper); color:var(--ink); box-shadow:0 30px 80px rgba(0,0,0,.5);
+    --bg:var(--paper); --fg:var(--ink); --fg-dim:var(--ink-dim); --rule:var(--line-p); --accent:var(--terra-on-paper); --roof:var(--olive-on-paper);}
+  dialog.sheet::backdrop{background:rgba(14,9,7,.72); backdrop-filter:blur(3px);}
+  dialog.sheet[open]{animation:sheet .32s cubic-bezier(.2,.7,.2,1);}
+  @keyframes sheet{from{transform:translateY(24px); opacity:.4;} to{transform:none; opacity:1;}}
+  @media (max-width:600px){ dialog.sheet{margin:auto 0 0; width:100%; max-width:100%; border-radius:18px 18px 0 0; padding-bottom:env(safe-area-inset-bottom,0px);} }
+  .sheet-in{padding:24px 24px 22px;}
+  .sheet-top{display:flex; justify-content:space-between; align-items:start; gap:12px;}
+  .sheet h2{font-size:clamp(28px,5vw,36px);}
+  .x{border:1.5px solid var(--line-p); background:none; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:20px; line-height:1; flex:none;}
+  .sheet .step{display:flex; align-items:center; gap:10px; margin:18px 0 10px; font-size:16.5px; color:var(--ink);}
+  .sheet .step span{width:26px; height:26px; flex:none; border-radius:50%; background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:500;}
+  .opts{display:flex; flex-direction:column; gap:8px; margin:0; padding:0; border:0;}
+  .opt{display:grid; grid-template-columns:22px 1fr auto; gap:12px; align-items:center; padding:10px 14px; border-radius:12px; background:var(--paper-2); cursor:pointer; border:1.5px solid transparent;}
+  .opt:has(input:checked){border-color:var(--terra-btn); background:#f5ead6;}
+  .opt input{accent-color:var(--terra-btn); width:18px; height:18px; margin:0;}
+  .opt b{font-weight:400; font-size:17px;}
+  .opt small{display:block; color:var(--ink-dim); font-size:14.5px;}
+  .opt em{font-style:normal; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--olive-on-paper);}
+  .msg{margin:0; padding:14px 16px; border-radius:12px; background:#fff8ec; border:1px dashed var(--line-p); font-size:16px;}
+  .msg p{margin:0 0 8px; color:var(--ink);}
+  .sheet-actions{display:flex; flex-direction:column; gap:10px; margin-top:0;}
+  .sheet-actions .btn{width:100%;}
+  .fine{margin:14px 0 0; color:var(--ink-dim); font-size:14.5px; text-align:center;}
+  .toast{position:fixed; left:50%; bottom:110px; transform:translateX(-50%); z-index:120; background:var(--ink); color:var(--cream); padding:10px 16px; border-radius:999px; font-size:14.5px; opacity:0; transition:opacity .2s; pointer-events:none;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="roof" viewBox="0 0 34 15"><path d="M2 13 17 2.5 32 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="logo.png" alt="" width="44" height="38"><span>Дом танца <em>WCS</em></span></a>
+    <nav class="menu" id="menu" aria-label="Разделы">
+      <a href="#faq">Вопросы</a>
+      <a href="#about">О Доме</a>
+      <a href="#teachers">Преподаватели</a>
+      <a href="#schedule">Расписание</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#news">Новости</a>
+      <a href="#visit">Контакты</a>
+    </nav>
+    <button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button>
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">Меню</button>
+  </div>
+</header>
+
+<main>
+<!-- 1. hero -->
+<section class="hero night" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow"><i></i>Школа West Coast Swing* · Санкт-Петербург</p>
+        <h1><span>Здесь</span><span>живёт</span><span>танец</span></h1>
+        <p class="hero-lede">Дом танца WCS на Разъезжей, 36. Учим с нуля, танцуем парами, а по воскресеньям собираемся на вечеринки.</p>
+        <div class="hero-actions" id="heroActions">
+          <button class="btn btn-terra" type="button" data-signup><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на пробное</button>
+          <a class="btn btn-line" href="#faq">Если вы впервые</a>
+        </div>
+      </div>
+      <figure class="hero-mark"><img src="logo.png" alt="Логотип Дома танца WCS: крыша над двумя руками" width="232" height="200"></figure>
+    </div>
+
+    <div class="door-note" id="doorNote">
+      <div class="dn-row">
+        <div class="dn-label">Ближайшая<b>новая группа</b></div>
+        <div class="dn-main"><span class="dn-when" id="ngWhen">В понедельник в 19:00</span><span class="dn-who" id="ngWho">ведут Аня и Оля</span></div>
+        <div class="dn-side"><div class="dn-price">Пробное<b>400 ₽</b></div><button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button></div>
+      </div>
+      <div class="dn-row dn-today">
+        <div class="dn-label">Сегодня<b id="todayName">в Доме</b></div>
+        <ul class="today-list" id="todayList"><li class="quiet">Смотрите расписание недели ниже</li></ul>
+      </div>
+      <p class="dn-foot" id="dnFoot">По обычному расписанию. Точное на эту неделю — в <a href="#schedule">расписании</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. faq -->
+<section class="band paper" id="faq">
+  <div class="wrap faq-grid">
+    <div class="faq-side">
+      <div class="head">
+        <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Вопросы и ответы</p>
+        <h2>Если вы у нас впервые</h2>
+        <p class="lede">Коротко о том, что обычно спрашивают перед первым занятием.</p>
+      </div>
+      <div class="ask">
+        <p>Не нашли ответ? Спросите в комментариях к любому посту нашего канала — ответим и подскажем, в какую группу сейчас идёт набор.</p>
+        <div class="ask-row">
+          <a class="btn btn-line btn-sm" href="https://t.me/domwcs" target="_blank" rel="noopener">Открыть канал</a>
+          <button class="copy" type="button" data-copy="+7 (993) 475-30-64">+7 (993) 475-30-64 <small>копировать</small></button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="qa">
+        <details name="faq" open>
+          <summary><span class="q">Нужен ли партнёр, чтобы начать?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">Нет. На занятиях партнёры меняются по кругу — так учиться быстрее и интереснее, поэтому приходить можно одному или одной. Если хотите заниматься вдвоём, на парный абонемент действует скидка 10%.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Я никогда не танцевал(а). Получится?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">Да, для этого есть новые группы — они начинают с самой базы. Примерно через три месяца регулярных занятий вы уверенно танцуете основу и можете приходить на вечеринки.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Как попасть на первое занятие и сколько это стоит?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">Оставьте комментарий под любым постом в нашем Telegram-канале — ответим и подскажем, в какую группу сейчас идёт набор. Пробное занятие стоит 400&nbsp;₽, а если после него вы берёте абонемент, оно становится бесплатным.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Что надеть?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">Удобную одежду, в которой легко двигаться, и обувь на гладкой подошве — в ней проще делать повороты. Специальная танцевальная обувь на старте не нужна.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Я стесняюсь и не уверен(а), что у меня есть чувство ритма</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">С этим приходят почти все. Музыкальность — такой же навык, как шаги, её разбирают на занятиях. А атмосфера у нас домашняя: все когда-то начинали.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Что такое сампо?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">Самостоятельная подготовка: зал открыт, можно прийти отработать движения или потанцевать с другими учениками. В день занятия сампо входит в стоимость абонемента.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Что будет, если я пропущу неделю?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">В каждом тарифе есть «заморозка» на неделю — абонемент просто продлится. А при продлении в день последнего занятия — скидка 10%.</p>
+        </details>
+        <details name="faq">
+          <summary><span class="q">Как вас найти?</span><span class="plus" aria-hidden="true"></span></summary>
+          <p class="a">Ул. Разъезжая, 36, 4 минуты пешком от м. Лиговский проспект. Код домофона — #1653.</p>
+        </details>
+      </div>
+      <div class="ask ask-mobile">
+        <p>Не нашли ответ? Спросите в комментариях к любому посту нашего канала — ответим и подскажем, в какую группу сейчас идёт набор.</p>
+        <div class="ask-row">
+          <a class="btn btn-line btn-sm" href="https://t.me/domwcs" target="_blank" rel="noopener">Открыть канал</a>
+          <button class="copy" type="button" data-copy="+7 (993) 475-30-64">+7 (993) 475-30-64 <small>копировать</small></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. about -->
+<section class="band night" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div>
+        <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>О Доме</p>
+        <h2>Не просто школа танца — сообщество</h2>
+        <blockquote class="quote">Дом WCS — это то место, где мы объединяем людей и учим танцу West Coast Swing*. Всем нам нужен дом, и нашему любимому танцу тоже.<cite>— из нашего телеграм-канала</cite></blockquote>
+      </div>
+      <div>
+        <p class="about-text">West Coast Swing* — импровизационный парный танец под музыку самых разных жанров: от блюза до поп-музыки. У нас занимаются с нуля и до уровня All-Star, проводят лаборатории, свитчи и мастер-классы приглашённые педагоги, а по вечерам собираются домашние вечеринки.</p>
+      </div>
+    </div>
+    <div class="week-wrap">
+    <p class="week-title" id="weekTitle">Обычная неделя в Доме</p>
+        <ul class="week" id="week" lang="ru">
+          <li><span class="d">Пн</span><span class="e hot">Новая группа</span><span class="e">Группа</span></li>
+          <li><span class="d">Вт</span><span class="e">Старшая</span><span class="e">Младшая группа</span></li>
+          <li><span class="d">Ср</span><span class="e">Свитч</span><span class="e">Общая группа</span></li>
+          <li><span class="d">Чт</span><span class="e">Младшая группа</span><span class="e">Старшая</span></li>
+          <li><span class="d">Пт</span><span class="e">Сампо до 19:30</span><span class="e">Мероприятие</span></li>
+          <li><span class="d">Сб</span><span class="e">«Другие роли»</span><span class="e">Сампо</span></li>
+          <li><span class="d">Вс</span><span class="e hot">Вечеринка</span><span class="e">Сампо</span></li>
+        </ul>
+    </div>
+    <div class="facts">
+      <div class="fact"><span class="num" id="subscriberCount">478</span><span>человек в нашем телеграм-канале</span></div>
+      <div class="fact"><span class="num">4 мин</span><span>пешком от м. Лиговский проспект</span></div>
+      <div class="fact"><span class="num">3 мес</span><span>чтобы уверенно танцевать с нуля</span></div>
+      <div class="fact"><span class="num">1-е</span><span>занятие в новой группе — бесплатно</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. teachers -->
+<section class="band night" id="teachers" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Наши люди</p>
+      <h2>Преподаватели</h2>
+      <p class="lede">Большинство групп в Доме ведут пары преподавателей.</p>
+    </div>
+    <div class="team">
+      <article class="t">
+        <div class="pair"><i class="o">АП</i><i class="t1">ЕЛ</i></div>
+        <h3>Саша и Лена</h3>
+        <p class="names">Александр Парфененко и Елена Логашина</p>
+        <ul class="slots">
+          <li><b>Младшая группа</b><span>вт 20:30 · чт 19:00</span></li>
+          <li><b>Старшая группа</b><span>вт 19:00 · чт 20:30</span></li>
+          <li><b>«Другие роли»</b><span>сб 14:30</span></li>
+        </ul>
+      </article>
+      <article class="t">
+        <div class="pair"><i class="t1">АД</i><i class="o">ОМ</i></div>
+        <h3>Аня и Оля</h3>
+        <p class="names">Анна Данилова и Ольга Михеева</p>
+        <ul class="slots"><li><b>Новая группа</b><span>пн 19:00</span></li></ul>
+      </article>
+      <article class="t">
+        <div class="pair"><i class="o">ОФ</i><i class="t1">ЕЗ</i></div>
+        <h3>Олег и Женя</h3>
+        <p class="names">Олег Фабрицкий и Евгения Земскова</p>
+        <ul class="slots"><li><b>Группа</b><span>пн 20:30</span></li></ul>
+      </article>
+      <article class="t solo">
+        <div class="pair"><i class="t1">ДК</i></div>
+        <h3>Даша</h3>
+        <p class="names">Дарья Комкина</p>
+        <ul class="slots"><li><b>Свитч-группа</b><span>ср 19:00</span></li></ul>
+      </article>
+      <article class="t solo">
+        <div class="pair"><i class="o">ЕК</i></div>
+        <h3>Елена</h3>
+        <p class="names">Елена Котельникова</p>
+        <ul class="slots"><li><b>Преподаватель</b><span></span></li></ul>
+      </article>
+      <article class="t help">
+        <h3>Не знаете, с чего начать?</h3>
+        <p>Расскажите, танцевали ли вы раньше, — подберём группу и удобный день.</p>
+        <button class="btn btn-line btn-sm" type="button" data-signup>Подобрать группу</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 5. schedule -->
+<section class="band night" id="schedule" style="background:var(--night-2)">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Каждую неделю</p>
+      <h2>Расписание недели</h2>
+      <p class="lede">Раз в неделю мы публикуем расписание в Telegram — сайт забирает картинку сам.</p>
+    </div>
+    <div class="poster-wrap">
+      <button class="poster" id="posterBtn" type="button" aria-label="Открыть расписание крупно">
+        <img id="schedule-image" src="schedule.jpg" alt="Расписание занятий на неделю" width="1280" height="853">
+        <span class="zoom">Открыть крупно</span>
+      </button>
+      <p class="sched-fallback" id="schedule-fallback">Не получилось загрузить картинку расписания. Актуальное расписание — в нашем <a href="https://t.me/domwcs" target="_blank" rel="noopener">Telegram-канале</a>.</p>
+    </div>
+    <div class="sched-meta"><span id="schedule-updated"></span><a href="https://t.me/domwcs" target="_blank" rel="noopener">Расписание в Telegram →</a></div>
+  </div>
+</section>
+
+<!-- 6. pricing -->
+<section class="band paper" id="pricing">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Как заниматься</p>
+      <h2>Тарифы</h2>
+      <p class="lede">Занятие длится 1,5 часа, сампо в день занятия входит в стоимость. Интенсивы, вечеринки и мероприятия — 3 часа.</p>
+    </div>
+    <div class="intro-prices">
+      <span class="pill"><span>Пробное</span><b>400 ₽</b><span>бесплатно при покупке абонемента</span></span>
+      <span class="pill"><span>Разовое</span><b>1 800 ₽</b></span>
+      <span class="pill"><span>Вечеринка</span><b>500 ₽</b></span>
+    </div>
+    <div class="plans">
+      <article class="plan">
+        <span class="k">4 занятия в месяц</span>
+        <h3>«Старт»</h3>
+        <div class="price">5 500 ₽</div>
+        <div class="term">на месяц · 811 ₽ за час</div>
+        <ul><li>6 часов занятий</li><li>2 сампо</li></ul>
+        <button class="btn btn-line" type="button" data-signup>Начать со «Старта»</button>
+      </article>
+      <article class="plan mid">
+        <span class="k">8 занятий в месяц</span>
+        <h3>«База»</h3>
+        <div class="price">10 400 ₽</div>
+        <div class="term">на месяц · 724 ₽ за час</div>
+        <ul><li>12 часов занятий</li><li>5 сампо</li></ul>
+        <button class="btn btn-terra" type="button" data-signup>Выбрать «Базу»</button>
+      </article>
+      <article class="plan">
+        <span class="k">3 месяца с интенсивами</span>
+        <h3>«Полный успех»</h3>
+        <div class="price">17 400 ₽</div>
+        <div class="term">на 3 месяца · 600 ₽ за час</div>
+        <ul><li>8 занятий и 2 интенсива</li><li>Безлимитное сампо</li></ul>
+        <button class="btn btn-line" type="button" data-signup>Выбрать</button>
+      </article>
+    </div>
+
+    <div class="price-lower">
+      <figure class="chart" style="margin:0">
+        <h3>Сколько стоит час занятий</h3>
+        <p class="sub">Чем длиннее абонемент, тем дешевле час. Наведите на строку — покажем, что входит.</p>
+        <ol class="bars" id="bars" aria-label="Цена часа по тарифам, рублей"></ol>
+        <div class="axis" aria-hidden="true"><span></span><span><span>0</span><span>600</span><span>1 200 ₽</span></span><span></span></div>
+      </figure>
+      <div>
+        <details class="all">
+          <summary>Все тарифы и цены <span class="plus" aria-hidden="true"></span></summary>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Тариф</th><th>Что входит</th><th>Срок</th><th>Стоимость</th><th>Час</th></tr></thead>
+              <tbody>
+          <tr><td>Пробное занятие</td><td>Бесплатно при покупке абонемента</td><td>—</td><td class="time">400&nbsp;₽</td><td>—</td></tr>
+          <tr><td>Разовое занятие</td><td>Без абонемента</td><td>—</td><td class="time">1 800&nbsp;₽</td><td>1 200 ₽</td></tr>
+          <tr><td>Тариф «старт»</td><td>6 ч. (4 занятия) + 2 сампо*</td><td>месяц</td><td class="time">5 500&nbsp;₽</td><td>811 ₽</td></tr>
+          <tr><td>Тариф «база»</td><td>12 ч. (8 занятий) + 5 сампо</td><td>месяц</td><td class="time">10 400&nbsp;₽</td><td>724 ₽</td></tr>
+          <tr><td>Тариф «полный успех»</td><td>18 ч. (8 занятий + 2 интенсива) + ∞ сампо</td><td>3 месяца</td><td class="time">17 400&nbsp;₽</td><td>600 ₽</td></tr>
+          <tr><td>Тариф «спортик»</td><td>4 интенсива + 10 сампо</td><td>2 месяца</td><td class="time">9 900&nbsp;₽</td><td>534 ₽</td></tr>
+          <tr><td>Тариф «социк»</td><td>4 вечера в Доме и ∞ сампо</td><td>месяц</td><td class="time">4 000&nbsp;₽</td><td>450 ₽ × 4 + 2 200 ₽</td></tr>
+          <tr><td>∞ сампо</td><td>Безлимитная самостоятельная подготовка</td><td>месяц</td><td class="time">2 200&nbsp;₽</td><td>—</td></tr>
+          <tr><td>Сампо</td><td>Разовая самостоятельная подготовка</td><td>сутки</td><td class="time">350&nbsp;₽</td><td>—</td></tr>
+          <tr><td>Тариф «люблю WCS»</td><td>36 ч. (группы твоего уровня + ∞ сампо)</td><td>3 месяца</td><td class="time">25 300&nbsp;₽</td><td>520 ₽</td></tr>
+          <tr><td>Тариф «очень люблю WCS»</td><td>72 ч. (группы твоего уровня + ∞ сампо)</td><td>6 месяцев</td><td class="time">49 000&nbsp;₽</td><td>500 ₽</td></tr>
+          <tr><td>Вечер Дома</td><td>Тематическое мероприятие</td><td>—</td><td class="time">500&nbsp;₽</td><td>—</td></tr>
+          <tr><td>Вечеринка</td><td>Танцевальный вечер</td><td>—</td><td class="time">500&nbsp;₽</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <p class="note">При продлении абонемента в день последнего занятия — скидка 10% от указанной стоимости. При покупке парного абонемента — скидка 10%. «Заморозка» на неделю действует в каждом тарифе. *Сампо — самостоятельная подготовка.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. news -->
+<section class="band night" id="news">
+  <div class="wrap">
+    <div class="news-head">
+      <div class="head">
+        <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Не пропустите</p>
+        <h2>Новости Дома</h2>
+        <p class="lede">Свежие посты из нашего Telegram-канала — лента обновляется сама.</p>
+      </div>
+      <a class="channel" href="https://t.me/domwcs" target="_blank" rel="noopener"><span class="num" id="subscriberCount2">478</span><span>подписчиков<br>в канале @domwcs →</span></a>
+    </div>
+    <div class="posts" id="eventsList"></div>
+  </div>
+</section>
+
+<!-- 8. visit -->
+<section class="band visit" id="visit">
+  <div class="wrap visit-grid">
+    <div>
+      <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Приходите в гости</p>
+      <p class="addr">Разъезжая, 36</p>
+      <dl>
+        <dt>Домофон</dt><dd>#1653</dd>
+        <dt>Метро</dt><dd>4 минуты от «Лиговского проспекта»</dd>
+        <dt>Телефон</dt><dd><button class="copy" type="button" data-copy="+7 (993) 475-30-64">+7 (993) 475-30-64 <small>копировать</small></button></dd>
+      </dl>
+      <div class="visit-actions">
+        <a class="btn btn-line" href="https://t.me/domwcs" target="_blank" rel="noopener">Telegram</a>
+        <a class="btn btn-line" href="https://vk.ru/wcs_spb" target="_blank" rel="noopener">ВКонтакте</a>
+        <a class="btn btn-line" href="https://yandex.ru/maps/-/CTtlEQzL" target="_blank" rel="noopener">Яндекс Карты</a>
+      </div>
+    </div>
+    <div class="map" id="mapFrame">
+      <div class="map-card">
+        <b>ул. Разъезжая, 36</b>
+        <span>Санкт-Петербург, м. Лиговский проспект</span>
+        <a href="https://yandex.ru/maps/-/CTtlEQzL" target="_blank" rel="noopener">Построить маршрут →</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="night">
+  <div class="wrap">
+    <div class="foot">
+      <span class="foot-brand"><img src="logo.png" alt="" width="40" height="34">© Дом танца WCS, Санкт-Петербург</span>
+      <span>Сделано с любовью к West Coast Swing*</span>
+    </div>
+    <p class="footnote">* West Coast Swing — свинг западного побережья.</p>
+  </div>
+</footer>
+
+<div class="dock" id="dock">
+  <button class="btn btn-terra" type="button" data-signup><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на пробное</button>
+</div>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+  <div class="sheet-in">
+    <div class="sheet-top">
+      <div>
+        <p class="kicker" style="margin-bottom:8px"><svg aria-hidden="true"><use href="#roof"/></svg>Запись на пробное</p>
+        <h2 id="sheetTitle">Как записаться</h2>
+      </div>
+      <button class="x" type="button" id="sheetClose" aria-label="Закрыть">×</button>
+    </div>
+    <p class="step"><span>1</span>Выберите новую группу</p>
+    <fieldset class="opts" id="opts"></fieldset>
+    <p class="step"><span>2</span>Скопируйте сообщение</p>
+    <div class="msg">
+      <p id="msgText">Здравствуйте! Хочу прийти на пробное занятие.</p>
+      <button class="copy" type="button" id="copyMsg"><small>Скопировать текст</small></button>
+    </div>
+    <p class="step"><span>3</span>Оставьте его комментарием под любым постом в канале</p>
+    <div class="sheet-actions">
+      <a class="btn btn-terra" id="sheetGo" href="https://t.me/domwcs" target="_blank" rel="noopener">Открыть канал @domwcs</a>
+    </div>
+    <p class="fine">Ответим в комментариях и запишем. Пробное — 400 ₽, бесплатно при покупке абонемента.<br>Можно и позвонить: +7 (993) 475-30-64</p>
+  </div>
+</dialog>
+
+<div class="lightbox" id="lightbox" hidden>
+  <div class="lb-bar"><span>Расписание недели · листайте в стороны</span><button class="btn btn-line btn-sm" type="button" id="lbClose" style="--rule:rgba(242,231,211,.3)">Закрыть</button></div>
+  <div class="lb-scroll"><img src="schedule.jpg" alt="Расписание занятий на неделю, крупно"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  // Куда ведёт кнопка записи: канал, запись — через комментарии к любому посту.
+  var BOOKING_URL = 'https://t.me/domwcs';
+
+  // Базовое расписание (повторяется каждую неделю). day: 0 = понедельник.
+  // Отсюда берутся преподаватели: на картинке расписания их обычно нет.
+  var BASE_SLOTS = [
+    { day: 0, time: '19:00', label: 'Новая группа', who: 'Аня и Оля', hot: true },
+    { day: 0, time: '20:30', label: 'Группа', who: 'Олег и Женя' },
+    { day: 1, time: '19:00', label: 'Старшая', who: 'Саша и Лена' },
+    { day: 1, time: '20:30', label: 'Младшая группа', who: 'Саша и Лена' },
+    { day: 2, time: '19:00', label: 'Свитч', who: 'Даша' },
+    { day: 2, time: '20:30', label: 'Общая группа', who: '' },
+    { day: 3, time: '19:00', label: 'Младшая группа', who: 'Саша и Лена' },
+    { day: 3, time: '20:30', label: 'Старшая', who: 'Саша и Лена' },
+    { day: 4, time: '19:30', label: 'Мероприятие', who: '' },
+    { day: 5, time: '14:30', label: '«Другие роли»', who: 'Саша и Лена' },
+    { day: 6, time: '19:00', label: 'Вечеринка', who: '', hot: true }
+  ];
+  var BASE_STRIP = [
+    [['Новая группа', 1], ['Группа']], [['Старшая'], ['Младшая группа']], [['Свитч'], ['Общая группа']],
+    [['Младшая группа'], ['Старшая']], [['Сампо до 19:30'], ['Мероприятие']], [['«Другие роли»'], ['Сампо']], [['Вечеринка', 1], ['Сампо']]
+  ].map(function (d) { return d.map(function (x) { return { label: x[0], hot: !!x[1] }; }); });
+  // для шторки записи: постоянные новые группы (day — день недели JS, 0 = воскресенье)
+  var NEW_GROUPS = BASE_SLOTS.filter(function (x) { return x.label === 'Новая группа'; }).map(function (x) {
+    var t = x.time.split(':'); return { day: (x.day + 1) % 7, h: +t[0], m: +t[1], who: x.who };
+  });
+  var DAY_IN = ['в воскресенье', 'в понедельник', 'во вторник', 'в среду', 'в четверг', 'в пятницу', 'в субботу'];
+  var DAY_NAME = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+  var DAY_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  var DAY_NOM = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+  var DAY_TODAY = ['в понедельник', 'во вторник', 'в среду', 'в четверг', 'в пятницу', 'в субботу', 'в воскресенье'];
+  var MONTH_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  function hhmm(g) { return g.h + ':' + (g.m < 10 ? '0' : '') + g.m; }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function mins(t) { var p = t.split(':'); return +p[0] * 60 + +p[1]; }
+  function kind(l) { return l.toLowerCase().replace(/[«»]/g, '').replace(' группа', '').replace(/^вечеринка.*/, 'вечеринка'); }
+
+  // ---------- время в Москве ----------
+  function moscowParts() {
+    var p = {};
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' })
+      .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+    var utc = Date.UTC(+p.year, +p.month - 1, +p.day);
+    return { utc: utc, idx: (new Date(utc).getUTCDay() + 6) % 7, min: +p.hour * 60 + +p.minute };
+  }
+  var now = moscowParts();
+
+  function whoFor(day, time, label) {
+    var b = BASE_SLOTS.filter(function (x) { return x.day === day && x.time === time && kind(x.label) === kind(label); })[0];
+    return b ? b.who : '';
+  }
+  function baseDay(i) {
+    return BASE_SLOTS.filter(function (x) { return x.day === i; }).map(function (x) { return { label: x.label, time: x.time, hot: x.hot }; });
+  }
+
+  // ---------- «Ближайшая новая группа» ----------
+  // weekDays — 7 дней с занятиями, offset — сколько дней назад был понедельник этой недели
+  function nextNewGroup(weekDays, offset) {
+    var c = [];
+    function scan(days, shift) {
+      days.forEach(function (items, i) {
+        items.forEach(function (it) {
+          if (it.label !== 'Новая группа' || !it.time) return;
+          var delta = (i - offset + shift) * 1440 + mins(it.time) - now.min;
+          if (delta > 0) c.push({ day: i, time: it.time, delta: delta });
+        });
+      });
+    }
+    scan(weekDays, 0);
+    if (!c.length) scan([0, 1, 2, 3, 4, 5, 6].map(baseDay), 7);   // на этой неделе новых групп больше нет — следующая неделя
+    c.sort(function (a, b) { return a.delta - b.delta; });
+    return c[0];
+  }
+  function showNext(n) {
+    if (!n) return;
+    var ahead = Math.floor((now.min + n.delta) / 1440);
+    var when = ahead === 0 ? 'сегодня' : ahead === 1 ? 'завтра' : ahead >= 7 ? 'в следующ' + (n.day === 2 || n.day === 4 || n.day === 5 ? 'ую ' : n.day === 6 ? 'ее ' : 'ий ') + DAY_TODAY[n.day].replace(/^во? /, '') : DAY_TODAY[n.day];
+    document.getElementById('ngWhen').textContent = cap(when) + ' в ' + n.time;
+    var who = whoFor(n.day, n.time, 'Новая группа');
+    document.getElementById('ngWho').textContent = who ? 'ведут ' + who : '';
+  }
+
+  // ---------- «Сегодня в Доме» ----------
+  function showToday(items) {
+    var timed = items.filter(function (it) { return it.time; }).sort(function (a, b) { return mins(a.time) - mins(b.time); });
+    var extra = items.filter(function (it) { return !it.time && !/^Сампо/.test(it.label); });
+    var hasSampo = items.some(function (it) { return /^Сампо/.test(it.label); });
+    var html = timed.concat(extra).map(function (it) {
+      var cls = '', live = '';
+      if (it.time) {
+        var start = mins(it.time), len = /Вечеринк|Мероприят/.test(it.label) ? 180 : 90;
+        if (now.min >= start + len) cls = ' class="past"';
+        else if (now.min >= start) live = '<em class="live">идёт сейчас</em>';
+      }
+      var who = it.time ? whoFor(now.idx, it.time, it.label) : '';
+      return '<li' + cls + '>' + (it.time ? '<span class="tt">' + it.time + '</span>' : '') + '<span>' + esc(it.label) + '</span>' +
+        (who ? '<span class="who">' + who + '</span>' : '') + live + '</li>';
+    }).join('');
+    if (!html) html = '<li class="quiet">' + (hasSampo ? 'Занятий нет — зал открыт для сампо' : 'Занятий нет') + '</li>';
+    document.getElementById('todayName').textContent = DAY_NOM[now.idx];
+    document.getElementById('todayList').innerHTML = html;
+  }
+
+  // ---------- «Неделя в Доме» ----------
+  function renderWeek(days, title, mark) {
+    document.getElementById('weekTitle').textContent = title;
+    document.getElementById('week').innerHTML = days.map(function (items, i) {
+      var today = i === mark;
+      return '<li' + (today ? ' class="today"' : '') + '><span class="d">' + DAY_SHORT[i] + (today ? '<i class="today-tag">сегодня</i>' : '') + '</span>' +
+        items.map(function (it) { return '<span class="e' + (it.hot ? ' hot' : '') + '">' + esc(it.label) + '</span>'; }).join('') + '</li>';
+    }).join('');
+  }
+
+  // сначала — обычная неделя, потом, если бот уже распознал картинку, — настоящая
+  var baseWeek = [0, 1, 2, 3, 4, 5, 6].map(baseDay);
+  renderWeek(BASE_STRIP, 'Обычная неделя в Доме', now.idx);
+  showToday(baseWeek[now.idx].concat(now.idx === 4 || now.idx >= 5 ? [{ label: 'Сампо' }] : []));
+  var best = nextNewGroup(baseWeek, now.idx);
+  showNext(best);
+  var bestJsDay = best ? (best.day + 1) % 7 : 1;
+
+  getJSON('week.json').then(function (w) {
+    if (!w || !w.week_start || !w.days || w.days.length !== 7) return;
+    var p = w.week_start.split('-'), start = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+    var diff = Math.round((now.utc - start) / 864e5);
+    if (diff > 6 || diff < -7) return;                  // устаревшая неделя — остаётся обычная
+    var days = w.days.map(function (d) { return d.items || []; });
+    var sd = new Date(start), ed = new Date(start + 6 * 864e5);
+    var range = sd.getUTCMonth() === ed.getUTCMonth()
+      ? sd.getUTCDate() + '–' + ed.getUTCDate() + ' ' + MONTH_GEN[ed.getUTCMonth()]
+      : sd.getUTCDate() + ' ' + MONTH_GEN[sd.getUTCMonth()] + ' – ' + ed.getUTCDate() + ' ' + MONTH_GEN[ed.getUTCMonth()];
+    renderWeek(days, 'Неделя в Доме · ' + range, diff >= 0 ? diff : -1);
+    if (diff >= 0) {                                     // неделя идёт сейчас
+      showToday(days[diff]);
+      showNext(nextNewGroup(days, diff));
+      document.getElementById('dnFoot').innerHTML = 'По расписанию этой недели — вся неделя в <a href="#schedule">расписании</a>.';
+    } else {                                             // опубликована следующая неделя
+      showNext(nextNewGroup(days, diff));
+    }
+  }).catch(function () {});
+
+  // ---------- sign-up sheet ----------
+  var sheet = document.getElementById('sheet'), opts = document.getElementById('opts'), msg = document.getElementById('msgText');
+  var choices = NEW_GROUPS.map(function (g) {
+    return { id: 'g' + g.day, title: DAY_NAME[g.day] + ', ' + hhmm(g), sub: 'Новая группа · ведут ' + g.who, text: DAY_IN[g.day] + ' в ' + hhmm(g) + ' (новая группа)' };
+  });
+  choices.push({ id: 'help', title: 'Пока не знаю', sub: 'Помогите выбрать группу', text: '' });
+  opts.innerHTML = '<legend class="sr" style="position:absolute;left:-9999px">Группа</legend>' + choices.map(function (c, i) {
+    var near = c.id === 'g' + bestJsDay ? '<em>ближайшая</em>' : '';
+    return '<label class="opt"><input type="radio" name="grp" value="' + c.id + '"' + (c.id === 'g' + bestJsDay ? ' checked' : '') + '>' +
+      '<span><b>' + c.title + '</b><small>' + c.sub + '</small></span>' + near + '</label>';
+  }).join('');
+  function updateMsg() {
+    var v = (opts.querySelector('input:checked') || {}).value, c = choices.filter(function (x) { return x.id === v; })[0];
+    msg.textContent = c && c.text ? 'Здравствуйте! Хочу прийти на пробное занятие ' + c.text + '.' : 'Здравствуйте! Хочу прийти на пробное занятие — помогите, пожалуйста, выбрать группу.';
+  }
+  opts.addEventListener('change', updateMsg); updateMsg();
+  var go = document.getElementById('sheetGo');
+  go.href = BOOKING_URL;
+  go.addEventListener('click', function () {
+    try { navigator.clipboard.writeText(msg.textContent).then(function () { say('Текст скопирован — вставьте его в комментарий'); }, function () {}); } catch (e) {}
+  });
+  document.querySelectorAll('[data-signup]').forEach(function (b) {
+    b.addEventListener('click', function () { if (sheet.showModal) sheet.showModal(); else window.open(BOOKING_URL, '_blank'); });
+  });
+  document.getElementById('sheetClose').addEventListener('click', function () { sheet.close(); });
+  sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
+
+  // ---------- copy helpers ----------
+  var toast = document.getElementById('toast'), tt;
+  function say(t) { toast.textContent = t; toast.classList.add('show'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('show'); }, 1800); }
+  function selectText(el) { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  function copy(text, el, done) {
+    try {
+      navigator.clipboard.writeText(text).then(function () { say(done); }, function () { selectText(el); say('Выделили текст — скопируйте его'); });
+    } catch (e) { selectText(el); say('Выделили текст — скопируйте его'); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copy(b.getAttribute('data-copy'), b, 'Номер скопирован'); }); });
+  document.getElementById('copyMsg').addEventListener('click', function () { copy(msg.textContent, msg, 'Сообщение скопировано'); });
+
+  // ---------- menu ----------
+  var menu = document.getElementById('menu'), mb = document.getElementById('menuBtn');
+  mb.addEventListener('click', function () { var o = menu.classList.toggle('open'); mb.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+  menu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { menu.classList.remove('open'); mb.setAttribute('aria-expanded', 'false'); }); });
+
+  // ---------- dock appears after the hero buttons (desktop) ----------
+  var dock = document.getElementById('dock');
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { dock.classList.toggle('show', !e[0].isIntersecting); }).observe(document.getElementById('heroActions'));
+  else dock.classList.add('show');
+
+  // ---------- live data from the bot ----------
+  function getJSON(u) { return fetch(u, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }); }
+  getJSON('subscribers.json').then(function (d) {
+    if (d && d.count) { document.getElementById('subscriberCount').textContent = d.count; document.getElementById('subscriberCount2').textContent = d.count; }
+  }).catch(function () {});
+
+  var img = document.getElementById('schedule-image');
+  img.addEventListener('error', function () { document.getElementById('posterBtn').style.display = 'none'; document.getElementById('schedule-fallback').style.display = 'block'; });
+  getJSON('schedule-meta.json').then(function (m) {
+    if (!m || !m.updated) return; var d = new Date(m.updated); if (isNaN(d)) return;
+    document.getElementById('schedule-updated').textContent = 'Обновлено ' + d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) + ' в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  }).catch(function () {});
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function renderPosts(list) {
+    document.getElementById('eventsList').innerHTML = list.slice(0, 3).map(function (ev) {
+      return '<a class="post" href="https://t.me/domwcs" target="_blank" rel="noopener"><div class="date"><span class="num">' + esc(ev.day) + '</span><span>' + esc(ev.mon) + '</span></div>' +
+        '<h3>' + esc(ev.name) + '</h3><p>' + esc(ev.desc) + '</p><span class="more">Читать в Telegram →</span></a>';
+    }).join('');
+  }
+  var fallbackPosts = [{ day: '·', mon: 'скоро', name: 'Мастер-классы, опены и вечеринки', desc: 'Анонсы выходят в нашем Telegram-канале.' }];
+  getJSON('events.json').then(function (e) { renderPosts(e && e.length ? e : fallbackPosts); }).catch(function () { renderPosts(fallbackPosts); });
+
+  // ---------- price per hour (real tariffs) ----------
+  var PER_HOUR = [
+    ['Разовое', 1200, 'Один класс без абонемента · 1 800 ₽'],
+    ['«Старт»', 811, '6 ч. (4 занятия) + 2 сампо · 5 500 ₽ на месяц'],
+    ['«База»', 724, '12 ч. (8 занятий) + 5 сампо · 10 400 ₽ на месяц'],
+    ['«Полный успех»', 600, '8 занятий + 2 интенсива + ∞ сампо · 17 400 ₽ на 3 месяца'],
+    ['«Спортик»', 534, '4 интенсива + 10 сампо · 9 900 ₽ на 2 месяца'],
+    ['«Люблю WCS»', 520, '36 ч. + ∞ сампо · 25 300 ₽ на 3 месяца'],
+    ['«Очень люблю WCS»', 500, '72 ч. + ∞ сампо · 49 000 ₽ на 6 месяцев']
+  ];
+  document.getElementById('bars').innerHTML = PER_HOUR.map(function (r) {
+    return '<li tabindex="0"><span class="lbl">' + r[0] + '</span><span class="track"><span class="fill" style="width:' + (r[1] / 1200 * 100).toFixed(1) + '%"></span></span>' +
+      '<span class="val">' + r[1].toLocaleString('ru-RU') + ' ₽</span><span class="tip">' + r[2] + '</span></li>';
+  }).join('');
+
+  // ---------- lightbox ----------
+  var lb = document.getElementById('lightbox');
+  document.getElementById('posterBtn').addEventListener('click', function () { lb.hidden = false; document.body.style.overflow = 'hidden'; document.getElementById('lbClose').focus(); });
+  function closeLb() { lb.hidden = true; document.body.style.overflow = ''; }
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) closeLb(); });
+
+  // ---------- map: live on the real site, a drawn card in previews ----------
+  if (window.self === window.top) {
+    var f = document.createElement('iframe');
+    f.src = 'https://yandex.ru/map-widget/v1/?ll=30.351071%2C59.922783&z=17&pt=30.351071%2C59.922783%2Cpm2rdm';
+    f.title = 'Карта: ул. Разъезжая, 36'; f.loading = 'lazy';
+    f.style.cssText = 'position:absolute; inset:0; width:100%; height:100%; border:0;';
+    document.getElementById('mapFrame').appendChild(f);
+  }
+})();
+</script>
+</body>
+</html>
