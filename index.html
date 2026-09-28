@@ -535,7 +535,7 @@
     <div class="week-wrap">
     <p class="week-title" id="weekTitle">Обычная неделя в Доме</p>
         <ul class="week" id="week" lang="ru">
-          <li><span class="d">Пн</span><span class="e hot">Новая группа</span><span class="e">1 уровень</span></li>
+          <li><span class="d">Пн</span><span class="e hot">Новая группа</span><span class="e">Группа</span></li>
           <li><span class="d">Вт</span><span class="e">Старшая</span><span class="e hot">Новая группа</span></li>
           <li><span class="d">Ср</span><span class="e">Свитч</span><span class="e">Общая группа</span></li>
           <li><span class="d">Чт</span><span class="e hot">Новая группа</span><span class="e">Старшая</span></li>
@@ -582,7 +582,7 @@
         <div class="pair"><i class="o">ОФ</i><i class="t1">ЕЗ</i></div>
         <h3>Олег и Женя</h3>
         <p class="names">Олег Фабрицкий и Евгения Земскова</p>
-        <ul class="slots"><li><b>1 уровень</b><span>пн 20:30</span></li></ul>
+        <ul class="slots"><li><b>Группа</b><span>пн 20:30</span></li></ul>
       </article>
       <article class="t solo">
         <div class="pair"><i class="t1">ДК</i></div>
@@ -798,7 +798,7 @@
   // Отсюда берутся преподаватели: на картинке расписания их обычно нет.
   var BASE_SLOTS = [
     { day: 0, time: '19:00', label: 'Новая группа', who: 'Аня и Оля', hot: true },
-    { day: 0, time: '20:30', label: '1 уровень', who: 'Олег и Женя' },
+    { day: 0, time: '20:30', label: 'Группа', who: 'Олег и Женя' },
     { day: 1, time: '19:00', label: 'Старшая', who: 'Саша и Лена' },
     { day: 1, time: '20:30', label: 'Новая группа', who: 'Саша и Лена', hot: true },
     { day: 2, time: '19:00', label: 'Свитч', who: 'Даша' },
@@ -810,7 +810,7 @@
     { day: 6, time: '19:00', label: 'Вечеринка', who: '', hot: true }
   ];
   var BASE_STRIP = [
-    [['Новая группа', 1], ['1 уровень']], [['Старшая'], ['Новая группа', 1]], [['Свитч'], ['Общая группа']],
+    [['Новая группа', 1], ['Группа']], [['Старшая'], ['Новая группа', 1]], [['Свитч'], ['Общая группа']],
     [['Новая группа', 1], ['Старшая']], [['Сампо до 19:30'], ['Мероприятие']], [['«Другие роли»'], ['Сампо']], [['Вечеринка', 1], ['Сампо']]
   ].map(function (d) { return d.map(function (x) { return { label: x[0], hot: !!x[1] }; }); });
   // для шторки записи: постоянные новые группы (day — день недели JS, 0 = воскресенье)
