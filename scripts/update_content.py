@@ -1,32 +1,38 @@
 #!/usr/bin/env python3
 """
-Раз в сутки (и по кнопке вручную) скрипт:
+Дважды в сутки (и по кнопке вручную) скрипт:
 1. Через Telegram Bot API забирает новые посты канала (getUpdates) — ОДИН раз
    для обоих сценариев, чтобы посты не терялись между расписанием и новостями.
 2. Расписание: если среди новых постов есть картинка с тегом "#расписание" —
-   скачивает самую свежую как schedule.jpg (работает так же, как раньше).
+   скачивает самую свежую как schedule.jpg и запоминает дату поста.
 3. Новости: если среди новых постов есть текст с тегом "#Новости" — переносит
-   текст поста на сайт как карточку события (без ИИ, бесплатно):
-   - первая строка текста -> название карточки
+   его на сайт карточкой (без ИИ, бесплатно):
+   - первая строка текста -> заголовок карточки
    - остальные строки -> описание
    - дата -> дата публикации поста
-   - тег справа -> если в тексте нашлось время (18:00-19:00) или цена (500 ₽) —
-     возьмёт их, иначе поставит "Подробности в Telegram"
+   - ссылка -> прямо на этот пост в канале
+   - фото -> если у поста есть фото (или обложка видео), бот скачивает его,
+     уменьшает до превью (~450 px, WebP ~30 КБ) и кладёт в папку news/.
    Добавляет карточку в начало events.json, оставляя не больше MAX_EVENTS штук.
+   Превью, которые больше не нужны, удаляются.
+4. Если у старых карточек нет фото — пробует найти их пост на публичной
+   странице канала t.me/s/<канал> и взять фото оттуда (разово, по тексту).
 
-Один offset-файл (scripts/telegram_offset.txt) на оба сценария.
+Один offset-файл (scripts/telegram_offset.txt) на все сценарии.
 
 Переменные окружения (задаются как секреты в GitHub Actions):
   TELEGRAM_BOT_TOKEN — токен бота от @BotFather
   TELEGRAM_CHANNEL   — юзернейм канала, например "@domwcs"
 """
 
+import html
+import io
 import json
 import os
 import re
 import sys
-import urllib.request
 import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 
 API_BASE = "https://api.telegram.org/bot{token}"
@@ -42,7 +48,12 @@ SCHEDULE_META = os.path.join(REPO_ROOT, "schedule-meta.json")
 EVENTS_FILE = os.path.join(REPO_ROOT, "events.json")
 EVENTS_META = os.path.join(REPO_ROOT, "events-meta.json")
 SUBSCRIBERS_FILE = os.path.join(REPO_ROOT, "subscribers.json")
+NEWS_DIR = os.path.join(REPO_ROOT, "news")
+LOOKUPS_FILE = os.path.join(REPO_ROOT, "scripts", "news_lookups.json")   # служебный, на сайт не влияет
 MAX_EVENTS = 6
+THUMB_SHORT_SIDE = 450      # превью: короткая сторона в пикселях (хватает для экранов ×2)
+THUMB_LONG_MAX = 900
+USER_AGENT = "Mozilla/5.0 (compatible; domwcs-site-bot/1.0; +https://domwcs.netlify.app)"
 
 MONTHS_RU = [
     "января", "февраля", "марта", "апреля", "мая", "июня",
@@ -79,12 +90,163 @@ def normalize_channel(channel):
     return channel if channel.startswith("@") else "@" + channel
 
 
-def download_file(token, file_id, dest_path):
-    file_info = api_call(token, "getFile", {"file_id": file_id})
-    file_path = file_info["file_path"]
-    file_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
-    urllib.request.urlretrieve(file_url, dest_path)
+def http_get(url, timeout=30):
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read()
 
+
+def telegram_file(token, file_id):
+    file_info = api_call(token, "getFile", {"file_id": file_id})
+    return http_get(f"https://api.telegram.org/file/bot{token}/{file_info['file_path']}", timeout=60)
+
+
+def download_file(token, file_id, dest_path):
+    with open(dest_path, "wb") as f:
+        f.write(telegram_file(token, file_id))
+
+
+# ---------------------------------------------------------------------------
+# Фото-превью для новостей
+
+def save_thumb(raw, name):
+    """Уменьшает картинку до превью и сохраняет как news/<name>.webp. Возвращает путь для сайта."""
+    try:
+        from PIL import Image, ImageOps
+    except ImportError:
+        print("Pillow не установлен — превью не делаю", file=sys.stderr)
+        return None
+    try:
+        img = Image.open(io.BytesIO(raw))
+        img = ImageOps.exif_transpose(img).convert("RGB")
+    except Exception as e:
+        print(f"Не удалось открыть фото для превью: {e}", file=sys.stderr)
+        return None
+    w, h = img.size
+    scale = min(1.0, THUMB_SHORT_SIDE / min(w, h), THUMB_LONG_MAX / max(w, h))
+    if scale < 1:
+        img = img.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
+    os.makedirs(NEWS_DIR, exist_ok=True)
+    rel = f"news/{name}.webp"
+    img.save(os.path.join(REPO_ROOT, rel), "WEBP", quality=74, method=6)
+    return rel
+
+
+def pick_photo_size(sizes):
+    """Из размеров фото, которые отдаёт Telegram, берём самый маленький, но не меньше превью."""
+    good = [s for s in sizes if min(s.get("width", 0), s.get("height", 0)) >= THUMB_SHORT_SIDE]
+    return min(good, key=lambda s: s["width"] * s["height"]) if good else sizes[-1]
+
+
+def post_media_file_id(post):
+    if post.get("photo"):
+        return pick_photo_size(post["photo"])["file_id"]
+    for key in ("video", "animation", "video_note", "document"):
+        media = post.get(key) or {}
+        thumb = media.get("thumbnail") or media.get("thumb")
+        if thumb:
+            return thumb["file_id"]
+    return None
+
+
+def cleanup_thumbs(events):
+    if not os.path.isdir(NEWS_DIR):
+        return
+    keep = {os.path.basename(e["img"]) for e in events if e.get("img")}
+    for fn in os.listdir(NEWS_DIR):
+        if fn not in keep:
+            os.remove(os.path.join(NEWS_DIR, fn))
+            print(f"Удалено старое превью: news/{fn}")
+
+
+# --- публичная страница канала t.me/s/<канал> (для старых карточек без фото) ---
+
+def text_key(text, limit=60):
+    key = re.sub(r"[^0-9a-zа-яё]", "", text.lower())
+    return key[:limit] if limit else key
+
+
+def parse_channel_page(page):
+    posts = []
+    for chunk in page.split('data-post="')[1:]:
+        post_id = chunk.split('"', 1)[0]
+        body = chunk.split('class="tgme_widget_message_wrap', 1)[0]
+        m = re.search(r'class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', body, re.S)
+        text = ""
+        if m:
+            text = re.sub(r"<br\s*/?>", "\n", m.group(1))
+            text = html.unescape(re.sub(r"<[^>]+>", "", text))
+        img = None
+        for cls in ("tgme_widget_message_photo_wrap", "tgme_widget_message_video_thumb", "link_preview_image"):
+            mm = re.search(cls + r"[^>]*background-image:url\('([^']+)'\)", body)
+            if mm:
+                img = mm.group(1)
+                break
+        posts.append({"post": post_id, "text": text, "img": img})
+    return posts
+
+
+def backfill_from_public_page(channel, events):
+    # ещё не найденные на странице канала: без ссылки на пост или без фото (если фото у поста есть)
+    try:
+        with open(LOOKUPS_FILE, encoding="utf-8") as f:
+            lookups = json.load(f)
+    except (OSError, ValueError):
+        lookups = {}
+    missing = [e for e in events if (not e.get("url") or (not e.get("img") and not e.get("noimg")))
+               and lookups.get(text_key(e.get("name", "")), 0) < 3]
+    if not missing:
+        return False
+    name = channel.lstrip("@")
+    posts, url = [], f"https://t.me/s/{name}"
+    try:
+        for _ in range(3):
+            page = http_get(url).decode("utf-8", "replace")
+            chunk = parse_channel_page(page)
+            if not chunk:
+                break
+            posts += chunk
+            first = min(int(p["post"].split("/")[-1]) for p in chunk if p["post"].split("/")[-1].isdigit())
+            url = f"https://t.me/s/{name}?before={first}"
+    except Exception as e:
+        print(f"Публичная страница канала недоступна ({e}) — старые карточки останутся без фото.")
+        return False
+    changed = False
+    for ev in missing:
+        key = text_key(ev.get("name", "").rstrip("…"))
+        if len(key) < 12:
+            continue
+        for p in posts:
+            if key[:40] in text_key(p["text"], limit=None):
+                msg_id = p["post"].split("/")[-1]
+                if not ev.get("url"):
+                    ev["url"] = f"https://t.me/{p['post']}"
+                    changed = True
+                if not ev.get("img") and not p["img"]:
+                    ev["noimg"] = True           # у поста нет фото — больше не искать
+                    changed = True
+                if not ev.get("img") and p["img"]:
+                    try:
+                        rel = save_thumb(http_get(p["img"]), msg_id)
+                    except Exception as e:
+                        print(f"Не скачалось фото поста {p['post']}: {e}")
+                        rel = None
+                    if rel:
+                        ev["img"] = rel
+                        changed = True
+                        print(f"Нашёл фото для «{ev['name'][:40]}…»: {rel}")
+                break
+        else:
+            k = text_key(ev.get("name", ""))           # не нашёлся — после 3 попыток перестанем искать
+            lookups[k] = lookups.get(k, 0) + 1
+    live = {text_key(e.get("name", "")) for e in events}
+    lookups = {k: v for k, v in lookups.items() if k in live}
+    with open(LOOKUPS_FILE, "w", encoding="utf-8") as f:
+        json.dump(lookups, f, ensure_ascii=False, indent=1)
+    return changed
+
+
+# ---------------------------------------------------------------------------
 
 def strip_hashtags(line):
     return re.sub(r"#\S+", "", line).strip()
@@ -123,12 +285,21 @@ def build_event_card(text, date_ts):
 
 
 def update_subscriber_count(token, channel):
-    """Запрашивает у Telegram текущее число участников канала и сохраняет его."""
+    """Запрашивает у Telegram текущее число участников канала и сохраняет его.
+    Файл переписывается, только если число изменилось: каждый лишний коммит —
+    это лишняя публикация сайта на Netlify (15 кредитов)."""
     try:
         count = api_call(token, "getChatMemberCount", {"chat_id": channel})
     except Exception as e:
         print(f"Не удалось получить число подписчиков: {e}", file=sys.stderr)
         return
+    try:
+        with open(SUBSCRIBERS_FILE, encoding="utf-8") as f:
+            if json.load(f).get("count") == count:
+                print(f"Подписчиков в канале: {count} (не изменилось)")
+                return
+    except (OSError, ValueError):
+        pass
     with open(SUBSCRIBERS_FILE, "w", encoding="utf-8") as f:
         json.dump(
             {"count": count, "updated": datetime.now(timezone.utc).isoformat()},
@@ -148,8 +319,12 @@ def load_events():
 
 
 def save_events(events):
+    events = events[:MAX_EVENTS]
     with open(EVENTS_FILE, "w", encoding="utf-8") as f:
-        json.dump(events[:MAX_EVENTS], f, ensure_ascii=False, indent=2)
+        json.dump(events, f, ensure_ascii=False, indent=2)
+    with open(EVENTS_META, "w", encoding="utf-8") as f:
+        json.dump({"updated": datetime.now(timezone.utc).isoformat()}, f, ensure_ascii=False, indent=2)
+    cleanup_thumbs(events)
 
 
 def main():
@@ -159,6 +334,7 @@ def main():
         print("Не заданы TELEGRAM_BOT_TOKEN и/или TELEGRAM_CHANNEL", file=sys.stderr)
         sys.exit(1)
     channel = normalize_channel(channel)
+    channel_name = channel.lstrip("@")
 
     update_subscriber_count(token, channel)
 
@@ -168,17 +344,15 @@ def main():
         params["offset"] = offset + 1
 
     updates = api_call(token, "getUpdates", params)
-    if not updates:
+    if updates:
+        write_offset(max(u["update_id"] for u in updates))
+    else:
         print("Новых постов нет.")
-        return
-
-    max_update_id = max(u["update_id"] for u in updates)
-    write_offset(max_update_id)
 
     best_schedule = None  # (date_ts, file_id)
-    news_posts = []       # [(date_ts, text), ...]
+    news_posts = []       # [(date_ts, text, post), ...]
 
-    for update in updates:
+    for update in updates or []:
         post = update.get("channel_post")
         if not post:
             continue
@@ -199,31 +373,52 @@ def main():
                 best_schedule = (date_ts, largest["file_id"])
 
         if NEWS_TAG_RE.search(combined_text):
-            news_posts.append((date_ts, combined_text))
+            news_posts.append((date_ts, combined_text, post))
 
     if best_schedule:
-        _, file_id = best_schedule
+        date_ts, file_id = best_schedule
         download_file(token, file_id, SCHEDULE_IMAGE)
-        meta = {"updated": datetime.now(timezone.utc).isoformat()}
+        meta = {
+            "updated": datetime.now(timezone.utc).isoformat(),
+            "posted": datetime.fromtimestamp(date_ts, tz=timezone.utc).isoformat(),
+        }
         with open(SCHEDULE_META, "w", encoding="utf-8") as f:
             json.dump(meta, f, ensure_ascii=False, indent=2)
         print(f"Расписание обновлено: {SCHEDULE_IMAGE}")
     else:
         print("Среди новых постов нет картинки с тегом #расписание.")
 
+    events = load_events()
+    changed = False
     if news_posts:
         news_posts.sort(key=lambda p: p[0])  # старые сначала — порядок вставки логичный
-        events = load_events()
-        for date_ts, text in news_posts:
+        for date_ts, text, post in news_posts:
             card = build_event_card(text, date_ts)
+            username = (post.get("chat") or {}).get("username") or channel_name
+            if post.get("message_id"):
+                card["url"] = f"https://t.me/{username}/{post['message_id']}"
+            file_id = post_media_file_id(post)
+            if not file_id:
+                card["noimg"] = True
+            if file_id:
+                try:
+                    rel = save_thumb(telegram_file(token, file_id), str(post.get("message_id") or date_ts))
+                    if rel:
+                        card["img"] = rel
+                except Exception as e:
+                    print(f"Фото к новости не скачалось: {e}", file=sys.stderr)
             events.insert(0, card)
-            print(f"Добавлено событие: {card.get('name')}")
-        save_events(events)
-        with open(EVENTS_META, "w", encoding="utf-8") as f:
-            json.dump({"updated": datetime.now(timezone.utc).isoformat()}, f, ensure_ascii=False, indent=2)
-        print(f"Новости обновлены: {EVENTS_FILE}")
+            changed = True
+            print(f"Добавлено событие: {card.get('name')}" + (" (с фото)" if card.get("img") else ""))
     else:
         print("Среди новых постов нет текста с тегом #Новости.")
+
+    if backfill_from_public_page(channel, events[:MAX_EVENTS]):
+        changed = True
+
+    if changed:
+        save_events(events)
+        print(f"Новости обновлены: {EVENTS_FILE}")
 
 
 if __name__ == "__main__":
