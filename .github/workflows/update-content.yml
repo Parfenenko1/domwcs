@@ -3,7 +3,7 @@ name: Обновление расписания и новостей из Telegra
 on:
   schedule:
     # Дважды в сутки: 12:00 и 00:00 по Москве (09:00 и 21:00 UTC).
-   - cron: "0 9,21 * * *"
+    - cron: "0 9,21 * * *"
   workflow_dispatch: {}   # кнопка "Run workflow" в интерфейсе GitHub — запустить вручную
 
 permissions:
@@ -21,19 +21,30 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Запустить скрипт обновления
+      - name: Установить библиотеки для картинок
+        run: pip install --quiet pillow numpy
+
+      - name: Забрать посты из Telegram (расписание, новости с фото, подписчики)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
         run: python scripts/update_content.py
 
-      - name: Распознать неделю по картинке расписания (для блока «Неделя в Доме»)
+      - name: Распознать расписание (неделя, группы, преподаватели)
         run: |
           if [ "$(python scripts/update_week.py --need)" = "yes" ]; then
             sudo apt-get update -qq
             sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-rus > /dev/null
-            pip install --quiet pillow
-            python scripts/update_week.py || echo "Неделю распознать не получилось — сайт покажет обычное расписание."
+            # Точные модели распознавания (лучше читают мелкий текст); если не скачались — берём системные
+            TD="$RUNNER_TEMP/tessdata"; mkdir -p "$TD"
+            SYS="$(dirname "$(find /usr/share/tesseract-ocr -name eng.traineddata | head -1)")"
+            cp -r "$SYS/configs" "$TD/"
+            for L in rus eng; do
+              curl -sfL --retry 3 -o "$TD/$L.traineddata" "https://github.com/tesseract-ocr/tessdata_best/raw/main/$L.traineddata" \
+                || cp "$SYS/$L.traineddata" "$TD/"
+            done
+            TESSDATA_PREFIX="$TD" python scripts/update_week.py \
+              || echo "Расписание распознать не получилось — сайт покажет прошлые данные."
           else
             echo "Картинка расписания не менялась — распознавать нечего."
           fi
@@ -42,21 +53,33 @@ jobs:
         run: |
           git config user.name "content-bot"
           git config user.email "content-bot@users.noreply.github.com"
-          for f in schedule.jpg schedule-meta.json week.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt; do
+          for f in schedule.jpg schedule-meta.json week.json groups.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt scripts/news_lookups.json; do
             if [ -f "$f" ]; then
               git add "$f"
             fi
           done
+          if [ -d news ] || git ls-files --error-unmatch news >/dev/null 2>&1; then
+            git add -A news
+          fi
           if git diff --cached --quiet; then
             echo "Изменений нет, коммит не нужен."
-          else
-            git commit -m "Автообновление расписания и новостей"
-            for i in 1 2 3 4 5; do
-              if git push; then
-                break
-              fi
-              echo "Пуш отклонён (кто-то успел закоммитить раньше), подтягиваю свежие изменения и пробую снова..."
-              git pull --rebase origin main
-              sleep 3
-            done
+            exit 0
           fi
+          # Каждая публикация на Netlify стоит 15 кредитов. Если поменялись только служебные файлы
+          # или число подписчиков — коммитим с [skip netlify]: сайт не пересобирается,
+          # а изменения уедут вместе со следующей настоящей публикацией.
+          SITE_CHANGES="$(git diff --cached --name-only | grep -v -E '^(scripts/|subscribers\.json$)' || true)"
+          if [ -z "$SITE_CHANGES" ]; then
+            MSG="Бот: служебное обновление [skip netlify]"
+          else
+            MSG="Автообновление расписания и новостей"
+          fi
+          git commit -m "$MSG"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              break
+            fi
+            echo "Пуш отклонён (кто-то успел закоммитить раньше), подтягиваю свежие изменения и пробую снова..."
+            git pull --rebase origin main
+            sleep 3
+          done
