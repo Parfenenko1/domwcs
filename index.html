@@ -137,6 +137,7 @@
   .today-list li{display:inline-flex; align-items:baseline; gap:8px; padding:8px 14px; border-radius:999px; background:var(--paper-2); font-size:16px;}
   .today-list .tt{font-weight:500; color:var(--terra-on-paper); font-variant-numeric:tabular-nums;}
   .today-list .who{color:var(--ink-faint); font-size:14.5px;}
+  .sheet.no-choice .choose{display:none;}
   .today-list .live{font-style:normal; font-size:11.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:#fff4e6; background:var(--terra-btn); padding:2px 8px; border-radius:999px;}
   .today-list li.past{opacity:.5;}
   .today-list li.quiet{background:none; padding:8px 0; color:var(--ink-dim);}
@@ -155,6 +156,7 @@
     .door-note{margin-top:44px; padding:6px 20px 18px;}
     .dn-row{grid-template-columns:1fr; gap:12px;}
     .today-list{grid-column:auto;}
+    .today-list li{flex-wrap:wrap; row-gap:2px; border-radius:14px;}
     .dn-side{justify-content:space-between;}
     .dn-price{text-align:left;}
   }
@@ -200,6 +202,7 @@
   .week .d{font-size:14px; letter-spacing:.12em; text-transform:uppercase; color:var(--cream);}
   .week .e{font-size:15.5px; line-height:1.3; color:var(--cream-dim);}
   .week .e.hot{color:var(--terra-on-night);}
+  .week .e small{display:block; margin-top:1px; font-size:13.5px; color:var(--cream-faint);}
   .week li.today{background:linear-gradient(180deg, rgba(188,88,0,.30), var(--night-2)); box-shadow:inset 0 0 0 1.5px rgba(224,122,36,.55);}
   .week .today-tag{display:block; margin-top:3px; font-style:normal; font-size:11px; letter-spacing:.1em; color:var(--terra-on-night);}
   .facts{display:grid; grid-template-columns:repeat(4,1fr); margin-top:64px; border-top:1px solid var(--line-n);}
@@ -210,12 +213,14 @@
   @media (max-width:980px){
     .about-grid{grid-template-columns:1fr; gap:48px;}
     .week{grid-template-columns:1fr; gap:0; border-top:1px solid var(--line-n);}
-    .week li{flex-direction:row; align-items:baseline; min-height:0; background:none; border-radius:0; padding:12px 0; border-bottom:1px solid var(--line-n); gap:16px;}
+    .week li{display:grid; grid-template-columns:96px minmax(0,1fr); align-items:baseline; min-height:0; background:none; border-radius:0; padding:12px 0; border-bottom:1px solid var(--line-n); gap:4px 16px;}
+    .week .e{grid-column:2;}
+    .week .d{grid-row:1 / span 6;}
     .week li.today{background:none; box-shadow:none;}
     .week li.today .d{color:var(--terra-on-night);}
     .week .today-tag{display:inline; margin:0 0 0 6px;}
-    .week .d{flex:0 0 96px;}
-    .week .e + .e::before{content:"· "; color:var(--cream-faint);}
+    .week .e small{display:inline; font-size:inherit;}
+    .week .e small::before{content:" — ";}
     .facts{grid-template-columns:1fr 1fr; margin-top:56px;}
     .fact:nth-child(3){padding-left:0; border-left:none;}
     .fact:nth-child(n+3){margin-top:26px; border-top:1px solid var(--line-n);}
@@ -236,6 +241,7 @@
   .slots{list-style:none; margin:auto 0 0; padding:14px 0 0; border-top:1px solid var(--line-n); display:flex; flex-direction:column; gap:8px;}
   .slots li{display:flex; justify-content:space-between; gap:12px; font-size:15.5px;}
   .slots b{font-weight:400; color:var(--olive-on-night);}
+  .slots em{font-style:normal; margin-left:6px; padding:1px 7px; border-radius:999px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#fff4e6; background:var(--terra-btn); vertical-align:2px;}
   .slots span{color:var(--cream-dim); white-space:nowrap; font-variant-numeric:tabular-nums;}
   .t.help{background:transparent; border:1.5px dashed var(--line-n); justify-content:center;}
   .t.help p{margin:0; color:var(--cream-dim);}
@@ -320,16 +326,39 @@
   .channel:hover{background:var(--night-3);}
   .channel .num{font-size:26px; color:var(--cream); padding:0 4px;}
   .channel span{font-size:14.5px; color:var(--cream-dim); line-height:1.25;}
-  .posts{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
-  .post{display:flex; flex-direction:column; gap:14px; padding:28px; border-radius:var(--r); background:var(--night-2); text-decoration:none; transition:transform .2s, background .2s;}
+  .posts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;}
+  .post{display:grid; grid-template-columns:168px minmax(0,1fr); gap:22px; padding:14px 22px 14px 14px; border-radius:var(--r); background:var(--night-2); text-decoration:none; transition:transform .2s, background .2s;}
   .post:hover{transform:translateY(-3px); background:var(--night-3);}
-  .post .date{display:flex; align-items:baseline; gap:10px;}
-  .post .date .num{font-size:50px; line-height:.9; color:var(--terra-on-night);}
-  .post .date span{color:var(--cream-faint); font-size:15px;}
-  .post h3{font-size:19px; line-height:1.35; color:var(--cream);}
-  .post p{margin:0; color:var(--cream-faint); font-size:15.5px;}
+  .thumb{position:relative; margin:0; aspect-ratio:4/5; border-radius:8px; overflow:hidden; background:var(--night-3); box-shadow:inset 0 0 0 1px rgba(242,231,211,.08);}
+  .thumb img{width:100%; height:100%; object-fit:cover; object-position:50% 38%; filter:saturate(.94) contrast(1.03); transition:transform .6s cubic-bezier(.2,.7,.2,1);}
+  .post:hover .thumb img{transform:scale(1.05);}
+  .stamp{position:absolute; left:10px; bottom:10px; min-width:46px; padding:6px 8px 5px; border-radius:6px; background:var(--paper); color:var(--ink); text-align:center; line-height:1; transform:rotate(-3deg); box-shadow:0 6px 14px rgba(0,0,0,.35);}
+  .stamp b{display:block; font-weight:500; font-size:22px; color:var(--terra-on-paper); font-variant-numeric:tabular-nums;}
+  .stamp span{display:block; margin-top:3px; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-dim);}
+  .thumb.blank{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--ink);
+    background:repeating-linear-gradient(-45deg, rgba(188,88,0,.09) 0 2px, transparent 2px 10px), var(--paper);}
+  .thumb.blank svg{width:40px; height:18px; color:var(--olive-on-paper);}
+  .thumb.blank b{font-weight:400; font-size:48px; line-height:.95; color:var(--terra-on-paper); font-variant-numeric:tabular-nums;}
+  .thumb.blank span{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-dim);}
+  .post-body{display:flex; flex-direction:column; gap:10px; min-width:0; padding:6px 0 4px;}
+  .post h3{font-size:19px; line-height:1.32; color:var(--cream); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+  .post p{margin:0; color:var(--cream-faint); font-size:15.5px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
   .post .more{margin-top:auto; padding-top:6px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--terra-on-night);}
   @media (max-width:980px){ .posts{grid-template-columns:1fr;} }
+  @media (max-width:560px){
+    .post{grid-template-columns:104px minmax(0,1fr); gap:14px; padding:12px 14px 12px 12px;}
+    .thumb{aspect-ratio:1/1; align-self:start;}
+    .stamp{left:6px; bottom:6px; min-width:38px; padding:5px 6px 4px;}
+    .stamp b{font-size:17px;}
+    .stamp span{font-size:9.5px;}
+    .thumb.blank b{font-size:34px;}
+    .thumb.blank svg{width:30px; height:14px;}
+    .thumb.blank span{font-size:10.5px;}
+    .post-body{gap:6px; padding:2px 0 0;}
+    .post h3{font-size:17px;}
+    .post p{font-size:14.5px; -webkit-line-clamp:2;}
+    .post .more{font-size:12px;}
+  }
 
   /* ---------- visit (terracotta) ---------- */
   .visit{background:var(--terra-deep); color:#fff4e6; --fg:#fff4e6; --fg-dim:#f6dcc2; --rule:rgba(255,244,230,.28); --roof:#e3e17a; --accent:#fff4e6;}
@@ -443,8 +472,8 @@
 
     <div class="door-note" id="doorNote">
       <div class="dn-row">
-        <div class="dn-label">Ближайшая<b>новая группа</b></div>
-        <div class="dn-main"><span class="dn-when" id="ngWhen">В понедельник в 19:00</span><span class="dn-who" id="ngWho">ведут Аня и Оля</span></div>
+        <div class="dn-label" id="ngLabel">Первое<b>занятие</b></div>
+        <div class="dn-main"><span class="dn-when" id="ngWhen">Подскажем группу</span><span class="dn-who" id="ngWho">напишите нам — ответим, куда сейчас идёт набор</span></div>
         <div class="dn-side"><div class="dn-price">Пробное<b>400 ₽</b></div><button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button></div>
       </div>
       <div class="dn-row dn-today">
@@ -535,12 +564,12 @@
     <div class="week-wrap">
     <p class="week-title" id="weekTitle">Обычная неделя в Доме</p>
         <ul class="week" id="week" lang="ru">
-          <li><span class="d">Пн</span><span class="e hot">Новая группа</span><span class="e">Группа</span></li>
-          <li><span class="d">Вт</span><span class="e">Старшая</span><span class="e">Младшая группа</span></li>
-          <li><span class="d">Ср</span><span class="e">Свитч</span><span class="e">Общая группа</span></li>
-          <li><span class="d">Чт</span><span class="e">Младшая группа</span><span class="e">Старшая</span></li>
+          <li><span class="d">Пн</span><span class="e">Группа<small>Аня и Оля</small></span><span class="e">Группа<small>Олег и Женя</small></span></li>
+          <li><span class="d">Вт</span><span class="e">Старшая группа<small>Саша и Лена</small></span><span class="e">Младшая группа<small>Саша и Лена</small></span></li>
+          <li><span class="d">Ср</span><span class="e">WCS Switch<small>Даша</small></span><span class="e">Общая группа</span></li>
+          <li><span class="d">Чт</span><span class="e">Младшая группа<small>Саша и Лена</small></span><span class="e">Старшая группа<small>Саша и Лена</small></span></li>
           <li><span class="d">Пт</span><span class="e">Сампо до 19:30</span><span class="e">Мероприятие</span></li>
-          <li><span class="d">Сб</span><span class="e">«Другие роли»</span><span class="e">Сампо</span></li>
+          <li><span class="d">Сб</span><span class="e">Другие роли<small>Саша и Лена</small></span><span class="e">Сампо</span></li>
           <li><span class="d">Вс</span><span class="e hot">Вечеринка</span><span class="e">Сампо</span></li>
         </ul>
     </div>
@@ -562,35 +591,35 @@
       <p class="lede">Большинство групп в Доме ведут пары преподавателей.</p>
     </div>
     <div class="team">
-      <article class="t">
+      <article class="t" data-teacher="sl">
         <div class="pair"><i class="o">АП</i><i class="t1">ЕЛ</i></div>
         <h3>Саша и Лена</h3>
         <p class="names">Александр Парфененко и Елена Логашина</p>
         <ul class="slots">
           <li><b>Младшая группа</b><span>вт 20:30 · чт 19:00</span></li>
           <li><b>Старшая группа</b><span>вт 19:00 · чт 20:30</span></li>
-          <li><b>«Другие роли»</b><span>сб 14:30</span></li>
+          <li><b>Другие роли</b><span>сб 14:30</span></li>
         </ul>
       </article>
-      <article class="t">
+      <article class="t" data-teacher="ao">
         <div class="pair"><i class="t1">АД</i><i class="o">ОМ</i></div>
         <h3>Аня и Оля</h3>
         <p class="names">Анна Данилова и Ольга Михеева</p>
-        <ul class="slots"><li><b>Новая группа</b><span>пн 19:00</span></li></ul>
+        <ul class="slots"><li><b>Группа</b><span>пн 19:00</span></li></ul>
       </article>
-      <article class="t">
+      <article class="t" data-teacher="oz">
         <div class="pair"><i class="o">ОФ</i><i class="t1">ЕЗ</i></div>
         <h3>Олег и Женя</h3>
         <p class="names">Олег Фабрицкий и Евгения Земскова</p>
         <ul class="slots"><li><b>Группа</b><span>пн 20:30</span></li></ul>
       </article>
-      <article class="t solo">
+      <article class="t solo" data-teacher="d">
         <div class="pair"><i class="t1">ДК</i></div>
         <h3>Даша</h3>
         <p class="names">Дарья Комкина</p>
-        <ul class="slots"><li><b>Свитч-группа</b><span>ср 19:00</span></li></ul>
+        <ul class="slots"><li><b>WCS Switch</b><span>ср 19:00</span></li></ul>
       </article>
-      <article class="t solo">
+      <article class="t solo" data-teacher="ek">
         <div class="pair"><i class="o">ЕК</i></div>
         <h3>Елена</h3>
         <p class="names">Елена Котельникова</p>
@@ -708,7 +737,7 @@
       <div class="head">
         <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Не пропустите</p>
         <h2>Новости Дома</h2>
-        <p class="lede">Свежие посты из нашего Telegram-канала — лента обновляется сама.</p>
+        <p class="lede">Свежие посты из нашего Telegram-канала — лента и фото обновляются сами.</p>
       </div>
       <a class="channel" href="https://t.me/domwcs" target="_blank" rel="noopener"><span class="num" id="subscriberCount2">478</span><span>подписчиков<br>в канале @domwcs →</span></a>
     </div>
@@ -767,14 +796,14 @@
       </div>
       <button class="x" type="button" id="sheetClose" aria-label="Закрыть">×</button>
     </div>
-    <p class="step"><span>1</span>Выберите новую группу</p>
-    <fieldset class="opts" id="opts"></fieldset>
-    <p class="step"><span>2</span>Скопируйте сообщение</p>
+    <p class="step choose"><span>1</span>Выберите новую группу</p>
+    <fieldset class="opts choose" id="opts"></fieldset>
+    <p class="step"><span class="n">2</span>Скопируйте сообщение</p>
     <div class="msg">
       <p id="msgText">Здравствуйте! Хочу прийти на пробное занятие.</p>
       <button class="copy" type="button" id="copyMsg"><small>Скопировать текст</small></button>
     </div>
-    <p class="step"><span>3</span>Оставьте его комментарием под любым постом в канале</p>
+    <p class="step"><span class="n">3</span>Оставьте его комментарием под любым постом в канале</p>
     <div class="sheet-actions">
       <a class="btn btn-terra" id="sheetGo" href="https://t.me/domwcs" target="_blank" rel="noopener">Открыть канал @domwcs</a>
     </div>
@@ -794,39 +823,51 @@
   // Куда ведёт кнопка записи: канал, запись — через комментарии к любому посту.
   var BOOKING_URL = 'https://t.me/domwcs';
 
-  // Базовое расписание (повторяется каждую неделю). day: 0 = понедельник.
-  // Отсюда берутся преподаватели: на картинке расписания их обычно нет.
-  var BASE_SLOTS = [
-    { day: 0, time: '19:00', label: 'Новая группа', who: 'Аня и Оля', hot: true },
+  // ---------- кто есть кто ----------
+  // Как преподавателей зовут на картинке расписания (у пары должны быть оба имени).
+  var TEACHERS = [
+    { id: 'sl', keys: [['саша', 'александр', 'парфененко'], ['лена', 'логашина']] },
+    { id: 'ao', keys: [['аня', 'анна', 'данилова'], ['оля', 'ольга', 'михеева']] },
+    { id: 'oz', keys: [['олег', 'фабрицкий'], ['женя', 'евгения', 'земскова']] },
+    { id: 'd', keys: [['даша', 'дарья', 'комкина']] },
+    { id: 'ek', keys: [['котельникова']] }
+  ];
+
+  // Обычная неделя — запасной вариант, пока бот не распознал свежее расписание.
+  // Названия групп и отметку «идёт набор» сайт берёт из самого расписания:
+  // week.json (эта неделя) и groups.json (постоянные группы за последние недели).
+  var BASE_GROUPS = [
+    { day: 0, time: '19:00', label: 'Группа', who: 'Аня и Оля' },
     { day: 0, time: '20:30', label: 'Группа', who: 'Олег и Женя' },
-    { day: 1, time: '19:00', label: 'Старшая', who: 'Саша и Лена' },
+    { day: 1, time: '19:00', label: 'Старшая группа', who: 'Саша и Лена' },
     { day: 1, time: '20:30', label: 'Младшая группа', who: 'Саша и Лена' },
-    { day: 2, time: '19:00', label: 'Свитч', who: 'Даша' },
+    { day: 2, time: '19:00', label: 'WCS Switch', who: 'Даша' },
     { day: 2, time: '20:30', label: 'Общая группа', who: '' },
     { day: 3, time: '19:00', label: 'Младшая группа', who: 'Саша и Лена' },
-    { day: 3, time: '20:30', label: 'Старшая', who: 'Саша и Лена' },
-    { day: 4, time: '19:30', label: 'Мероприятие', who: '' },
-    { day: 5, time: '14:30', label: '«Другие роли»', who: 'Саша и Лена' },
-    { day: 6, time: '19:00', label: 'Вечеринка', who: '', hot: true }
+    { day: 3, time: '20:30', label: 'Старшая группа', who: 'Саша и Лена' },
+    { day: 5, time: '14:30', label: 'Другие роли', who: 'Саша и Лена' }
   ];
-  var BASE_STRIP = [
-    [['Новая группа', 1], ['Группа']], [['Старшая'], ['Младшая группа']], [['Свитч'], ['Общая группа']],
-    [['Младшая группа'], ['Старшая']], [['Сампо до 19:30'], ['Мероприятие']], [['«Другие роли»'], ['Сампо']], [['Вечеринка', 1], ['Сампо']]
-  ].map(function (d) { return d.map(function (x) { return { label: x[0], hot: !!x[1] }; }); });
-  // для шторки записи: постоянные новые группы (day — день недели JS, 0 = воскресенье)
-  var NEW_GROUPS = BASE_SLOTS.filter(function (x) { return x.label === 'Новая группа'; }).map(function (x) {
-    var t = x.time.split(':'); return { day: (x.day + 1) % 7, h: +t[0], m: +t[1], who: x.who };
-  });
-  var DAY_IN = ['в воскресенье', 'в понедельник', 'во вторник', 'в среду', 'в четверг', 'в пятницу', 'в субботу'];
-  var DAY_NAME = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+  var BASE_EXTRA = [
+    { day: 4, time: '19:30', kind: 'note', label: 'Закрыт' },
+    { day: 6, time: '19:00', kind: 'note', label: 'Вечеринка в Доме', hot: true, party: true }
+  ];
+
   var DAY_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  var DAY_LOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+  var DAY_NAME = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
   var DAY_NOM = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
-  var DAY_TODAY = ['в понедельник', 'во вторник', 'в среду', 'в четверг', 'в пятницу', 'в субботу', 'в воскресенье'];
+  var DAY_IN = ['в понедельник', 'во вторник', 'в среду', 'в четверг', 'в пятницу', 'в субботу', 'в воскресенье'];
+  var DAY_NEXT = ['в следующий понедельник', 'в следующий вторник', 'в следующую среду', 'в следующий четверг',
+    'в следующую пятницу', 'в следующую субботу', 'в следующее воскресенье'];
   var MONTH_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-  function hhmm(g) { return g.h + ':' + (g.m < 10 ? '0' : '') + g.m; }
+  var DAY_MS = 864e5;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-  function mins(t) { var p = t.split(':'); return +p[0] * 60 + +p[1]; }
-  function kind(l) { return l.toLowerCase().replace(/[«»]/g, '').replace(' группа', '').replace(/^вечеринка.*/, 'вечеринка'); }
+  function mins(t) { var p = String(t).split(':'); return +p[0] * 60 + +p[1]; }
+  function byTime(a, b) { return (a.day || 0) - (b.day || 0) || mins(a.time || '99:00') - mins(b.time || '99:00'); }
+  function isClosed(it) { return it.kind === 'note' && /^закрыт/i.test(it.label || ''); }
+  function getJSON(u) { return fetch(u, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
 
   // ---------- время в Москве ----------
   function moscowParts() {
@@ -837,117 +878,216 @@
     return { utc: utc, idx: (new Date(utc).getUTCDay() + 6) % 7, min: +p.hour * 60 + +p.minute };
   }
   var now = moscowParts();
+  var thisMonday = now.utc - now.idx * DAY_MS;
 
-  function whoFor(day, time, label) {
-    var b = BASE_SLOTS.filter(function (x) { return x.day === day && x.time === time && kind(x.label) === kind(label); })[0];
+  // ---------- преподаватели по имени из расписания ----------
+  function words(s) { return String(s || '').toLowerCase().replace(/ё/g, 'е').split(/[^а-яa-z]+/).filter(Boolean); }
+  function teacherOf(who) {
+    var w = words(who);
+    if (!w.length) return null;
+    for (var i = 0; i < TEACHERS.length; i++) {
+      if (TEACHERS[i].keys.every(function (alts) { return alts.some(function (a) { return w.indexOf(a) >= 0; }); })) return TEACHERS[i];
+    }
+    return null;
+  }
+  function baseWho(day, time) {
+    var b = BASE_GROUPS.filter(function (x) { return x.day === day && x.time === time; })[0];
     return b ? b.who : '';
   }
-  function baseDay(i) {
-    return BASE_SLOTS.filter(function (x) { return x.day === i; }).map(function (x) { return { label: x.label, time: x.time, hot: x.hot }; });
-  }
 
-  // ---------- «Ближайшая новая группа» ----------
-  // weekDays — 7 дней с занятиями, offset — сколько дней назад был понедельник этой недели
-  function nextNewGroup(weekDays, offset) {
-    var c = [];
-    function scan(days, shift) {
-      days.forEach(function (items, i) {
+  // ---------- данные: свежая неделя и постоянные группы ----------
+  var week = null;     // { days: [7 × items], offset: дней от этого понедельника, range: '28 сентября – 4 октября' }
+  var groups = null;   // постоянные группы из groups.json
+
+  function useWeek(w) {
+    if (!w || w.version !== 2 || !w.week_start || !w.days || w.days.length !== 7) return null;
+    var p = w.week_start.split('-'), start = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+    var offset = Math.round((start - thisMonday) / DAY_MS);
+    if (offset !== 0 && offset !== 7) return null;              // устаревшая неделя
+    var sd = new Date(start), ed = new Date(start + 6 * DAY_MS);
+    var range = sd.getUTCMonth() === ed.getUTCMonth()
+      ? sd.getUTCDate() + '–' + ed.getUTCDate() + ' ' + MONTH_GEN[ed.getUTCMonth()]
+      : sd.getUTCDate() + ' ' + MONTH_GEN[sd.getUTCMonth()] + ' – ' + ed.getUTCDate() + ' ' + MONTH_GEN[ed.getUTCMonth()];
+    return { days: w.days.map(function (d) { return d.items || []; }), offset: offset, range: range };
+  }
+  function regularGroups() {
+    if (groups && groups.length) return groups;
+    if (week) {
+      var out = [];
+      week.days.forEach(function (items, day) {
         items.forEach(function (it) {
-          if (it.label !== 'Новая группа' || !it.time) return;
-          var delta = (i - offset + shift) * 1440 + mins(it.time) - now.min;
-          if (delta > 0) c.push({ day: i, time: it.time, delta: delta });
+          if (it.kind === 'class' && it.time && !it.tag) out.push({ day: day, time: it.time, label: it.label, who: it.who || '', 'new': !!it['new'] });
         });
       });
+      if (out.length) return out;
     }
-    scan(weekDays, 0);
-    if (!c.length) scan([0, 1, 2, 3, 4, 5, 6].map(baseDay), 7);   // на этой неделе новых групп больше нет — следующая неделя
-    c.sort(function (a, b) { return a.delta - b.delta; });
-    return c[0];
+    return BASE_GROUPS;
   }
-  function showNext(n) {
-    if (!n) return;
-    var ahead = Math.floor((now.min + n.delta) / 1440);
-    var when = ahead === 0 ? 'сегодня' : ahead === 1 ? 'завтра' : ahead >= 7 ? 'в следующ' + (n.day === 2 || n.day === 4 || n.day === 5 ? 'ую ' : n.day === 6 ? 'ее ' : 'ий ') + DAY_TODAY[n.day].replace(/^во? /, '') : DAY_TODAY[n.day];
-    document.getElementById('ngWhen').textContent = cap(when) + ' в ' + n.time;
-    var who = whoFor(n.day, n.time, 'Новая группа');
-    document.getElementById('ngWho').textContent = who ? 'ведут ' + who : '';
+  // обычная неделя: постоянные группы + пятница/воскресенье + сампо
+  function regularWeek() {
+    var days = [[], [], [], [], [], [], []];
+    regularGroups().forEach(function (g) {
+      days[g.day].push({ kind: 'class', time: g.time, label: g.label, who: g.who || baseWho(g.day, g.time), 'new': g['new'], hot: g['new'] });
+    });
+    BASE_EXTRA.forEach(function (x) { days[x.day].push(x); });
+    days.forEach(function (d) { d.push({ kind: 'sampo', label: 'Сампо' }); });
+    return days;
   }
-
-  // ---------- «Сегодня в Доме» ----------
-  function showToday(items) {
-    var timed = items.filter(function (it) { return it.time; }).sort(function (a, b) { return mins(a.time) - mins(b.time); });
-    var extra = items.filter(function (it) { return !it.time && !/^Сампо/.test(it.label); });
-    var hasSampo = items.some(function (it) { return /^Сампо/.test(it.label); });
-    var html = timed.concat(extra).map(function (it) {
-      var cls = '', live = '';
-      if (it.time) {
-        var start = mins(it.time), len = /Вечеринк|Мероприят/.test(it.label) ? 180 : 90;
-        if (now.min >= start + len) cls = ' class="past"';
-        else if (now.min >= start) live = '<em class="live">идёт сейчас</em>';
-      }
-      var who = it.time ? whoFor(now.idx, it.time, it.label) : '';
-      return '<li' + cls + '>' + (it.time ? '<span class="tt">' + it.time + '</span>' : '') + '<span>' + esc(it.label) + '</span>' +
-        (who ? '<span class="who">' + who + '</span>' : '') + live + '</li>';
-    }).join('');
-    if (!html) html = '<li class="quiet">' + (hasSampo ? 'Занятий нет — зал открыт для сампо' : 'Занятий нет') + '</li>';
-    document.getElementById('todayName').textContent = DAY_NOM[now.idx];
-    document.getElementById('todayList').innerHTML = html;
+  // week_start всегда понедельник: offset 0 — неделя идёт сейчас, 7 — уже вывесили следующую
+  function currentWeekDays() { return week && week.offset === 0 ? week.days : null; }
+  function todayItems() {
+    var cur = currentWeekDays();
+    return cur ? cur[now.idx] || [] : regularWeek()[now.idx];
   }
 
   // ---------- «Неделя в Доме» ----------
+  function stripItems(items) {
+    var closed = items.filter(isClosed)[0];
+    var sampo = items.some(function (it) { return it.kind === 'sampo'; });
+    var out = items.filter(function (it) { return it.kind !== 'sampo' && it !== closed; }).slice().sort(byTime);
+    if (closed) out.push({ label: sampo && closed.time ? 'Сампо до ' + closed.time : closed.label + (closed.time ? ' с ' + closed.time : '') });
+    if (!out.length && sampo) out.push({ label: 'Сампо' });
+    return out;
+  }
   function renderWeek(days, title, mark) {
     document.getElementById('weekTitle').textContent = title;
     document.getElementById('week').innerHTML = days.map(function (items, i) {
       var today = i === mark;
       return '<li' + (today ? ' class="today"' : '') + '><span class="d">' + DAY_SHORT[i] + (today ? '<i class="today-tag">сегодня</i>' : '') + '</span>' +
-        items.map(function (it) { return '<span class="e' + (it.hot ? ' hot' : '') + '">' + esc(it.label) + '</span>'; }).join('') + '</li>';
+        stripItems(items).map(function (it) {
+          var second = it.title || it.who || (it.kind === 'class' && it.time ? baseWho(i, it.time) : '');
+          return '<span class="e' + (it.hot || it['new'] ? ' hot' : '') + '">' + esc(it.label) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
+        }).join('') + '</li>';
     }).join('');
   }
 
-  // сначала — обычная неделя, потом, если бот уже распознал картинку, — настоящая
-  var baseWeek = [0, 1, 2, 3, 4, 5, 6].map(baseDay);
-  renderWeek(BASE_STRIP, 'Обычная неделя в Доме', now.idx);
-  showToday(baseWeek[now.idx].concat(now.idx === 4 || now.idx >= 5 ? [{ label: 'Сампо' }] : []));
-  var best = nextNewGroup(baseWeek, now.idx);
-  showNext(best);
-  var bestJsDay = best ? (best.day + 1) % 7 : 1;
+  // ---------- «Сегодня в Доме» ----------
+  function showToday(items) {
+    var closed = items.filter(isClosed)[0];
+    var sampo = items.some(function (it) { return it.kind === 'sampo'; });
+    var list = items.filter(function (it) { return it.kind !== 'sampo' && !isClosed(it); }).slice().sort(byTime);
+    var html = list.map(function (it) {
+      var cls = '', live = '';
+      if (it.time) {
+        var start = mins(it.time), len = it.kind === 'class' ? 90 : 180;
+        if (now.min >= start + len) cls = ' class="past"';
+        else if (now.min >= start) live = '<em class="live">идёт сейчас</em>';
+      }
+      var who = it.who || (it.kind === 'class' ? baseWho(now.idx, it.time) : '');
+      var name = it.label + (it.title ? ' ' + it.title : '');
+      return '<li' + cls + '>' + (it.time ? '<span class="tt">' + esc(it.time) + '</span>' : '') + '<span>' + esc(name) + '</span>' +
+        (who ? '<span class="who">' + esc(who) + '</span>' : '') + live + '</li>';
+    }).join('');
+    if (closed && closed.time) html += '<li class="quiet">С ' + esc(closed.time) + ' зал закрыт</li>';
+    if (!list.length) html = '<li class="quiet">' + (sampo ? 'Занятий нет — зал открыт для сампо' + (closed && closed.time ? ' до ' + esc(closed.time) : '') : 'Занятий нет') + '</li>';
+    document.getElementById('todayName').textContent = DAY_NOM[now.idx];
+    document.getElementById('todayList').innerHTML = html;
+  }
 
-  getJSON('week.json').then(function (w) {
-    if (!w || !w.week_start || !w.days || w.days.length !== 7) return;
-    var p = w.week_start.split('-'), start = Date.UTC(+p[0], +p[1] - 1, +p[2]);
-    var diff = Math.round((now.utc - start) / 864e5);
-    if (diff > 6 || diff < -7) return;                  // устаревшая неделя — остаётся обычная
-    var days = w.days.map(function (d) { return d.items || []; });
-    var sd = new Date(start), ed = new Date(start + 6 * 864e5);
-    var range = sd.getUTCMonth() === ed.getUTCMonth()
-      ? sd.getUTCDate() + '–' + ed.getUTCDate() + ' ' + MONTH_GEN[ed.getUTCMonth()]
-      : sd.getUTCDate() + ' ' + MONTH_GEN[sd.getUTCMonth()] + ' – ' + ed.getUTCDate() + ' ' + MONTH_GEN[ed.getUTCMonth()];
-    renderWeek(days, 'Неделя в Доме · ' + range, diff >= 0 ? diff : -1);
-    if (diff >= 0) {                                     // неделя идёт сейчас
-      showToday(days[diff]);
-      showNext(nextNewGroup(days, diff));
-      document.getElementById('dnFoot').innerHTML = 'По расписанию этой недели — вся неделя в <a href="#schedule">расписании</a>.';
-    } else {                                             // опубликована следующая неделя
-      showNext(nextNewGroup(days, diff));
+  // ---------- «Ближайшая новая группа» ----------
+  // Новая группа = в подписи на расписании есть «группа с нуля», «новая группа» или «набор».
+  function newGroupDates() {
+    var found = [];
+    function add(it, dayOffset) {                       // dayOffset — дней от этого понедельника
+      if (!it.time) return;
+      var delta = (dayOffset - now.idx) * 1440 + mins(it.time) - now.min;
+      if (delta > 0) found.push({ day: ((dayOffset % 7) + 7) % 7, time: it.time, label: it.label, who: it.who || baseWho(((dayOffset % 7) + 7) % 7, it.time), delta: delta });
     }
-  }).catch(function () {});
+    var covered = {};
+    if (week) {
+      week.days.forEach(function (items, i) {
+        covered[week.offset + i] = true;
+        items.forEach(function (it) { if (it['new']) add(it, week.offset + i); });
+      });
+    }
+    regularGroups().forEach(function (g) {                // на недели, которых ещё нет в расписании
+      if (!g['new']) return;
+      for (var k = 0; k <= 14; k += 7) if (!covered[g.day + k]) add(g, g.day + k);
+    });
+    found.sort(function (a, b) { return a.delta - b.delta; });
+    var seen = {};
+    return found.filter(function (f) { var key = f.day + ' ' + f.time; if (seen[key]) return false; seen[key] = 1; return true; });
+  }
+  function whenText(f) {
+    var ahead = Math.floor((now.min + f.delta) / 1440);
+    return ahead === 0 ? 'сегодня' : ahead === 1 ? 'завтра' : ahead >= 7 ? DAY_NEXT[f.day] : DAY_IN[f.day];
+  }
+  function showNext(list) {
+    var n = list[0];
+    if (n) {
+      document.getElementById('ngLabel').innerHTML = 'Ближайшая<b>новая группа</b>';
+      document.getElementById('ngWhen').textContent = cap(whenText(n)) + ' в ' + n.time;
+      document.getElementById('ngWho').textContent = n.who ? 'ведут ' + n.who : n.label;
+    } else {                                              // набора сейчас нет — просто пробное
+      document.getElementById('ngLabel').innerHTML = 'Первое<b>занятие</b>';
+      document.getElementById('ngWhen').textContent = 'Подскажем группу';
+      document.getElementById('ngWho').textContent = 'напишите нам — ответим, куда сейчас идёт набор';
+    }
+  }
+
+  // ---------- карточки преподавателей ----------
+  function renderTeachers() {
+    var list = regularGroups().slice().sort(byTime);
+    document.querySelectorAll('[data-teacher]').forEach(function (card) {
+      var id = card.getAttribute('data-teacher'), rows = [];
+      list.forEach(function (g) {
+        var t = teacherOf(g.who) || (!g.who ? teacherOf(baseWho(g.day, g.time)) : null);
+        if (!t || t.id !== id) return;
+        var row = rows.filter(function (r) { return r.label === g.label; })[0];
+        if (!row) rows.push(row = { label: g.label, slots: [], open: false });
+        row.slots.push(DAY_LOW[g.day] + ' ' + g.time);
+        if (g['new']) row.open = true;
+      });
+      card.querySelector('.slots').innerHTML = rows.length ? rows.map(function (r) {
+        return '<li><b>' + esc(r.label) + (r.open ? '<em>набор</em>' : '') + '</b><span>' + r.slots.join(' · ') + '</span></li>';
+      }).join('') : '<li><b>Преподаватель</b><span></span></li>';
+    });
+  }
+
+  // ---------- всё вместе ----------
+  var nextList = [];
+  function render() {
+    var cur = currentWeekDays();
+    if (cur) renderWeek(cur, 'Неделя в Доме · ' + week.range, now.idx);
+    else if (week) renderWeek(week.days, 'Следующая неделя в Доме · ' + week.range, -1);
+    else renderWeek(regularWeek(), 'Обычная неделя в Доме', now.idx);
+    showToday(todayItems());
+    nextList = newGroupDates();
+    showNext(nextList);
+    renderTeachers();
+    document.getElementById('dnFoot').innerHTML = cur
+      ? 'По расписанию этой недели — вся неделя в <a href="#schedule">расписании</a>.'
+      : week ? 'Уже опубликовано расписание на следующую неделю — смотрите <a href="#schedule">ниже</a>.'
+        : 'По обычному расписанию. Точное на эту неделю — в <a href="#schedule">расписании</a>.';
+    buildSheet();
+  }
 
   // ---------- sign-up sheet ----------
-  var sheet = document.getElementById('sheet'), opts = document.getElementById('opts'), msg = document.getElementById('msgText');
-  var choices = NEW_GROUPS.map(function (g) {
-    return { id: 'g' + g.day, title: DAY_NAME[g.day] + ', ' + hhmm(g), sub: 'Новая группа · ведут ' + g.who, text: DAY_IN[g.day] + ' в ' + hhmm(g) + ' (новая группа)' };
-  });
-  choices.push({ id: 'help', title: 'Пока не знаю', sub: 'Помогите выбрать группу', text: '' });
-  opts.innerHTML = '<legend class="sr" style="position:absolute;left:-9999px">Группа</legend>' + choices.map(function (c, i) {
-    var near = c.id === 'g' + bestJsDay ? '<em>ближайшая</em>' : '';
-    return '<label class="opt"><input type="radio" name="grp" value="' + c.id + '"' + (c.id === 'g' + bestJsDay ? ' checked' : '') + '>' +
-      '<span><b>' + c.title + '</b><small>' + c.sub + '</small></span>' + near + '</label>';
-  }).join('');
+  var sheet = document.getElementById('sheet'), opts = document.getElementById('opts'), msg = document.getElementById('msgText'), choices = [];
+  function buildSheet() {
+    choices = nextList.map(function (g) {
+      return { id: 'g' + g.day + g.time, title: DAY_NAME[g.day] + ', ' + g.time, sub: g.label + (g.who ? ' · ведут ' + g.who : ''), text: DAY_IN[g.day] + ' в ' + g.time + ' (' + g.label.toLowerCase() + ')' };
+    });
+    sheet.classList.toggle('no-choice', !choices.length);
+    sheet.querySelectorAll('.step .n').forEach(function (n, i) { n.textContent = choices.length ? i + 2 : i + 1; });
+    if (choices.length) {
+      choices.push({ id: 'help', title: 'Пока не знаю', sub: 'Помогите выбрать группу', text: '' });
+      opts.innerHTML = '<legend class="sr" style="position:absolute;left:-9999px">Группа</legend>' + choices.map(function (c, i) {
+        return '<label class="opt"><input type="radio" name="grp" value="' + esc(c.id) + '"' + (i === 0 ? ' checked' : '') + '>' +
+          '<span><b>' + esc(c.title) + '</b><small>' + esc(c.sub) + '</small></span>' + (i === 0 ? '<em>ближайшая</em>' : '') + '</label>';
+      }).join('');
+    } else {
+      opts.innerHTML = '';
+    }
+    updateMsg();
+  }
   function updateMsg() {
     var v = (opts.querySelector('input:checked') || {}).value, c = choices.filter(function (x) { return x.id === v; })[0];
-    msg.textContent = c && c.text ? 'Здравствуйте! Хочу прийти на пробное занятие ' + c.text + '.' : 'Здравствуйте! Хочу прийти на пробное занятие — помогите, пожалуйста, выбрать группу.';
+    msg.textContent = !choices.length
+      ? 'Здравствуйте! Хочу прийти на пробное занятие — подскажите, пожалуйста, в какую группу сейчас идёт набор.'
+      : c && c.text ? 'Здравствуйте! Хочу прийти на пробное занятие ' + c.text + '.' : 'Здравствуйте! Хочу прийти на пробное занятие — помогите, пожалуйста, выбрать группу.';
   }
-  opts.addEventListener('change', updateMsg); updateMsg();
+  opts.addEventListener('change', updateMsg);
   var go = document.getElementById('sheetGo');
   go.href = BOOKING_URL;
   go.addEventListener('click', function () {
@@ -958,6 +1098,14 @@
   });
   document.getElementById('sheetClose').addEventListener('click', function () { sheet.close(); });
   sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
+
+  // сначала — обычная неделя, потом — то, что бот распознал в расписании
+  render();
+  Promise.all([getJSON('week.json'), getJSON('groups.json')]).then(function (r) {
+    week = useWeek(r[0]);
+    groups = r[1] && r[1].version === 2 && r[1].groups && r[1].groups.length ? r[1].groups : null;
+    render();
+  });
 
   // ---------- copy helpers ----------
   var toast = document.getElementById('toast'), tt;
@@ -982,7 +1130,6 @@
   else dock.classList.add('show');
 
   // ---------- live data from the bot ----------
-  function getJSON(u) { return fetch(u, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }); }
   getJSON('subscribers.json').then(function (d) {
     if (d && d.count) { document.getElementById('subscriberCount').textContent = d.count; document.getElementById('subscriberCount2').textContent = d.count; }
   }).catch(function () {});
@@ -994,12 +1141,25 @@
     document.getElementById('schedule-updated').textContent = 'Обновлено ' + d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) + ' в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   }).catch(function () {});
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function renderPosts(list) {
-    document.getElementById('eventsList').innerHTML = list.slice(0, 3).map(function (ev) {
-      return '<a class="post" href="https://t.me/domwcs" target="_blank" rel="noopener"><div class="date"><span class="num">' + esc(ev.day) + '</span><span>' + esc(ev.mon) + '</span></div>' +
-        '<h3>' + esc(ev.name) + '</h3><p>' + esc(ev.desc) + '</p><span class="more">Читать в Telegram →</span></a>';
+    var box = document.getElementById('eventsList');
+    box.innerHTML = list.slice(0, 4).map(function (ev) {
+      var url = /^https:\/\/t\.me\//.test(ev.url || '') ? ev.url : 'https://t.me/domwcs';
+      var img = /^news\/[\w.-]+$/.test(ev.img || '') ? ev.img : '';
+      var mon = String(ev.mon || '');
+      var blank = '<svg aria-hidden="true"><use href="#roof"/></svg><b>' + esc(ev.day) + '</b><span>' + esc(mon) + '</span>';
+      var thumb = img
+        ? '<figure class="thumb" data-blank="' + esc(blank) + '"><img src="' + esc(img) + '" alt="" loading="lazy" decoding="async">' +
+          '<span class="stamp"><b>' + esc(ev.day) + '</b><span>' + esc(mon.slice(0, 3)) + '</span></span></figure>'
+        : '<figure class="thumb blank">' + blank + '</figure>';
+      return '<a class="post" href="' + esc(url) + '" target="_blank" rel="noopener">' + thumb +
+        '<div class="post-body"><h3>' + esc(ev.name) + '</h3>' + (ev.desc ? '<p>' + esc(ev.desc) + '</p>' : '') +
+        '<span class="more">Читать в Telegram →</span></div></a>';
     }).join('');
+    // фото не загрузилось — вместо него карточка с датой
+    box.querySelectorAll('.thumb img').forEach(function (im) {
+      im.addEventListener('error', function () { var f = im.parentNode; f.className = 'thumb blank'; f.innerHTML = f.getAttribute('data-blank'); });
+    });
   }
   var fallbackPosts = [{ day: '·', mon: 'скоро', name: 'Мастер-классы, опены и вечеринки', desc: 'Анонсы выходят в нашем Telegram-канале.' }];
   getJSON('events.json').then(function (e) { renderPosts(e && e.length ? e : fallbackPosts); }).catch(function () { renderPosts(fallbackPosts); });
