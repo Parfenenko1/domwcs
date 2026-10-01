@@ -233,6 +233,11 @@
   .menu a{text-decoration:none; color:var(--cream-dim); font-size:15px; transition:color .15s;}
   .menu a:hover{color:var(--cream);}
   .menu-btn{display:none; border:1.5px solid var(--line-n); background:none; border-radius:999px; padding:9px 16px; font-size:14px; cursor:pointer;}
+  .lk-link[hidden]{display:none!important;}
+  .top .lk-top{border:1.5px solid var(--line-n); color:var(--cream); background:transparent; margin-right:-12px;}
+  .top .lk-top:hover{border-color:var(--cream-dim);}
+  .menu .lk-menu{color:var(--cream);}
+  @media (min-width:1021px){ .menu .lk-menu{display:none!important;} }
   @media (max-width:1020px){
     .menu{position:fixed; inset:68px 0 auto 0; flex-direction:column; gap:0; padding:8px 18px 22px; background:var(--night); border-bottom:1px solid var(--line-n);
           opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity .2s, transform .2s, visibility .2s;}
@@ -593,7 +598,9 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <a href="#pricing">Тарифы</a>
       <a href="#news">Новости</a>
       <a href="#visit">Контакты</a>
+      <a class="lk-link lk-menu" href="https://lk.wcshome.ru" hidden>Личный кабинет</a>
     </nav>
+    <a class="btn btn-sm lk-link lk-top" href="https://lk.wcshome.ru" hidden>Личный кабинет</a>
     <button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button>
     <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">Меню</button>
   </div>
@@ -790,7 +797,6 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     <div class="head">
       <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Каждую неделю</p>
       <h2>Расписание недели</h2>
-      <p class="lede">Раз в неделю мы публикуем расписание в Telegram — сайт забирает картинку сам.</p>
     </div>
     <div class="poster-wrap">
       <button class="poster" id="posterBtn" type="button" aria-label="Открыть расписание крупно">
@@ -799,7 +805,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       </button>
       <p class="sched-fallback" id="schedule-fallback">Не получилось загрузить картинку расписания. Актуальное расписание — в нашем <a href="https://t.me/domwcs" target="_blank" rel="noopener">Telegram-канале</a>.</p>
     </div>
-    <div class="sched-meta"><span id="schedule-updated"></span><a href="https://t.me/domwcs" target="_blank" rel="noopener">Расписание в Telegram →</a></div>
+    <div class="sched-meta"><span id="schedule-updated" hidden></span><a href="https://t.me/domwcs" target="_blank" rel="noopener">Расписание в Telegram →</a></div>
   </div>
 </section>
 
@@ -887,7 +893,6 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <div class="head">
         <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Не пропустите</p>
         <h2>Новости Дома</h2>
-        <p class="lede">Свежие посты из нашего Telegram-канала — лента и фото обновляются сами.</p>
       </div>
       <a class="channel" href="https://t.me/domwcs" target="_blank" rel="noopener"><span class="num" id="subscriberCount2">478</span><span>подписчиков<br>в канале @domwcs →</span></a>
     </div>
@@ -1354,6 +1359,18 @@ document.addEventListener('click', function (e) {
   var g = el.hasAttribute('data-signup') ? 'signup_open' : (el.id === 'sheetGo' || /\?direct/.test(el.getAttribute('href') || '')) ? 'signup_go' : el.id === 'copyMsg' ? 'signup_copy' : 'phone_copy';
   try { if (window.ym) ym(113254414, 'reachGoal', g); } catch (err) {}
 }, true);
+</script>
+<script>
+/* Кнопка «Личный кабинет» появляется, когда кабинет на lk.wcshome.ru отвечает. */
+(function () {
+  if (!window.fetch) return;
+  var ctl = window.AbortController ? new AbortController() : null;
+  var t = setTimeout(function () { if (ctl) ctl.abort(); }, 5000);
+  fetch('https://lk.wcshome.ru/api/health', { mode: 'cors', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) { clearTimeout(t); if (j && j.ok) document.querySelectorAll('.lk-link').forEach(function (a) { a.hidden = false; }); })
+    .catch(function () {});
+})();
 </script>
 </body>
 </html>
