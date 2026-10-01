@@ -564,8 +564,19 @@
   .toast{position:fixed; left:50%; bottom:110px; transform:translateX(-50%); z-index:120; background:var(--ink); color:var(--cream); padding:10px 16px; border-radius:999px; font-size:14.5px; opacity:0; transition:opacity .2s; pointer-events:none;}
   .toast.show{opacity:1;}
 </style>
+<!-- Yandex.Metrika counter -->
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
+</script>
+<!-- /Yandex.Metrika counter -->
 </head>
 <body>
+<noscript><div><img src="https://mc.yandex.ru/watch/113254414" style="position:absolute;left:-9999px" alt=""></div></noscript>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="roof" viewBox="0 0 34 15"><path d="M2 13 17 2.5 32 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -1334,6 +1345,15 @@
     document.getElementById('mapFrame').appendChild(f);
   }
 })();
+</script>
+<script>
+/* цели Яндекс Метрики: запись на пробное */
+document.addEventListener('click', function (e) {
+  var el = e.target && e.target.closest ? e.target.closest('[data-signup],#sheetGo,#copyMsg,[data-copy]') : null;
+  if (!el) return;
+  var g = el.hasAttribute('data-signup') ? 'signup_open' : el.id === 'sheetGo' ? 'signup_go' : el.id === 'copyMsg' ? 'signup_copy' : 'phone_copy';
+  try { if (window.ym) ym(113254414, 'reachGoal', g); } catch (err) {}
+}, true);
 </script>
 </body>
 </html>
