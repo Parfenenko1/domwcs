@@ -280,6 +280,9 @@
   .sheet.no-choice .choose{display:none;}
   .today-list .live{font-style:normal; font-size:11.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:#fff4e6; background:var(--terra-btn); padding:2px 8px; border-radius:999px;}
   .today-list li.past{opacity:.5;}
+  .today-list li.off{opacity:.7;}
+  .today-list li.off > span:not(.tt):not(.who){text-decoration:line-through;}
+  .today-list .off-tag{font-style:normal; font-size:11.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); border:1px solid currentColor; padding:1px 7px; border-radius:999px;}
   .today-list li.quiet{background:none; padding:8px 0; color:var(--ink-dim);}
   .door-note::before{content:""; position:absolute; left:50%; top:-10px; width:92px; height:20px; transform:translateX(-50%) rotate(-2deg); background:rgba(214,196,160,.9); border-radius:2px; box-shadow:0 1px 2px rgba(0,0,0,.2);}
   .dn-label{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); line-height:1.3;}
@@ -343,6 +346,8 @@
   .week .e{font-size:15.5px; line-height:1.3; color:var(--cream-dim);}
   .week .e.hot{color:var(--terra-on-night);}
   .week .e small{display:block; margin-top:1px; font-size:13.5px; color:var(--cream-faint);}
+  .week .e.off{opacity:.6;}
+  .week .e.off s{text-decoration-thickness:1px;}
   .week li.today{background:linear-gradient(180deg, rgba(188,88,0,.30), var(--night-2)); box-shadow:inset 0 0 0 1.5px rgba(224,122,36,.55);}
   .week .today-tag{display:block; margin-top:3px; font-style:normal; font-size:11px; letter-spacing:.1em; color:var(--terra-on-night);}
   .facts{display:grid; grid-template-columns:repeat(4,1fr); margin-top:64px; border-top:1px solid var(--line-n);}
@@ -627,7 +632,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <div class="dn-row">
         <div class="dn-label" id="ngLabel">Первое<b>занятие</b></div>
         <div class="dn-main"><span class="dn-when" id="ngWhen">Подскажем группу</span><span class="dn-who" id="ngWho">напишите нам — ответим, куда сейчас идёт набор</span></div>
-        <div class="dn-side"><div class="dn-price">Пробное<b>400 ₽</b></div><button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button></div>
+        <div class="dn-side"><div class="dn-price">Пробное<b data-price="trial">400 ₽</b></div><button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button></div>
       </div>
       <div class="dn-row dn-today">
         <div class="dn-label">Сегодня<b id="todayName">в Доме</b></div>
@@ -671,7 +676,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
         </details>
         <details name="faq">
           <summary><span class="q">Как попасть на первое занятие и сколько это стоит?</span><span class="plus" aria-hidden="true"></span></summary>
-          <p class="a">Нажмите «Записаться» и напишите нам в личные сообщения Telegram-канала @domwcs — ответим и подскажем, в какую группу сейчас идёт набор. Пробное занятие стоит 400&nbsp;₽, а если после него вы берёте абонемент, оно становится бесплатным.</p>
+          <p class="a">Нажмите «Записаться» и напишите нам в личные сообщения Telegram-канала @domwcs — ответим и подскажем, в какую группу сейчас идёт набор. Пробное занятие стоит <span data-price="trial">400&nbsp;₽</span>, а если после него вы берёте абонемент, оно становится бесплатным.</p>
         </details>
         <details name="faq">
           <summary><span class="q">Что надеть?</span><span class="plus" aria-hidden="true"></span></summary>
@@ -817,12 +822,12 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <h2>Тарифы</h2>
       <p class="lede">Занятие длится 1,5 часа, сампо в день занятия входит в стоимость. Интенсивы, вечеринки и мероприятия — 3 часа.</p>
     </div>
-    <div class="intro-prices">
+    <div class="intro-prices" id="introPrices">
       <span class="pill"><span>Пробное</span><b>400 ₽</b><span>бесплатно при покупке абонемента</span></span>
       <span class="pill"><span>Разовое</span><b>1 800 ₽</b></span>
       <span class="pill"><span>Вечеринка</span><b>500 ₽</b></span>
     </div>
-    <div class="plans">
+    <div class="plans" id="plans">
       <article class="plan">
         <span class="k">4 занятия в месяц</span>
         <h3>«Старт»</h3>
@@ -854,7 +859,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
         <h3>Сколько стоит час занятий</h3>
         <p class="sub">Чем длиннее абонемент, тем дешевле час. Наведите на строку — покажем, что входит.</p>
         <ol class="bars" id="bars" aria-label="Цена часа по тарифам, рублей"></ol>
-        <div class="axis" aria-hidden="true"><span></span><span><span>0</span><span>600</span><span>1 200 ₽</span></span><span></span></div>
+        <div class="axis" aria-hidden="true"><span></span><span id="barsAxis"><span>0</span><span>600</span><span>1 200 ₽</span></span><span></span></div>
       </figure>
       <div>
         <details class="all">
@@ -862,7 +867,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
           <div class="table-wrap">
             <table>
               <thead><tr><th>Тариф</th><th>Что входит</th><th>Срок</th><th>Стоимость</th><th>Час</th></tr></thead>
-              <tbody>
+              <tbody id="priceRows">
           <tr><td>Пробное занятие</td><td>Бесплатно при покупке абонемента</td><td>—</td><td class="time">400&nbsp;₽</td><td>—</td></tr>
           <tr><td>Разовое занятие</td><td>Без абонемента</td><td>—</td><td class="time">1 800&nbsp;₽</td><td>1 200 ₽</td></tr>
           <tr><td>Тариф «старт»</td><td>6 ч. (4 занятия) + 2 сампо*</td><td>месяц</td><td class="time">5 500&nbsp;₽</td><td>811 ₽</td></tr>
@@ -962,7 +967,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     <div class="sheet-actions">
       <a class="btn btn-terra" id="sheetGo" href="https://t.me/domwcs?direct" target="_blank" rel="noopener">Написать в Telegram</a>
     </div>
-    <p class="fine">Если откроется сам канал — нажмите значок сообщения внизу экрана. Ответим и запишем. Пробное — 400 ₽, бесплатно при покупке абонемента.<br>Можно и позвонить: +7 (993) 475-30-64</p>
+    <p class="fine">Если откроется сам канал — нажмите значок сообщения внизу экрана. Ответим и запишем. Пробное — <span data-price="trial">400 ₽</span>, бесплатно при покупке абонемента.<br>Можно и позвонить: +7 (993) 475-30-64</p>
   </div>
 </dialog>
 
@@ -977,6 +982,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 (function () {
   // Куда ведёт кнопка записи: личные сообщения канала @domwcs.
   var BOOKING_URL = 'https://t.me/domwcs?direct';
+  // CRM Дома: отсюда сайт берёт тарифы, цены, преподавателей и правки расписания.
+  var CRM_URL = 'https://lk.wcshome.ru';
 
   // ---------- кто есть кто ----------
   // Как преподавателей зовут на картинке расписания (у пары должны быть оба имени).
@@ -1091,6 +1098,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   // week_start всегда понедельник: offset 0 — неделя идёт сейчас, 7 — уже вывесили следующую
   function currentWeekDays() { return week && week.offset === 0 ? week.days : null; }
   function todayItems() {
+    if (crm && crm.today) return crm.today;
     var cur = currentWeekDays();
     return cur ? cur[now.idx] || [] : regularWeek()[now.idx];
   }
@@ -1110,8 +1118,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       var today = i === mark;
       return '<li' + (today ? ' class="today"' : '') + '><span class="d">' + DAY_SHORT[i] + (today ? '<i class="today-tag">сегодня</i>' : '') + '</span>' +
         stripItems(items).map(function (it) {
-          var second = it.title || it.who || (it.kind === 'class' && it.time ? baseWho(i, it.time) : '');
-          return '<span class="e' + (it.hot || it['new'] ? ' hot' : '') + '">' + esc(it.label) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
+          var second = it.cancel ? (it.movedTo ? 'перенос на ' + it.movedTo : 'отменено') : (it.title || it.who || (it.kind === 'class' && it.time ? baseWho(i, it.time) : '')) + (it.sub && !it.cancel ? ' · замена' : '') + (it.moved && !it.cancel ? ' · перенос' : '');
+          return '<span class="e' + (it.cancel ? ' off' : (it.hot || it['new'] ? ' hot' : '')) + '">' + (it.cancel ? '<s>' + esc(it.label) + '</s>' : esc(it.label)) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
         }).join('') + '</li>';
     }).join('');
   }
@@ -1123,12 +1131,13 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     var list = items.filter(function (it) { return it.kind !== 'sampo' && !isClosed(it); }).slice().sort(byTime);
     var html = list.map(function (it) {
       var cls = '', live = '';
+      if (it.cancel) return '<li class="off">' + (it.time ? '<span class="tt">' + esc(it.time) + '</span>' : '') + '<span>' + esc(it.label + (it.title ? ' ' + it.title : '')) + '</span><em class="off-tag">' + (it.movedTo ? 'перенос на ' + esc(it.movedTo) : 'отменено') + '</em></li>';
       if (it.time) {
         var start = mins(it.time), len = it.kind === 'class' ? 90 : 180;
         if (now.min >= start + len) cls = ' class="past"';
         else if (now.min >= start) live = '<em class="live">идёт сейчас</em>';
       }
-      var who = it.who || (it.kind === 'class' ? baseWho(now.idx, it.time) : '');
+      var who = (it.who || (it.kind === 'class' ? baseWho(now.idx, it.time) : '')) + (it.sub && it.who ? ' · замена' : '') + (it.moved ? ' · перенос' : '');
       var name = it.label + (it.title ? ' ' + it.title : '');
       return '<li' + cls + '>' + (it.time ? '<span class="tt">' + esc(it.time) + '</span>' : '') + '<span>' + esc(name) + '</span>' +
         (who ? '<span class="who">' + esc(who) + '</span>' : '') + live + '</li>';
@@ -1144,7 +1153,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   function newGroupDates() {
     var found = [];
     function add(it, dayOffset) {                       // dayOffset — дней от этого понедельника
-      if (!it.time) return;
+      if (!it.time || it.cancel) return;
+      if (it.from) { var fp = it.from.split('-'); if (thisMonday + dayOffset * DAY_MS < Date.UTC(+fp[0], +fp[1] - 1, +fp[2])) return; }
       var delta = (dayOffset - now.idx) * 1440 + mins(it.time) - now.min;
       if (delta > 0) found.push({ day: ((dayOffset % 7) + 7) % 7, time: it.time, label: it.label, who: it.who || baseWho(((dayOffset % 7) + 7) % 7, it.time), delta: delta });
     }
@@ -1182,6 +1192,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 
   // ---------- карточки преподавателей ----------
   function renderTeachers() {
+    if (crm && crm.cards && crm.cards.length) return renderTeachersCRM(crm.cards);
     var list = regularGroups().slice().sort(byTime);
     document.querySelectorAll('[data-teacher]').forEach(function (card) {
       var id = card.getAttribute('data-teacher'), rows = [];
@@ -1217,6 +1228,62 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     buildSheet();
   }
 
+  // ---------- из CRM: преподаватели ----------
+  function renderTeachersCRM(cards) {
+    var team = document.querySelector('#teachers .team'), help = team && team.querySelector('.t.help'); if (!team) return;
+    team.querySelectorAll('.t:not(.help)').forEach(function (n) { n.parentNode.removeChild(n); });
+    var html = cards.map(function (c, k) {
+      var cls = k % 2 ? ['t1', 'o'] : ['o', 't1'];
+      return '<article class="t' + (c.inits.length < 2 ? ' solo' : '') + '" data-teacher="' + esc(c.id) + '"><div class="pair">' +
+        c.inits.map(function (x, i) { return '<i class="' + (i < 2 ? cls[i] : 'c') + '">' + esc(x) + '</i>'; }).join('') + '</div>' +
+        '<h3>' + esc(c.title) + '</h3><p class="names">' + esc(c.names) + '</p><ul class="slots">' +
+        (c.rows.length ? c.rows.map(function (r) { return '<li><b>' + esc(r.label) + (r.open ? '<em>набор</em>' : '') + '</b><span>' + esc(r.slots.join(' · ')) + '</span></li>'; }).join('') : '<li><b>Преподаватель</b><span></span></li>') +
+        '</ul></article>';
+    }).join('');
+    if (help) help.insertAdjacentHTML('beforebegin', html); else team.insertAdjacentHTML('beforeend', html);
+  }
+
+  // ---------- из CRM: тарифы и цены ----------
+  function rubs(n) { return Math.round(n).toLocaleString('ru-RU') + '\u00a0₽'; }
+  function hourNum(h) { return /^\d+$/.test(String(h || '').trim()) ? +h : null; }
+  function hourText(h) { var n = hourNum(h); return n ? rubs(n) : (String(h || '').trim() || '—'); }
+  function accName(n) { return /^[А-Яа-яЁё]+а$/.test(n) ? n.slice(0, -1) + 'у' : n; }
+  function renderPrices(d) {
+    var P = d.prices || {}, T = (d.tariffs || []).slice();
+    if (!T.length || !P.trial) return;
+    document.querySelectorAll('[data-price]').forEach(function (el) { var v = P[el.getAttribute('data-price')]; if (v) el.textContent = rubs(v); });
+    document.getElementById('introPrices').innerHTML =
+      '<span class="pill"><span>Пробное</span><b>' + rubs(P.trial) + '</b><span>бесплатно при покупке абонемента</span></span>' +
+      '<span class="pill"><span>Разовое</span><b>' + rubs(P.single) + '</b></span>' +
+      '<span class="pill"><span>Вечеринка</span><b>' + rubs(P.party) + '</b></span>';
+    var top = T.filter(function (t) { return t.top; }).slice(0, 3);
+    if (top.length) document.getElementById('plans').innerHTML = top.map(function (t, i) {
+      var mid = top.length === 3 && i === 1, h = hourNum(t.hour);
+      var btn = t.id === 'start' && t.name === 'Старт' ? 'Начать со «Старта»' : mid ? 'Выбрать «' + accName(t.name) + '»' : 'Выбрать';
+      return '<article class="plan' + (mid ? ' mid' : '') + '"><span class="k">' + esc(t.k || '') + '</span><h3>«' + esc(t.name) + '»</h3>' +
+        '<div class="price">' + rubs(t.price) + '</div><div class="term">на ' + esc(t.term) + (h ? ' · ' + rubs(h) + ' за час' : '') + '</div>' +
+        '<ul>' + (t.pts || []).map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' +
+        '<button class="btn ' + (mid ? 'btn-terra' : 'btn-line') + '" type="button" data-signup>' + esc(btn) + '</button></article>';
+    }).join('');
+    var row = function (a, b, c, dd, e) { return '<tr><td>' + a + '</td><td>' + b + '</td><td>' + c + '</td><td class="time">' + dd + '</td><td>' + e + '</td></tr>'; };
+    document.getElementById('priceRows').innerHTML =
+      row('Пробное занятие', 'Бесплатно при покупке абонемента', '—', rubs(P.trial), '—') +
+      row('Разовое занятие', 'Без абонемента', '—', rubs(P.single), rubs(P.single / 1.5)) +
+      T.map(function (t) { return row(/^∞/.test(t.name) ? esc(t.name) : 'Тариф «' + esc(t.name.toLowerCase()) + '»', esc(t.site || t.hint || ''), esc(t.term), rubs(t.price), esc(hourText(t.hour))); }).join('') +
+      row('Сампо', 'Разовая самостоятельная подготовка', 'сутки', rubs(P.sampo), '—') +
+      row('Вечер Дома', 'Тематическое мероприятие', '—', rubs(P.party), '—') +
+      row('Вечеринка', 'Танцевальный вечер', '—', rubs(P.party), '—');
+    var bars = [['Разовое', Math.round(P.single / 1.5), 'Один класс без абонемента · ' + rubs(P.single)]].concat(
+      T.filter(function (t) { return hourNum(t.hour); }).map(function (t) { return ['«' + t.name + '»', hourNum(t.hour), (t.site || t.hint || '') + ' · ' + rubs(t.price) + ' на ' + t.term]; })
+    ).sort(function (a, b) { return b[1] - a[1]; });
+    var max = Math.max.apply(null, bars.map(function (b) { return b[1]; })), scale = Math.max(1200, Math.ceil(max / 100) * 100);
+    document.getElementById('bars').innerHTML = bars.map(function (r) {
+      return '<li tabindex="0"><span class="lbl">' + esc(r[0]) + '</span><span class="track"><span class="fill" style="width:' + (r[1] / scale * 100).toFixed(1) + '%"></span></span>' +
+        '<span class="val">' + r[1].toLocaleString('ru-RU') + ' ₽</span><span class="tip">' + esc(r[2]) + '</span></li>';
+    }).join('');
+    document.getElementById('barsAxis').innerHTML = '<span>0</span><span>' + (scale / 2).toLocaleString('ru-RU') + '</span><span>' + scale.toLocaleString('ru-RU') + ' ₽</span>';
+  }
+
   // ---------- sign-up sheet ----------
   var sheet = document.getElementById('sheet'), opts = document.getElementById('opts'), msg = document.getElementById('msgText'), choices = [];
   function buildSheet() {
@@ -1248,8 +1315,9 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   go.addEventListener('click', function () {
     try { navigator.clipboard.writeText(msg.textContent).then(function () { say('Текст скопирован — вставьте его в сообщение'); }, function () {}); } catch (e) {}
   });
-  document.querySelectorAll('[data-signup]').forEach(function (b) {
-    b.addEventListener('click', function () { if (sheet.showModal) sheet.showModal(); else window.open(BOOKING_URL, '_blank'); });
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[data-signup]') : null; if (!b) return;
+    if (sheet.showModal) sheet.showModal(); else window.open(BOOKING_URL, '_blank');
   });
   document.getElementById('sheetClose').addEventListener('click', function () { sheet.close(); });
   sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
@@ -1257,10 +1325,29 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   // сначала — обычная неделя, потом — то, что бот распознал в расписании
   render();
   Promise.all([getJSON('week.json'), getJSON('groups.json')]).then(function (r) {
+    if (crm) return;                                   // CRM уже ответила — у неё неделя с правками
     week = useWeek(r[0]);
     groups = r[1] && r[1].version === 2 && r[1].groups && r[1].groups.length ? r[1].groups : null;
     render();
   });
+
+  // ---------- данные из CRM (lk.wcshome.ru): тарифы, цены, преподаватели, неделя с отменами и заменами ----------
+  // Не ответила за 5 секунд — сайт остаётся как есть: расписание из канала, тарифы и преподаватели из этой страницы.
+  var crm = null;
+  (function () {
+    if (!window.fetch) return;
+    var ctl = window.AbortController ? new AbortController() : null, t = setTimeout(function () { if (ctl) ctl.abort(); }, 5000);
+    fetch(CRM_URL + '/api/public', { cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        clearTimeout(t); if (!d || d.v !== 1) return;
+        crm = d;
+        var w = useWeek(d.week); if (w) week = w;
+        if (d.groups && d.groups.length) groups = d.groups;
+        try { renderPrices(d); } catch (e) {}
+        render();
+      }).catch(function () {});
+  })();
 
   // ---------- copy helpers ----------
   var toast = document.getElementById('toast'), tt;
