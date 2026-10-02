@@ -570,6 +570,12 @@
   .msg p{margin:0 0 8px; color:var(--ink);}
   .sheet-actions{display:flex; flex-direction:column; gap:10px; margin-top:0;}
   .sheet-actions .btn{width:100%;}
+  .sheet:not(.bot) .via-bot, .sheet.bot .via-chat{display:none;}
+  .via-bot .lead-in{margin:16px 0 18px; font-size:17px; color:var(--ink);}
+  .via-bot ol{margin:0 0 20px; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .via-bot li{display:flex; gap:12px; align-items:baseline; padding:10px 14px; border-radius:12px; background:var(--paper-2); font-size:16px;}
+  .via-bot li b{font-weight:500; color:var(--terra-on-paper); flex:none;}
+  .sheet-direct{display:block; text-align:center; padding:6px; color:var(--ink-dim); font-size:15.5px; text-decoration:underline; text-underline-offset:3px;}
   .fine{margin:14px 0 0; color:var(--ink-dim); font-size:14.5px; text-align:center;}
   .toast{position:fixed; left:50%; bottom:110px; transform:translateX(-50%); z-index:120; background:var(--ink); color:var(--cream); padding:10px 16px; border-radius:999px; font-size:14.5px; opacity:0; transition:opacity .2s; pointer-events:none;}
   .toast.show{opacity:1;}
@@ -956,6 +962,19 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       </div>
       <button class="x" type="button" id="sheetClose" aria-label="Закрыть">×</button>
     </div>
+    <div class="via-bot">
+      <p class="lead-in">Бот Дома в Telegram поможет выбрать группу — три вопроса кнопками, полминуты. Потом ответит живой человек и обо всём договоримся.</p>
+      <ol>
+        <li><b>1</b>Танцевали раньше?</li>
+        <li><b>2</b>Кем хотите быть в паре — лидером или фолловером?</li>
+        <li><b>3</b>Какое время удобно?</li>
+      </ol>
+      <div class="sheet-actions">
+        <a class="btn btn-terra" id="sheetBot" href="https://t.me/wcshome_bot?start=site" target="_blank" rel="noopener">Подобрать группу в Telegram</a>
+        <a class="sheet-direct" href="https://t.me/domwcs?direct" target="_blank" rel="noopener">или сразу написать нам — без бота</a>
+      </div>
+    </div>
+    <div class="via-chat">
     <p class="step choose"><span>1</span>Выберите новую группу</p>
     <fieldset class="opts choose" id="opts"></fieldset>
     <p class="step"><span class="n">2</span>Скопируйте сообщение</p>
@@ -967,7 +986,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     <div class="sheet-actions">
       <a class="btn btn-terra" id="sheetGo" href="https://t.me/domwcs?direct" target="_blank" rel="noopener">Написать в Telegram</a>
     </div>
-    <p class="fine">Если откроется сам канал — нажмите значок сообщения внизу экрана. Ответим и запишем. Пробное — <span data-price="trial">400 ₽</span>, бесплатно при покупке абонемента.<br>Можно и позвонить: +7 (993) 475-30-64</p>
+    </div>
+    <p class="fine"><span class="via-chat">Если откроется сам канал — нажмите значок сообщения внизу экрана. Ответим и запишем. </span>Пробное — <span data-price="trial">400 ₽</span>, бесплатно при покупке абонемента.<br>Можно и позвонить: +7 (993) 475-30-64</p>
   </div>
 </dialog>
 
@@ -980,7 +1000,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 
 <script>
 (function () {
-  // Куда ведёт кнопка записи: личные сообщения канала @domwcs.
+  // Куда ведёт кнопка записи: бот Дома (@wcshome_bot) подбирает группу и передаёт человека в личные сообщения канала.
+  // Пока бот не отвечает (CRM или посредник Telegram недоступны) — сразу личные сообщения канала @domwcs, как раньше.
   var BOOKING_URL = 'https://t.me/domwcs?direct';
   // CRM Дома: отсюда сайт берёт тарифы, цены, преподавателей и правки расписания.
   var CRM_URL = 'https://mylk.wcshome.ru';
@@ -1441,21 +1462,23 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 <script>
 /* цели Яндекс Метрики: запись на пробное */
 document.addEventListener('click', function (e) {
-  var el = e.target && e.target.closest ? e.target.closest('[data-signup],#sheetGo,#copyMsg,[data-copy],a[href*="?direct"]') : null;
+  var el = e.target && e.target.closest ? e.target.closest('[data-signup],#sheetGo,#sheetBot,#copyMsg,[data-copy],a[href*="?direct"]') : null;
   if (!el) return;
-  var g = el.hasAttribute('data-signup') ? 'signup_open' : (el.id === 'sheetGo' || /\?direct/.test(el.getAttribute('href') || '')) ? 'signup_go' : el.id === 'copyMsg' ? 'signup_copy' : 'phone_copy';
+  var g = el.hasAttribute('data-signup') ? 'signup_open' : el.id === 'sheetBot' ? 'signup_bot' : (el.id === 'sheetGo' || /\?direct/.test(el.getAttribute('href') || '')) ? 'signup_go' : el.id === 'copyMsg' ? 'signup_copy' : 'phone_copy';
   try { if (window.ym) ym(113254414, 'reachGoal', g); } catch (err) {}
 }, true);
 </script>
 <script>
-/* Кнопка «Личный кабинет» появляется, когда кабинет на mylk.wcshome.ru отвечает. */
+/* Кнопка «Личный кабинет» появляется, когда кабинет на mylk.wcshome.ru отвечает.
+   Запись через бота включается, только если бот на связи (tg: ok) — иначе остаётся запись в личные сообщения канала. */
 (function () {
   if (!window.fetch) return;
   var ctl = window.AbortController ? new AbortController() : null;
   var t = setTimeout(function () { if (ctl) ctl.abort(); }, 5000);
   fetch('https://mylk.wcshome.ru/api/health', { mode: 'cors', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
     .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (j) { clearTimeout(t); if (j && j.ok) document.querySelectorAll('.lk-link').forEach(function (a) { a.hidden = false; }); })
+    .then(function (j) { clearTimeout(t); if (j && j.ok) document.querySelectorAll('.lk-link').forEach(function (a) { a.hidden = false; });
+      if (j && j.ok && j.tg === 'ok' && j.lead) { var sh = document.getElementById('sheet'); if (sh) sh.classList.add('bot'); } })
     .catch(function () {});
 })();
 </script>
