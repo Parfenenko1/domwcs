@@ -603,9 +603,9 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <a href="#pricing">Тарифы</a>
       <a href="#news">Новости</a>
       <a href="#visit">Контакты</a>
-      <a class="lk-link lk-menu" href="https://lk.wcshome.ru" hidden>Личный кабинет</a>
+      <a class="lk-link lk-menu" href="https://mylk.wcshome.ru" hidden>Личный кабинет</a>
     </nav>
-    <a class="btn btn-sm lk-link lk-top" href="https://lk.wcshome.ru" hidden>Личный кабинет</a>
+    <a class="btn btn-sm lk-link lk-top" href="https://mylk.wcshome.ru" hidden>Личный кабинет</a>
     <button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button>
     <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">Меню</button>
   </div>
@@ -939,7 +939,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <span class="foot-brand"><img src="logo.png" alt="" width="40" height="34">© Дом танца WCS, Санкт-Петербург</span>
       <span>Сделано с любовью к West Coast Swing*</span>
     </div>
-    <p class="footnote">* West Coast Swing — свинг западного побережья. · <a href="https://lk.wcshome.ru/privacy" style="color:inherit">Политика обработки персональных данных</a></p>
+    <p class="footnote">* West Coast Swing — свинг западного побережья.</p>
   </div>
 </footer>
 
@@ -983,7 +983,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   // Куда ведёт кнопка записи: личные сообщения канала @domwcs.
   var BOOKING_URL = 'https://t.me/domwcs?direct';
   // CRM Дома: отсюда сайт берёт тарифы, цены, преподавателей и правки расписания.
-  var CRM_URL = 'https://lk.wcshome.ru';
+  var CRM_URL = 'https://mylk.wcshome.ru';
 
   // ---------- кто есть кто ----------
   // Как преподавателей зовут на картинке расписания (у пары должны быть оба имени).
@@ -1331,7 +1331,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     render();
   });
 
-  // ---------- данные из CRM (lk.wcshome.ru): тарифы, цены, преподаватели, неделя с отменами и заменами ----------
+  // ---------- данные из CRM (mylk.wcshome.ru): тарифы, цены, преподаватели, неделя с отменами и заменами ----------
   // Не ответила за 5 секунд — сайт остаётся как есть: расписание из канала, тарифы и преподаватели из этой страницы.
   var crm = null;
   (function () {
@@ -1448,12 +1448,12 @@ document.addEventListener('click', function (e) {
 }, true);
 </script>
 <script>
-/* Кнопка «Личный кабинет» появляется, когда кабинет на lk.wcshome.ru отвечает. */
+/* Кнопка «Личный кабинет» появляется, когда кабинет на mylk.wcshome.ru отвечает. */
 (function () {
   if (!window.fetch) return;
   var ctl = window.AbortController ? new AbortController() : null;
   var t = setTimeout(function () { if (ctl) ctl.abort(); }, 5000);
-  fetch('https://lk.wcshome.ru/api/health', { mode: 'cors', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+  fetch('https://mylk.wcshome.ru/api/health', { mode: 'cors', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (j) { clearTimeout(t); if (j && j.ok) document.querySelectorAll('.lk-link').forEach(function (a) { a.hidden = false; }); })
     .catch(function () {});
