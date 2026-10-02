@@ -230,15 +230,19 @@
   .brand span{font-family:var(--display); font-size:19px; white-space:nowrap;}
   .brand em{font-style:normal; color:var(--terra-on-night);}
   .menu{display:flex; gap:22px;}
-  .menu a{text-decoration:none; color:var(--cream-dim); font-size:15px; transition:color .15s;}
+  .menu a{text-decoration:none; color:var(--cream-dim); font-size:15px; white-space:nowrap; transition:color .15s;}
+  .top .btn{white-space:nowrap; flex:none;}
   .menu a:hover{color:var(--cream);}
   .menu-btn{display:none; border:1.5px solid var(--line-n); background:none; border-radius:999px; padding:9px 16px; font-size:14px; cursor:pointer;}
   .lk-link[hidden]{display:none!important;}
-  .top .lk-top{border:1.5px solid var(--line-n); color:var(--cream); background:transparent; margin-right:-12px;}
+  .top .lk-top{border:1.5px solid var(--line-n); color:var(--cream); background:transparent; margin-right:-12px; gap:0;}
   .top .lk-top:hover{border-color:var(--cream-dim);}
   .menu .lk-menu{color:var(--cream);}
-  @media (min-width:1021px){ .menu .lk-menu{display:none!important;} }
-  @media (max-width:1020px){
+  @media (min-width:1101px){ .menu .lk-menu{display:none!important;} }
+  /* планшет в альбомной ориентации и узкий ноутбук: всё в одну строку */
+  @media (min-width:1101px){ .top .wrap{gap:18px;} .menu{gap:17px;} .top .lk-top{margin-right:-6px;} }
+  @media (min-width:1101px) and (max-width:1360px){ .menu{gap:15px;} .menu a{font-size:14.5px;} .top .lk-top .lk-long{display:none;} }
+  @media (max-width:1100px){
     .menu{position:fixed; inset:68px 0 auto 0; flex-direction:column; gap:0; padding:8px 18px 22px; background:var(--night); border-bottom:1px solid var(--line-n);
           opacity:0; visibility:hidden; transform:translateY(-6px); transition:opacity .2s, transform .2s, visibility .2s;}
     .menu.open{opacity:1; visibility:visible; transform:none;}
@@ -539,7 +543,7 @@
   .dock{position:fixed; right:28px; bottom:calc(28px + env(safe-area-inset-bottom,0px)); z-index:60; opacity:0; transform:translateY(14px); pointer-events:none; transition:opacity .25s, transform .25s;}
   .dock.show{opacity:1; transform:none; pointer-events:auto;}
   .dock .btn{box-shadow:0 14px 34px rgba(0,0,0,.45); min-height:56px; padding:0 28px;}
-  @media (max-width:1020px){
+  @media (max-width:1100px){
     .dock{left:0; right:0; bottom:0; opacity:1; transform:none; pointer-events:auto; padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
           background:rgba(27,19,16,.9); backdrop-filter:blur(12px); border-top:1px solid var(--line-n);}
     .dock .btn{width:100%; box-shadow:none;}
@@ -611,7 +615,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <a href="#visit">Контакты</a>
       <a class="lk-link lk-menu" href="https://mylk.wcshome.ru" hidden>Личный кабинет</a>
     </nav>
-    <a class="btn btn-sm lk-link lk-top" href="https://mylk.wcshome.ru" hidden>Личный кабинет</a>
+    <a class="btn btn-sm lk-link lk-top" href="https://mylk.wcshome.ru" hidden><span class="lk-long">Личный&nbsp;</span>кабинет</a>
     <button class="btn btn-terra btn-sm" type="button" data-signup>Записаться</button>
     <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">Меню</button>
   </div>
