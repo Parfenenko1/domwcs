@@ -389,6 +389,7 @@
   .pair .o{background:var(--olive); color:#fbf6d6;}
   .pair .t1{background:var(--terra); color:#fff4e6;}
   .pair .c{background:var(--cream-dim); color:var(--night);}
+  .pair i.ph{background-size:cover; background-position:center; color:transparent;}   /* фото преподавателя из CRM поверх цветного круга */
   .t h3{font-size:27px; line-height:1.1;}
   .t .names{margin:-8px 0 0; color:var(--cream-faint); font-size:15.5px;}
   .slots{list-style:none; margin:auto 0 0; padding:14px 0 0; border-top:1px solid var(--line-n); display:flex; flex-direction:column; gap:8px;}
@@ -1265,7 +1266,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     var html = cards.map(function (c, k) {
       var cls = k % 2 ? ['t1', 'o'] : ['o', 't1'];
       return '<article class="t' + (c.inits.length < 2 ? ' solo' : '') + '" data-teacher="' + esc(c.id) + '"><div class="pair">' +
-        c.inits.map(function (x, i) { return '<i class="' + (i < 2 ? cls[i] : 'c') + '">' + esc(x) + '</i>'; }).join('') + '</div>' +
+        c.inits.map(function (x, i) { var ph = c.photos && c.photos[i];   // фото из CRM (пока нет фото с фотосессии); нет фото — инициалы
+          return '<i class="' + (i < 2 ? cls[i] : 'c') + (ph ? ' ph' : '') + '"' + (ph ? ' style="background-image:url(\'' + esc(CRM_URL + ph) + '\')"' : '') + '>' + esc(x) + '</i>'; }).join('') + '</div>' +
         '<h3>' + esc(c.title) + '</h3><p class="names">' + esc(c.names) + '</p><ul class="slots">' +
         (c.rows.length ? c.rows.map(function (r) { return '<li><b>' + esc(r.label) + (r.open ? '<em>набор</em>' : '') + '</b><span>' + esc(r.slots.join(' · ')) + '</span></li>'; }).join('') : '<li><b>Преподаватель</b><span></span></li>') +
         '</ul></article>';
