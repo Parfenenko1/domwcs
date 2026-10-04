@@ -399,6 +399,7 @@
   .slots span{color:var(--cream-dim); white-space:nowrap; font-variant-numeric:tabular-nums;}
   .t.help{background:transparent; border:1.5px dashed var(--line-n); justify-content:center;}
   /* индивидуальное занятие: одна плашка после всех преподавателей → выбор преподавателя → бот передаёт заявку ему */
+  .indiv[hidden]{display:none;}   /* показываем, только когда CRM ответила списком преподавателей — иначе запись не сработает */
   .indiv{margin-top:16px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 28px; background:var(--night-2); border-radius:var(--r); padding:26px 28px;}
   .indiv h3{font-size:27px; line-height:1.1; margin:0 0 6px;}
   .indiv p{margin:0; color:var(--cream-dim); max-width:560px;}
@@ -814,7 +815,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
         <button class="btn btn-line btn-sm" type="button" data-signup>Подобрать группу</button>
       </article>
     </div>
-    <div class="indiv">
+    <div class="indiv" id="indivStrip" hidden>
       <div><h3>Индивидуальное занятие</h3><p>Выберите преподавателя — бот передаст ему вашу заявку и контакт, и он напишет вам сам.</p></div>
       <button class="btn btn-terra" type="button" data-indiv><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на индивидуальное</button>
     </div>
@@ -1422,6 +1423,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       .then(function (d) {
         clearTimeout(t); if (!d || d.v !== 1) return;
         crm = d;
+        if (d.teachers && d.teachers.length) document.getElementById('indivStrip').hidden = false;   // CRM умеет запись на индивидуальное
         var w = useWeek(d.week); if (w) week = w;
         if (d.groups && d.groups.length) groups = d.groups;
         try { renderPrices(d); } catch (e) {}
