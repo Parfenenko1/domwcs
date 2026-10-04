@@ -398,6 +398,12 @@
   .slots em{font-style:normal; margin-left:6px; padding:1px 7px; border-radius:999px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#fff4e6; background:var(--terra-btn); vertical-align:2px;}
   .slots span{color:var(--cream-dim); white-space:nowrap; font-variant-numeric:tabular-nums;}
   .t.help{background:transparent; border:1.5px dashed var(--line-n); justify-content:center;}
+  /* индивидуальное занятие: одна плашка после всех преподавателей → выбор преподавателя → бот передаёт заявку ему */
+  .indiv{margin-top:16px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 28px; background:var(--night-2); border-radius:var(--r); padding:26px 28px;}
+  .indiv h3{font-size:27px; line-height:1.1; margin:0 0 6px;}
+  .indiv p{margin:0; color:var(--cream-dim); max-width:560px;}
+  .opt .ava{width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:14px; letter-spacing:.04em; background:var(--olive) center/cover no-repeat; color:#fbf6d6;}
+  .opt .ava.ph{color:transparent;}
   .t.help p{margin:0; color:var(--cream-dim);}
   @media (max-width:980px){ .team{grid-template-columns:1fr 1fr;} .t,.t.solo{grid-column:span 1;} }
   @media (max-width:620px){ .team{grid-template-columns:1fr;} }
@@ -808,6 +814,10 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
         <button class="btn btn-line btn-sm" type="button" data-signup>Подобрать группу</button>
       </article>
     </div>
+    <div class="indiv">
+      <div><h3>Индивидуальное занятие</h3><p>Выберите преподавателя — бот передаст ему вашу заявку и контакт, и он напишет вам сам.</p></div>
+      <button class="btn btn-terra" type="button" data-indiv><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на индивидуальное</button>
+    </div>
   </div>
 </section>
 
@@ -963,6 +973,22 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   <button class="btn btn-terra" type="button" data-signup><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на пробное</button>
 </div>
 
+<dialog class="sheet" id="indivSheet" aria-labelledby="indivTitle">
+  <div class="sheet-in">
+    <div class="sheet-top">
+      <div>
+        <p class="kicker" style="margin-bottom:8px"><svg aria-hidden="true"><use href="#roof"/></svg>Индивидуальное занятие</p>
+        <h2 id="indivTitle">К кому записаться?</h2>
+      </div>
+      <button class="x" type="button" id="indivClose" aria-label="Закрыть">×</button>
+    </div>
+    <fieldset class="opts" id="indivOpts" style="margin-top:18px"></fieldset>
+    <div class="sheet-actions">
+      <a class="btn btn-terra" id="indivGo" href="https://t.me/wcshome_bot?start=indiv" target="_blank" rel="noopener">Записаться в Telegram</a>
+    </div>
+    <p class="fine">Откроется бот Дома: он попросит номер телефона и передаст заявку преподавателю — тот напишет вам сам и договоритесь о времени.</p>
+  </div>
+</dialog>
 <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
   <div class="sheet-in">
     <div class="sheet-top">
@@ -1352,6 +1378,28 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     if (sheet.showModal) sheet.showModal(); else window.open(BOOKING_URL, '_blank');
   });
   document.getElementById('sheetClose').addEventListener('click', function () { sheet.close(); });
+
+  // индивидуальное: список преподавателей из CRM → ссылка в бота с выбранным преподавателем (бот передаст заявку ему)
+  var indiv = document.getElementById('indivSheet'), indivOpts = document.getElementById('indivOpts'), indivGo = document.getElementById('indivGo');
+  function indivLink() {
+    var v = (indivOpts.querySelector('input:checked') || {}).value || '';
+    indivGo.href = 'https://t.me/' + ((crm && crm.bot) || 'wcshome_bot') + '?start=indiv_' + (v || 'help');   // help — «пока не знаю», бот передаст заявку администраторам
+  }
+  function buildIndiv() {
+    var list = (crm && crm.teachers) || [];
+    indivOpts.innerHTML = '<legend class="sr" style="position:absolute;left:-9999px">Преподаватель</legend>' + list.map(function (t, i) {
+      return '<label class="opt"><input type="radio" name="tch" value="' + esc(t.id) + '"' + (i === 0 ? ' checked' : '') + '><span><b>' + esc(t.short || t.name) + '</b><small>' + esc(t.name) + '</small></span>' +
+        '<i class="ava' + (t.photo ? ' ph' : '') + '"' + (t.photo ? ' style="background-image:url(\'' + esc(CRM_URL + t.photo) + '\')"' : '') + '>' + esc(t.inits || '') + '</i></label>';
+    }).join('') + '<label class="opt"><input type="radio" name="tch" value=""' + (list.length ? '' : ' checked') + '><span><b>Пока не знаю</b><small>Помогите выбрать преподавателя</small></span></label>';
+    indivLink();
+  }
+  indivOpts.addEventListener('change', indivLink);
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[data-indiv]') : null; if (!b) return;
+    buildIndiv(); if (indiv.showModal) indiv.showModal(); else window.open(indivGo.href, '_blank');
+  });
+  document.getElementById('indivClose').addEventListener('click', function () { indiv.close(); });
+  indiv.addEventListener('click', function (e) { if (e.target === indiv) indiv.close(); });
   sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
 
   // сначала — обычная неделя, потом — то, что бот распознал в расписании
