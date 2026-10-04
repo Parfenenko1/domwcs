@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Дважды в сутки (и по кнопке вручную) скрипт:
+Каждые 5 минут (и по кнопке вручную) скрипт:
 1. Через Telegram Bot API забирает новые посты канала (getUpdates) — ОДИН раз
    для обоих сценариев, чтобы посты не терялись между расписанием и новостями.
 2. Расписание: если среди новых постов есть картинка с тегом "#расписание" —
@@ -17,6 +17,11 @@
    Превью, которые больше не нужны, удаляются.
 4. Если у старых карточек нет фото — пробует найти их пост на публичной
    странице канала t.me/s/<канал> и взять фото оттуда (разово, по тексту).
+
+Правки постов тоже учитываются (edited_channel_post): забыли хештег и дописали его
+потом — пост подхватится, как будто тег стоял сразу. Поправили текст новости —
+обновится её карточка; убрали #Новости — карточка уйдёт с сайта. Правка старого
+поста с расписанием не заменит более свежее расписание.
 
 Один offset-файл (scripts/telegram_offset.txt) на все сценарии.
 
@@ -327,6 +332,19 @@ def save_events(events):
     cleanup_thumbs(events)
 
 
+def post_url(post, channel_name):
+    username = (post.get("chat") or {}).get("username") or channel_name
+    return f"https://t.me/{username}/{post['message_id']}" if post.get("message_id") else None
+
+
+def load_schedule_meta():
+    try:
+        with open(SCHEDULE_META, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
 def main():
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     channel = os.environ.get("TELEGRAM_CHANNEL")
@@ -339,7 +357,8 @@ def main():
     update_subscriber_count(token, channel)
 
     offset = read_offset()
-    params = {"timeout": 0, "allowed_updates": json.dumps(["channel_post"])}
+    # правки постов тоже: хештег могли дописать уже после публикации
+    params = {"timeout": 0, "allowed_updates": json.dumps(["channel_post", "edited_channel_post"])}
     if offset is not None:
         params["offset"] = offset + 1
 
@@ -349,18 +368,25 @@ def main():
     else:
         print("Новых постов нет.")
 
-    best_schedule = None  # (date_ts, file_id)
-    news_posts = []       # [(date_ts, text, post), ...]
-
+    # один пост мог прийти несколько раз (опубликован, потом исправлен) — берём последнюю версию
+    latest = {}           # message_id -> (post, это правка?)
     for update in updates or []:
-        post = update.get("channel_post")
+        edited = "edited_channel_post" in update
+        post = update.get("edited_channel_post") if edited else update.get("channel_post")
         if not post:
             continue
         chat = post.get("chat", {})
         chat_username = chat.get("username")
         if chat_username and normalize_channel(chat_username) != channel:
             continue
+        key = post.get("message_id") or id(post)
+        latest[key] = (post, edited or latest.get(key, (None, False))[1])
 
+    best_schedule = None  # (date_ts, file_id, file_unique_id, message_id)
+    news_posts = []       # [(date_ts, text, post), ...]
+    untagged_edits = []   # исправленные посты без #Новости — если их карточка на сайте, она уходит
+
+    for post, edited in latest.values():
         caption = post.get("caption", "") or ""
         text = post.get("text", "") or ""
         combined_text = caption or text
@@ -370,33 +396,68 @@ def main():
         if photos and SCHEDULE_TAG_RE.search(caption):
             largest = photos[-1]
             if best_schedule is None or date_ts >= best_schedule[0]:
-                best_schedule = (date_ts, largest["file_id"])
+                best_schedule = (date_ts, largest["file_id"], largest.get("file_unique_id"), post.get("message_id"))
 
         if NEWS_TAG_RE.search(combined_text):
-            news_posts.append((date_ts, combined_text, post))
+            news_posts.append((date_ts, combined_text, post, edited))
+        elif edited:
+            untagged_edits.append(post)
 
     if best_schedule:
-        date_ts, file_id = best_schedule
-        download_file(token, file_id, SCHEDULE_IMAGE)
-        meta = {
-            "updated": datetime.now(timezone.utc).isoformat(),
-            "posted": datetime.fromtimestamp(date_ts, tz=timezone.utc).isoformat(),
-        }
-        with open(SCHEDULE_META, "w", encoding="utf-8") as f:
-            json.dump(meta, f, ensure_ascii=False, indent=2)
-        print(f"Расписание обновлено: {SCHEDULE_IMAGE}")
+        date_ts, file_id, file_uid, msg_id = best_schedule
+        meta_old = load_schedule_meta()
+        posted = datetime.fromtimestamp(date_ts, tz=timezone.utc)
+        try:
+            cur = datetime.fromisoformat(meta_old["posted"]) if meta_old.get("posted") else None
+        except ValueError:
+            cur = None
+        if cur and posted < cur:
+            print("Исправлен старый пост с расписанием — на сайте уже более свежее, не трогаю.")
+        elif file_uid and meta_old.get("file") == file_uid:
+            print("Расписание то же самое (пост исправили, картинка прежняя) — обновлять нечего.")
+        else:
+            download_file(token, file_id, SCHEDULE_IMAGE)
+            meta = {
+                "updated": datetime.now(timezone.utc).isoformat(),
+                "posted": posted.isoformat(),
+            }
+            if msg_id:
+                meta["message_id"] = msg_id
+            if file_uid:
+                meta["file"] = file_uid
+            with open(SCHEDULE_META, "w", encoding="utf-8") as f:
+                json.dump(meta, f, ensure_ascii=False, indent=2)
+            print(f"Расписание обновлено: {SCHEDULE_IMAGE}")
     else:
         print("Среди новых постов нет картинки с тегом #расписание.")
 
     events = load_events()
     changed = False
+    for post in untagged_edits:
+        url = post_url(post, channel_name)
+        if url and any(e.get("url") == url for e in events):
+            events = [e for e in events if e.get("url") != url]
+            changed = True
+            print(f"Из поста убрали #Новости — карточка снята с сайта: {url}")
     if news_posts:
         news_posts.sort(key=lambda p: p[0])  # старые сначала — порядок вставки логичный
-        for date_ts, text, post in news_posts:
+        shown = [int(m.group(1)) for e in events[:MAX_EVENTS] for m in [re.search(r"/(\d+)$", e.get("url") or "")] if m]
+        for date_ts, text, post, edited in news_posts:
             card = build_event_card(text, date_ts)
-            username = (post.get("chat") or {}).get("username") or channel_name
-            if post.get("message_id"):
-                card["url"] = f"https://t.me/{username}/{post['message_id']}"
+            url = post_url(post, channel_name)
+            if url:
+                card["url"] = url
+            old = next((e for e in events if url and e.get("url") == url), None)
+            if old:   # пост уже на сайте — его исправили: обновляем текст, фото оставляем
+                fresh = {k: card[k] for k in ("day", "mon", "name", "desc", "tag")}
+                if any(old.get(k) != v for k, v in fresh.items()):
+                    old.update(fresh)
+                    changed = True
+                    print(f"Обновлена карточка: {card.get('name')}")
+                continue
+            if edited and len(events) >= MAX_EVENTS and shown and (post.get("message_id") or 0) < min(shown):
+                print(f"Исправили старый пост, которого уже нет на сайте, — назад не возвращаю: {url}")
+                continue
             file_id = post_media_file_id(post)
             if not file_id:
                 card["noimg"] = True
