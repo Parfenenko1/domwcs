@@ -23,11 +23,16 @@
 обновится её карточка; убрали #Новости — карточка уйдёт с сайта. Правка старого
 поста с расписанием не заменит более свежее расписание.
 
+5. Посты с #расписание и #Новости дублируются в группу ВКонтакте (scripts/vk_crosspost.py):
+   новый пост — запись в ВК, правка — правится и там, тег убрали — запись удаляется.
+   Включается секретом VK_TOKEN (ключ сообщества).
+
 Один offset-файл (scripts/telegram_offset.txt) на все сценарии.
 
 Переменные окружения (задаются как секреты в GitHub Actions):
   TELEGRAM_BOT_TOKEN — токен бота от @BotFather
   TELEGRAM_CHANNEL   — юзернейм канала, например "@domwcs"
+  VK_TOKEN, VK_GROUP_ID, VK_USER_TOKEN — для ВКонтакте, см. vk_crosspost.py
 """
 
 import html
@@ -43,6 +48,7 @@ from datetime import datetime, timezone
 API_BASE = "https://api.telegram.org/bot{token}"
 SCHEDULE_TAG_RE = re.compile(r"#расписание", re.IGNORECASE)
 NEWS_TAG_RE = re.compile(r"#новости", re.IGNORECASE)
+VK_TAG_RE = re.compile(r"#(расписание|новости)", re.IGNORECASE)   # что дублируется в ВК
 TIME_RANGE_RE = re.compile(r"\d{1,2}[:.]\d{2}\s*[-–—]\s*\d{1,2}[:.]\d{2}")
 PRICE_RE = re.compile(r"\d[\d\s]{0,6}\s*(₽|руб\.?|рублей)", re.IGNORECASE)
 
@@ -480,6 +486,13 @@ def main():
     if changed:
         save_events(events)
         print(f"Новости обновлены: {EVENTS_FILE}")
+
+    # те же посты (#расписание и #Новости) — в группу ВКонтакте; сбой ВК сайту не мешает
+    try:
+        import vk_crosspost
+        vk_crosspost.crosspost(list(latest.values()), VK_TAG_RE, lambda file_id: telegram_file(token, file_id), channel_name)
+    except Exception as e:
+        print(f"ВК: дублирование не сработало: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
