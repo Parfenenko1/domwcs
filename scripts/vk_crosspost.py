@@ -14,7 +14,8 @@
 
 Переменные окружения (секреты в GitHub Actions; без них дублирование просто выключено):
   VK_TOKEN       — ключ доступа сообщества (Управление → Работа с API → Ключи доступа)
-  VK_GROUP_ID    — номер группы (цифры, без минуса), например 12345678
+  VK_GROUP_ID    — необязательно: номер или короткое имя группы (wcs_spb); без него группа
+                   берётся из ключа сообщества
   VK_USER_TOKEN  — необязательно: ключ администратора группы для загрузки фото, если ключ
                    сообщества фото загружать не может (тогда без него в записи будет ссылка на пост
                    в Telegram с превью вместо фото)
@@ -80,7 +81,22 @@ def save_state(s):
 
 
 def enabled():
-    return bool(os.environ.get("VK_TOKEN") and os.environ.get("VK_GROUP_ID"))
+    return bool(os.environ.get("VK_TOKEN"))
+
+
+_gid = {}
+
+
+def group_id():
+    """Номер группы: из VK_GROUP_ID (цифры или короткое имя) или из самого ключа сообщества."""
+    raw = (os.environ.get("VK_GROUP_ID") or "").strip().lstrip("-")
+    if raw.isdigit():
+        return raw
+    if raw not in _gid:
+        r = vk_call(os.environ["VK_TOKEN"], "groups.getById", {"group_id": raw} if raw else {})
+        groups = r.get("groups", []) if isinstance(r, dict) else r
+        _gid[raw] = str(groups[0]["id"])
+    return _gid[raw]
 
 
 def collect(posts, tag_re):
@@ -119,7 +135,7 @@ def photo_key(photos):
 
 def upload_photos(photos, get_file):
     """Фото в альбом стены группы. Ключ сообщества может не уметь (ошибка 27) — тогда ключ администратора."""
-    gid = os.environ["VK_GROUP_ID"].lstrip("-")
+    gid = group_id()
     tokens = [t for t in (os.environ.get("VK_TOKEN"), os.environ.get("VK_USER_TOKEN")) if t]
     last = None
     for token in tokens:
@@ -140,7 +156,7 @@ def upload_photos(photos, get_file):
 
 def publish(it, rec, url, get_file):
     """Создать или исправить запись. rec — что уже есть в ВК по этому посту (или None)."""
-    token, gid = os.environ["VK_TOKEN"], os.environ["VK_GROUP_ID"].lstrip("-")
+    token, gid = os.environ["VK_TOKEN"], group_id()
     pkey = photo_key(it["photos"])
     if rec and rec.get("photos") == pkey and rec.get("att") is not None:
         att = rec["att"]              # фото не менялись — не загружаем заново
@@ -185,7 +201,7 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
         try:
             if not it["tagged"]:
                 if rec and it["edited"]:
-                    vk_call(os.environ["VK_TOKEN"], "wall.delete", {"owner_id": f"-{os.environ['VK_GROUP_ID'].lstrip('-')}", "post_id": rec["vk"]})
+                    vk_call(os.environ["VK_TOKEN"], "wall.delete", {"owner_id": f"-{group_id()}", "post_id": rec["vk"]})
                     del state["posts"][known]
                     changed = True
                     print(f"ВК: из поста убрали тег — запись удалена ({url})")

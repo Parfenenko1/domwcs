@@ -26,6 +26,9 @@ class FakeVK:
         self.calls.append((token, method))
         if self.down:
             raise OSError("ВК не отвечает")
+        if method == "groups.getById":
+            assert params.get("group_id") in (None, "wcs_spb"), params
+            return {"groups": [{"id": 42, "screen_name": "wcs_spb"}]}
         if method == "photos.getWallUploadServer":
             if token == "group" and not self.group_photos:
                 raise vk.VkError(method, {"error_code": 27, "error_msg": "Group authorization failed"})
@@ -80,6 +83,17 @@ class VkCrosspostTest(unittest.TestCase):
         os.environ.pop("VK_TOKEN")
         self.assertFalse(self.run_vk((post(1, "Вечеринка\n#Новости"), False)))
         self.assertEqual(self.vk.calls, [])
+
+    def test_group_from_key_or_short_name(self):
+        for gid in (None, "wcs_spb"):
+            vk._gid.clear()
+            if gid:
+                os.environ["VK_GROUP_ID"] = gid
+            else:
+                os.environ.pop("VK_GROUP_ID")
+            self.run_vk((post(40 + len(self.vk.wall), "Вечеринка\n#новости", photo="x"), False))
+        self.assertEqual(len(self.vk.wall), 2)
+        self.assertIn(("group", "groups.getById"), self.vk.calls)
 
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))

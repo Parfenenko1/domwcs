@@ -38,7 +38,7 @@ jobs:
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
           # дублирование в группу ВКонтакте; пока секретов нет — выключено
           VK_TOKEN: ${{ secrets.VK_TOKEN }}
-          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
+          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}   # необязательно: группа берётся из ключа
           VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
         run: python scripts/update_content.py
 
