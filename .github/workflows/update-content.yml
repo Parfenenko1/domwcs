@@ -32,10 +32,14 @@ jobs:
       - name: Установить библиотеки для картинок
         run: pip install --quiet pillow numpy
 
-      - name: Забрать посты из Telegram (расписание, новости с фото, подписчики)
+      - name: Забрать посты из Telegram (расписание, новости с фото, подписчики) и продублировать в ВК
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+          # дублирование в группу ВКонтакте; пока секретов нет — выключено
+          VK_TOKEN: ${{ secrets.VK_TOKEN }}
+          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
+          VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
         run: python scripts/update_content.py
 
       - name: Распознать расписание (неделя, группы, преподаватели)
@@ -61,7 +65,7 @@ jobs:
         run: |
           git config user.name "content-bot"
           git config user.email "content-bot@users.noreply.github.com"
-          for f in schedule.jpg schedule-meta.json week.json groups.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt scripts/news_lookups.json; do
+          for f in schedule.jpg schedule-meta.json week.json groups.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt scripts/news_lookups.json scripts/vk_posts.json; do
             if [ -f "$f" ]; then
               git add "$f"
             fi

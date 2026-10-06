@@ -86,6 +86,21 @@ class UpdateContentTest(unittest.TestCase):
         p = os.path.join(self.dir, "schedule-meta.json")
         return read(p) if os.path.exists(p) else {}
 
+    def test_vk_gets_tagged_posts(self):
+        import vk_crosspost as vk
+        from test_vk_crosspost import FakeVK
+        fake = FakeVK()
+        vk.vk_call, vk.vk_upload, vk.STATE_FILE = fake.call, fake.upload, os.path.join(self.dir, "scripts", "vk_posts.json")
+        os.environ.update(VK_TOKEN="group", VK_GROUP_ID="42")
+        try:
+            self.tg.push("channel_post", message_id=40, text="Вечеринка\n#новости")
+            self.tg.push("channel_post", message_id=41, text="Просто пост")
+            self.run_script()
+        finally:
+            os.environ.pop("VK_TOKEN"); os.environ.pop("VK_GROUP_ID")
+        self.assertEqual([m for m, _ in fake.wall.values()], ["Вечеринка\n#новости"])
+        self.assertEqual(len(self.events()), 1, "сайт обновился как обычно")
+
     def test_news_tag_added_later(self):
         self.tg.push("channel_post", message_id=10, text="Вечеринка в субботу\nПриходите все")
         self.run_script()
