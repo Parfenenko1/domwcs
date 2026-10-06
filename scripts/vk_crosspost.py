@@ -3,7 +3,9 @@
 Дублирование постов канала в группу ВКонтакте. Вызывается из update_content.py с постами,
 которые тот уже забрал из Telegram (getUpdates), — отдельного опроса Telegram нет.
 
-Что уходит в ВК: посты с тегом #расписание или #Новости (текст и все фото, альбом — целиком).
+Что уходит в ВК: посты с тегом #расписание или #Новости — текст, все фото и видео (альбом — целиком).
+Всё делается ключом администратора (от имени группы); ключ сообщества — запасной, только для новых записей.
+Видео загружается в видеозаписи группы; больше 20 МБ бот Telegram не отдаёт — тогда ссылка на пост с превью.
 - Новый пост → запись на стене группы от имени группы.
 - Пост исправили в Telegram → запись в ВК правится (текст, а если сменились фото — и фото).
 - Тег дописали позже → запись появляется в ВК (если посту не больше VK_MAX_AGE_DAYS дней).
@@ -91,14 +93,19 @@ def admin_call(method, params):
         raise
 
 
-def vk_upload(url, filename, raw):
-    """Загрузка файла на сервер ВК (multipart, поле photo)."""
+def vk_upload(url, filename, raw, field="photo", ctype="image/jpeg"):
+    """Загрузка файла на сервер ВК (multipart): фото — поле photo, видео — поле video_file."""
     boundary = uuid.uuid4().hex
-    body = (f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"{filename}\"\r\n"
-            f"Content-Type: image/jpeg\r\n\r\n").encode() + raw + f"\r\n--{boundary}--\r\n".encode()
+    body = (f"--{boundary}\r\nContent-Disposition: form-data; name=\"{field}\"; filename=\"{filename}\"\r\n"
+            f"Content-Type: {ctype}\r\n\r\n").encode() + raw + f"\r\n--{boundary}--\r\n".encode()
     req = urllib.request.Request(url, data=body, headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=300) as resp:
         return json.load(resp)
+
+
+def tokens():
+    """Ключи по порядку: сначала администратора (умеет всё), потом сообщества (запасной — только новые записи)."""
+    return [t for t in (clean_token(os.environ.get("VK_USER_TOKEN")), os.environ.get("VK_TOKEN")) if t]
 
 
 def load_state():
@@ -145,7 +152,7 @@ def collect(posts, tag_re):
         if not mid:
             continue
         key = f"g{post['media_group_id']}" if post.get("media_group_id") else str(mid)
-        it = items.setdefault(key, {"key": key, "ids": [], "text": "", "photos": [], "date": post.get("date", 0),
+        it = items.setdefault(key, {"key": key, "ids": [], "text": "", "photos": [], "videos": [], "date": post.get("date", 0),
                                     "edited": False, "msg": mid})
         it["ids"].append(mid)
         it["msg"] = min(it["msg"], mid)
@@ -153,13 +160,18 @@ def collect(posts, tag_re):
         text = post.get("caption") or post.get("text") or ""
         if text:
             it["text"] = text
-        if any(post.get(k) for k in ("video", "animation", "video_note", "document")):
-            it["video"] = True   # видео ВК с ключом сообщества не загрузить — будет ссылка на пост с превью
+        for k in ("video", "animation", "video_note"):
+            v = post.get(k)
+            if v:
+                it["videos"].append((mid, v.get("file_id") or "", v.get("file_unique_id") or v.get("file_id") or "", v.get("file_size") or 0))
+        if post.get("document"):
+            it["link"] = True   # файл в ВК не переносим — будет ссылка на пост
         if post.get("photo"):
             best = post["photo"][-1]
             it["photos"].append((mid, best["file_id"], best.get("file_unique_id") or best["file_id"]))
     for it in items.values():
         it["photos"] = [p[1:] for p in sorted(it["photos"])][:MAX_PHOTOS]
+        it["videos"] = [v[1:] for v in sorted(it["videos"])][:MAX_PHOTOS]
         it["tagged"] = bool(tag_re.search(it["text"]))
     return items
 
@@ -168,16 +180,40 @@ def fingerprint(text, pkey):
     return hashlib.sha1((text + "|" + pkey).encode()).hexdigest()[:16]
 
 
-def photo_key(photos, video=False):
-    return ",".join(u for _, u in photos) or ("video" if video else "")
+def media_key(it):
+    """Отпечаток вложений: фото и видео поста — по нему видно, менялись ли они при правке."""
+    if it.get("mkey") is not None:
+        return it["mkey"]
+    keys = [u for _, u in it["photos"]] + ["v:" + v[1] for v in it.get("videos", [])] + (["link"] if it.get("link") else [])
+    return ",".join(keys)
+
+
+TG_FILE_LIMIT = 20 * 1024 * 1024   # больше этого бот Telegram файл не отдаёт
+
+
+def upload_video(file_id, size, get_file, title):
+    """Видео в видеозаписи группы (ключом администратора). Не вышло — None (будет ссылка на пост)."""
+    user = clean_token(os.environ.get("VK_USER_TOKEN"))
+    if not user or not file_id:
+        return None
+    if size and size > TG_FILE_LIMIT and not file_id.startswith("http"):
+        print(f"ВК: видео {size // 1048576} МБ — больше 20 МБ бот Telegram не отдаёт, будет ссылка на пост", file=sys.stderr)
+        return None
+    try:
+        raw = get_file(file_id)
+        saved = vk_call(user, "video.save", {"group_id": group_id(), "name": title[:120] or "Видео", "wallpost": 0})
+        up = vk_upload(saved["upload_url"], "video.mp4", raw, field="video_file", ctype="video/mp4")
+        return f"video{up.get('owner_id') or saved['owner_id']}_{up.get('video_id') or saved['video_id']}"
+    except Exception as e:
+        print(f"ВК: видео не загрузилось ({e}) — будет ссылка на пост в Telegram", file=sys.stderr)
+        return None
 
 
 def upload_photos(photos, get_file):
-    """Фото в альбом стены группы. Ключ сообщества может не уметь (ошибка 27) — тогда ключ администратора."""
+    """Фото в альбом стены группы: ключом администратора, не вышло — ключом сообщества."""
     gid = group_id()
-    tokens = [t for t in (os.environ.get("VK_TOKEN"), clean_token(os.environ.get("VK_USER_TOKEN"))) if t]
     last = None
-    for token in tokens:
+    for token in tokens():
         try:
             server = vk_call(token, "photos.getWallUploadServer", {"group_id": gid})
             out = []
@@ -195,26 +231,40 @@ def upload_photos(photos, get_file):
 
 def publish(it, rec, url, get_file):
     """Создать или исправить запись. rec — что уже есть в ВК по этому посту (или None)."""
-    token, gid = os.environ["VK_TOKEN"], group_id()
-    pkey = photo_key(it["photos"], it.get("video"))
+    gid = group_id()
+    pkey = media_key(it)
     if rec and rec.get("photos") == pkey and rec.get("att") is not None:
-        att = rec["att"]              # фото не менялись — не загружаем заново
-    elif it["photos"]:
-        att = upload_photos(it["photos"], get_file)
-        if att is None:
-            att = [url] if url else []
-        elif it.get("video") and url:
-            att = att[:MAX_PHOTOS - 1] + [url]   # в альбоме есть и видео — ссылка на пост, чтобы его увидели
-    elif it.get("video"):
-        att = [url] if url else []   # видео: ссылка на пост в Telegram, ВК покажет превью
+        att = rec["att"]              # фото и видео не менялись — не загружаем заново
     else:
-        att = []
+        att, need_link = [], bool(it.get("link"))
+        if it["photos"]:
+            ph = upload_photos(it["photos"], get_file)
+            att += ph or []
+            need_link = need_link or ph is None
+        title = (it["text"].strip().splitlines() or [""])[0]
+        for file_id, _, size in it.get("videos", []):
+            v = upload_video(file_id, size, get_file, title)
+            if v:
+                att.append(v)
+            else:
+                need_link = True
+        if need_link and url:          # что не загрузилось — ссылкой на пост в Telegram (ВК покажет превью)
+            att = att[:MAX_PHOTOS - 1] + [url]
+        att = att[:MAX_PHOTOS]
     params = {"owner_id": f"-{gid}", "message": it["text"], "attachments": ",".join(att)}
     if rec:
         admin_call("wall.edit", dict(params, post_id=rec["vk"]))
         vk_id = rec["vk"]
     else:
-        vk_id = vk_call(token, "wall.post", dict(params, from_group=1))["post_id"]
+        vk_id, last = None, None
+        for token in tokens():         # от имени группы: ключом администратора, не вышло — ключом сообщества
+            try:
+                vk_id = vk_call(token, "wall.post", dict(params, from_group=1))["post_id"]
+                break
+            except VkError as e:
+                last = e
+        if vk_id is None:
+            raise last
     return {"vk": vk_id, "fp": fingerprint(it["text"], pkey), "photos": pkey, "att": att,
             "ids": sorted(set(it["ids"]) | set((rec or {}).get("ids") or []))}
 
@@ -281,10 +331,9 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
                     print(f"ВК: из поста убрали тег — запись удалена ({url})")
                 continue
             if rec:
-                if partial:   # в альбоме исправили подпись, остальные фото не пришли — фото оставляем прежние
-                    it["photos"] = [(None, u) for u in rec["photos"].split(",") if u and u != "video"]
-                    it["video"] = it.get("video") or rec["photos"] == "video"
-                if rec.get("fp") == fingerprint(it["text"], photo_key(it["photos"], it.get("video"))):
+                if partial:   # в альбоме исправили подпись, остальные фото не пришли — вложения оставляем прежние
+                    it["mkey"] = rec.get("photos") or ""
+                if rec.get("fp") == fingerprint(it["text"], media_key(it)):
                     continue
                 state["posts"][known] = publish(it, rec, url, get_file)
                 changed = True
@@ -339,8 +388,10 @@ def parse_public(page, channel_name):
         text = html.unescape(re.sub(r"<[^>]+>", "", re.sub(r"<br\s*/?>", "\n", m.group(1)))) if m else ""
         photos = re.findall(r"tgme_widget_message_photo_wrap[^>]*background-image:url\('([^']+)'\)", body)
         video = "tgme_widget_message_video" in body or "tgme_widget_message_roundvideo" in body
+        vsrc = re.search(r'<video[^>]+src="([^"]+)"', body)
         d = re.search(r'<time datetime="([^"]+)"', body)
-        out.append({"id": int(post.split("/")[-1]), "text": text.strip(), "photos": photos, "time": d.group(1) if d else "", "video": video})
+        out.append({"id": int(post.split("/")[-1]), "text": text.strip(), "photos": photos, "time": d.group(1) if d else "", "video": video,
+                    "video_src": html.unescape(vsrc.group(1)) if vsrc else ""})
     return out
 
 
@@ -383,7 +434,8 @@ def backfill(spec, tag_re, channel_name, fetch, now=None):
         if not p["photos"]:
             m = {"message_id": p["id"], "date": int(now), "text": p["text"]}
             if p.get("video"):
-                m = {"message_id": p["id"], "date": int(now), "caption": p["text"], "video": {"file_id": "-"}}
+                src = p.get("video_src") or ""   # видео со страницы канала (большие там без ссылки — будет ссылка на пост)
+                m = {"message_id": p["id"], "date": int(now), "caption": p["text"], "video": {"file_id": src, "file_unique_id": src or "-"}}
             posts.append((m, False))
         for i, ph in enumerate(p["photos"]):   # альбом: подпись у первого фото, номера идут подряд
             m = {"message_id": p["id"] + i, "date": int(now), "photo": [{"file_id": ph, "file_unique_id": ph}]}
