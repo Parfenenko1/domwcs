@@ -179,6 +179,20 @@ class VkCrosspostTest(unittest.TestCase):
         self.assertEqual(list(self.vk.wall.values())[0][0], "Вечеринка в воскресенье\n#Новости", "с ключом администратора — исправлено")
         self.assertIn(("admin", "wall.edit"), self.vk.calls)
 
+    def test_admin_key_pasted_with_url_and_bad_key_not_retried(self):
+        self.assertEqual(vk.clean_token(" https://oauth.vk.com/blank.html#access_token=vk1.a.XYZ&expires_in=0&user_id=1 "), "vk1.a.XYZ")
+        self.assertEqual(vk.clean_token(" vk1.a.XYZ\n"), "vk1.a.XYZ")
+        self.run_vk((post(96, "Вечеринка в субботу\n#Новости"), False))
+        os.environ["VK_USER_TOKEN"] = "bad"
+        real = self.vk.call
+        def call(token, method, params):
+            if token == "bad":
+                raise vk.VkError(method, {"error_code": 5, "error_msg": "User authorization failed: invalid access_token (4)."})
+            return real(token, method, params)
+        vk.vk_call = call
+        self.run_vk((post(96, "Вечеринка в воскресенье\n#Новости"), True))
+        self.assertEqual(vk.load_state()["queue"], [], "плохой ключ — не повторяем каждые 5 минут")
+
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))
         msgs = sorted(m for m, _ in self.vk.wall.values())
