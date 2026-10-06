@@ -21,6 +21,7 @@ NOW = 1_790_000_000
 class FakeVK:
     def __init__(self, group_photos=True):
         self.wall, self.seq, self.photo_seq, self.down, self.group_photos, self.calls = {}, 100, 0, False, group_photos, []
+        self.group_admin = True
 
     def call(self, token, method, params):
         self.calls.append((token, method))
@@ -36,6 +37,8 @@ class FakeVK:
         if method == "photos.saveWallPhoto":
             self.photo_seq += 1
             return [{"owner_id": -42, "id": self.photo_seq}]
+        if method in ("wall.get", "wall.edit", "wall.delete") and token == "group" and self.group_admin is False:
+            raise vk.VkError(method, {"error_code": 27, "error_msg": "method is unavailable with group auth."})
         if method == "wall.get":
             return {"items": [{"id": k, "text": m} for k, (m, _) in sorted(self.wall.items(), reverse=True)]}
         if method == "wall.post":
@@ -164,6 +167,17 @@ class VkCrosspostTest(unittest.TestCase):
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             vk.backfill("91", TAG, "domwcs", lambda url: page.encode(), now=NOW)
         self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней!\n#Новости", "https://t.me/domwcs/91")])
+
+    def test_edit_needs_admin_key(self):
+        self.vk.group_admin = False
+        self.run_vk((post(95, "Вечеринка в субботу\n#Новости"), False))
+        self.run_vk((post(95, "Вечеринка в воскресенье\n#Новости"), True))
+        self.assertEqual(list(self.vk.wall.values())[0][0], "Вечеринка в субботу\n#Новости", "ключом сообщества не исправить")
+        self.assertEqual(vk.load_state()["queue"], [], "и не повторяем каждые 5 минут")
+        os.environ["VK_USER_TOKEN"] = "admin"
+        self.run_vk((post(95, "Вечеринка в воскресенье\n#Новости"), True))
+        self.assertEqual(list(self.vk.wall.values())[0][0], "Вечеринка в воскресенье\n#Новости", "с ключом администратора — исправлено")
+        self.assertIn(("admin", "wall.edit"), self.vk.calls)
 
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))

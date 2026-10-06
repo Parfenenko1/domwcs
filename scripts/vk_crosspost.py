@@ -19,9 +19,10 @@
   VK_TOKEN       — ключ доступа сообщества (Управление → Работа с API → Ключи доступа)
   VK_GROUP_ID    — необязательно: номер или короткое имя группы (wcs_spb); без него группа
                    берётся из ключа сообщества
-  VK_USER_TOKEN  — необязательно: ключ администратора группы для загрузки фото, если ключ
-                   сообщества фото загружать не может (тогда без него в записи будет ссылка на пост
-                   в Telegram с превью вместо фото)
+  VK_USER_TOKEN  — ключ администратора группы. Ключ сообщества умеет только публиковать новые
+                   записи; править и удалять их, сверять стену с ручными постами и (скорее всего)
+                   загружать фото может только ключ администратора. Без него новые посты уходят,
+                   а вместо фото — ссылка на пост в Telegram с превью.
 """
 
 import hashlib
@@ -57,6 +58,23 @@ def vk_call(token, method, params):
     if "error" in j:
         raise VkError(method, j["error"])
     return j["response"]
+
+
+class NeedAdmin(RuntimeError):
+    """Ключ сообщества этого не умеет (ошибка 27), а ключа администратора нет — повторять бессмысленно."""
+
+
+def admin_call(method, params):
+    """Правка, удаление и чтение стены: ключ сообщества их не умеет — нужен ключ администратора (VK_USER_TOKEN)."""
+    user = os.environ.get("VK_USER_TOKEN")
+    if user:
+        return vk_call(user, method, params)
+    try:
+        return vk_call(os.environ["VK_TOKEN"], method, params)
+    except VkError as e:
+        if e.code == 27:
+            raise NeedAdmin(f"{method} — нужен ключ администратора (секрет VK_USER_TOKEN)")
+        raise
 
 
 def vk_upload(url, filename, raw):
@@ -179,7 +197,7 @@ def publish(it, rec, url, get_file):
         att = []
     params = {"owner_id": f"-{gid}", "message": it["text"], "attachments": ",".join(att)}
     if rec:
-        vk_call(token, "wall.edit", dict(params, post_id=rec["vk"]))
+        admin_call("wall.edit", dict(params, post_id=rec["vk"]))
         vk_id = rec["vk"]
     else:
         vk_id = vk_call(token, "wall.post", dict(params, from_group=1))["post_id"]
@@ -200,7 +218,7 @@ def find_on_wall(text):
     if len(want) < 20:
         return None
     try:
-        wall = vk_call(os.environ["VK_TOKEN"], "wall.get", {"owner_id": f"-{group_id()}", "count": 50})
+        wall = admin_call("wall.get", {"owner_id": f"-{group_id()}", "count": 50})
     except Exception as e:
         print(f"ВК: стену проверить не получилось ({e})", file=sys.stderr)
         return None
@@ -243,7 +261,7 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
         try:
             if not it["tagged"]:
                 if rec and it["edited"]:
-                    vk_call(os.environ["VK_TOKEN"], "wall.delete", {"owner_id": f"-{group_id()}", "post_id": rec["vk"]})
+                    admin_call("wall.delete", {"owner_id": f"-{group_id()}", "post_id": rec["vk"]})
                     del state["posts"][known]
                     changed = True
                     print(f"ВК: из поста убрали тег — запись удалена ({url})")
@@ -270,6 +288,8 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
             state["posts"][key] = publish(it, None, url, get_file)
             changed = True
             print(f"ВК: опубликовано ({url})")
+        except NeedAdmin as e:
+            print(f"ВК: не получилось ({url}): {e}", file=sys.stderr)   # не повторяем: без ключа не выйдет
         except Exception as e:
             print(f"ВК: не получилось ({url}): {e} — попробую в следующий раз", file=sys.stderr)
             for p, ed in all_posts:
