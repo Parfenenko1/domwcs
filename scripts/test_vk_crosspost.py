@@ -22,11 +22,18 @@ class FakeVK:
     def __init__(self, group_photos=True):
         self.wall, self.seq, self.photo_seq, self.down, self.group_photos, self.calls = {}, 100, 0, False, group_photos, []
         self.group_admin = True
+        self.uploaded_videos, self.video_seq, self.bad_admin = [], 500, False
 
     def call(self, token, method, params):
         self.calls.append((token, method))
         if self.down:
             raise OSError("ВК не отвечает")
+        if token == "admin" and self.bad_admin:
+            raise vk.VkError(method, {"error_code": 5, "error_msg": "User authorization failed: invalid access_token (4)."})
+        if method == "video.save":
+            assert token == "admin", "видео грузится только ключом администратора"
+            self.video_seq += 1
+            return {"upload_url": f"https://vup/{self.video_seq}", "owner_id": -42, "video_id": self.video_seq}
         if method == "groups.getById":
             assert params.get("group_id") in (None, "wcs_spb"), params
             return {"groups": [{"id": 42, "screen_name": "wcs_spb"}]}
@@ -54,7 +61,10 @@ class FakeVK:
             return 1
         raise AssertionError(method)
 
-    def upload(self, url, filename, raw):
+    def upload(self, url, filename, raw, field="photo", ctype="image/jpeg"):
+        if field == "video_file":
+            self.uploaded_videos.append(raw)
+            return {"owner_id": -42, "video_id": int(url.rsplit("/", 1)[-1]), "size": len(raw)}
         return {"photo": raw.decode(), "server": 1, "hash": "h"}
 
 
@@ -192,6 +202,34 @@ class VkCrosspostTest(unittest.TestCase):
         vk.vk_call = call
         self.run_vk((post(96, "Вечеринка в воскресенье\n#Новости"), True))
         self.assertEqual(vk.load_state()["queue"], [], "плохой ключ — не повторяем каждые 5 минут")
+
+    def test_video_uploaded_with_admin_key(self):
+        os.environ["VK_USER_TOKEN"] = "admin"
+        p = post(97, "Соло с Аней!\n#Новости")
+        p["caption"] = p.pop("text"); p["video"] = {"file_id": "vid1", "file_unique_id": "u1", "file_size": 5_000_000}
+        self.run_vk((p, False))
+        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней!\n#Новости", "video-42_501")])
+        self.assertEqual(self.vk.uploaded_videos, [b"vid1"])
+        self.assertEqual(self.vk.calls[-1], ("admin", "wall.post"), "публикует ключ администратора")
+        # правка текста — видео заново не грузится
+        p2 = dict(p, caption="Соло с Аней! Старт 10 октября\n#Новости")
+        self.run_vk((p2, True))
+        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней! Старт 10 октября\n#Новости", "video-42_501")])
+        self.assertEqual(len(self.vk.uploaded_videos), 1)
+
+    def test_big_video_and_photo_album(self):
+        os.environ["VK_USER_TOKEN"] = "admin"
+        a = post(98, "Вечеринка\n#Новости", photo="ph", group="A")
+        b = post(99, group="A"); b["video"] = {"file_id": "big", "file_unique_id": "ub", "file_size": 50_000_000}
+        self.run_vk((a, False), (b, False))
+        self.assertEqual(list(self.vk.wall.values()), [("Вечеринка\n#Новости", "photo-42_1,https://t.me/domwcs/98")],
+                         "видео больше 20 МБ — ссылкой на пост, фото — загружено")
+
+    def test_bad_admin_key_falls_back_to_group_for_new_posts(self):
+        os.environ["VK_USER_TOKEN"] = "admin"
+        self.vk.bad_admin = True
+        self.run_vk((post(100, "Новая запись\n#Новости"), False))
+        self.assertEqual(list(self.vk.wall.values()), [("Новая запись\n#Новости", "")])
 
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))
