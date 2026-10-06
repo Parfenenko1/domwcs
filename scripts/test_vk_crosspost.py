@@ -36,6 +36,8 @@ class FakeVK:
         if method == "photos.saveWallPhoto":
             self.photo_seq += 1
             return [{"owner_id": -42, "id": self.photo_seq}]
+        if method == "wall.get":
+            return {"items": [{"id": k, "text": m} for k, (m, _) in sorted(self.wall.items(), reverse=True)]}
         if method == "wall.post":
             self.seq += 1
             self.wall[self.seq] = (params["message"], params["attachments"])
@@ -94,6 +96,25 @@ class VkCrosspostTest(unittest.TestCase):
             self.run_vk((post(40 + len(self.vk.wall), "Вечеринка\n#новости", photo="x"), False))
         self.assertEqual(len(self.vk.wall), 2)
         self.assertIn(("group", "groups.getById"), self.vk.calls)
+
+    def test_manual_vk_post_not_duplicated(self):
+        # в ВК уже вручную выложили этот пост (без тега, чуть другие знаки)
+        self.vk.wall[7] = ("Вечеринка в субботу! Начало в 20:00, вход 500 ₽", "photo-42_99")
+        self.run_vk((post(50, "Вечеринка в субботу. Начало в 20:00, вход 500 ₽\n#Новости", photo="z"), False))
+        self.assertEqual(len(self.vk.wall), 1, "второй раз не выложили")
+        # правка такого поста в Telegram ручную запись не трогает
+        self.run_vk((post(50, "Вечеринка в воскресенье\n#Новости", photo="z"), True))
+        self.assertEqual(self.vk.wall[7][0], "Вечеринка в субботу! Начало в 20:00, вход 500 ₽")
+        self.run_vk((post(50, "Без тега"), True))
+        self.assertIn(7, self.vk.wall, "и не удаляет")
+
+    def test_posts_before_launch_untouched(self):
+        self.run_vk(now=NOW)                       # первый запуск — запоминается время включения
+        self.assertIn("since", vk.load_state())
+        self.run_vk((post(60, "Старый пост, исправили\n#Новости", date=NOW - 3600), True), now=NOW + 300)
+        self.assertEqual(self.vk.wall, {}, "правка поста, вышедшего до включения, в ВК не уходит")
+        self.run_vk((post(61, "Новый пост после включения\n#Новости", date=NOW + 600), False), now=NOW + 900)
+        self.assertEqual(len(self.vk.wall), 1)
 
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))
