@@ -150,6 +150,21 @@ class VkCrosspostTest(unittest.TestCase):
         self.run_vk((post(460, "Сегодня вечеринка до утра!\n#НОВОСТИ", date=NOW - 3600), True), now=NOW + 120)
         self.assertIn("Сегодня вечеринка до утра!\n#НОВОСТИ", [m for m, _ in self.vk.wall.values()])
 
+    def test_video_post_gets_link(self):
+        p = post(90, "Соло с Аней! В эту субботу!\n#Новости")
+        p["caption"] = p.pop("text"); p["video"] = {"file_id": "v", "thumbnail": {"file_id": "t"}}
+        self.run_vk((p, False))
+        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней! В эту субботу!\n#Новости", "https://t.me/domwcs/90")])
+
+    def test_backfill_adds_video_link_to_text_only_record(self):
+        # запись ушла без видео (как было до правки) — повторная отправка поста добавляет ссылку
+        self.run_vk((post(91, "Соло с Аней!\n#Новости"), False))
+        page = ('<div data-post="domwcs/91"><div class="tgme_widget_message_video_wrap"><video class="tgme_widget_message_video"></video></div>'
+                '<div class="tgme_widget_message_text js-message_text">Соло с Аней!<br/>#Новости</div><time datetime="2026-09-21T06:00:00+00:00"></time></div>')
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            vk.backfill("91", TAG, "domwcs", lambda url: page.encode(), now=NOW)
+        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней!\n#Новости", "https://t.me/domwcs/91")])
+
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))
         msgs = sorted(m for m, _ in self.vk.wall.values())

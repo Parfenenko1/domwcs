@@ -121,6 +121,8 @@ def collect(posts, tag_re):
         text = post.get("caption") or post.get("text") or ""
         if text:
             it["text"] = text
+        if any(post.get(k) for k in ("video", "animation", "video_note", "document")):
+            it["video"] = True   # видео ВК с ключом сообщества не загрузить — будет ссылка на пост с превью
         if post.get("photo"):
             best = post["photo"][-1]
             it["photos"].append((mid, best["file_id"], best.get("file_unique_id") or best["file_id"]))
@@ -134,8 +136,8 @@ def fingerprint(text, pkey):
     return hashlib.sha1((text + "|" + pkey).encode()).hexdigest()[:16]
 
 
-def photo_key(photos):
-    return ",".join(u for _, u in photos)
+def photo_key(photos, video=False):
+    return ",".join(u for _, u in photos) or ("video" if video else "")
 
 
 def upload_photos(photos, get_file):
@@ -162,13 +164,17 @@ def upload_photos(photos, get_file):
 def publish(it, rec, url, get_file):
     """Создать или исправить запись. rec — что уже есть в ВК по этому посту (или None)."""
     token, gid = os.environ["VK_TOKEN"], group_id()
-    pkey = photo_key(it["photos"])
+    pkey = photo_key(it["photos"], it.get("video"))
     if rec and rec.get("photos") == pkey and rec.get("att") is not None:
         att = rec["att"]              # фото не менялись — не загружаем заново
     elif it["photos"]:
         att = upload_photos(it["photos"], get_file)
         if att is None:
             att = [url] if url else []
+        elif it.get("video") and url:
+            att = att[:MAX_PHOTOS - 1] + [url]   # в альбоме есть и видео — ссылка на пост, чтобы его увидели
+    elif it.get("video"):
+        att = [url] if url else []   # видео: ссылка на пост в Telegram, ВК покажет превью
     else:
         att = []
     params = {"owner_id": f"-{gid}", "message": it["text"], "attachments": ",".join(att)}
@@ -244,8 +250,9 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
                 continue
             if rec:
                 if partial:   # в альбоме исправили подпись, остальные фото не пришли — фото оставляем прежние
-                    it["photos"] = [(None, u) for u in rec["photos"].split(",") if u]
-                if rec.get("fp") == fingerprint(it["text"], photo_key(it["photos"])):
+                    it["photos"] = [(None, u) for u in rec["photos"].split(",") if u and u != "video"]
+                    it["video"] = it.get("video") or rec["photos"] == "video"
+                if rec.get("fp") == fingerprint(it["text"], photo_key(it["photos"], it.get("video"))):
                     continue
                 state["posts"][known] = publish(it, rec, url, get_file)
                 changed = True
@@ -297,8 +304,9 @@ def parse_public(page, channel_name):
         m = re.search(r'class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', body, re.S)
         text = html.unescape(re.sub(r"<[^>]+>", "", re.sub(r"<br\s*/?>", "\n", m.group(1)))) if m else ""
         photos = re.findall(r"tgme_widget_message_photo_wrap[^>]*background-image:url\('([^']+)'\)", body)
+        video = "tgme_widget_message_video" in body or "tgme_widget_message_roundvideo" in body
         d = re.search(r'<time datetime="([^"]+)"', body)
-        out.append({"id": int(post.split("/")[-1]), "text": text.strip(), "photos": photos, "time": d.group(1) if d else ""})
+        out.append({"id": int(post.split("/")[-1]), "text": text.strip(), "photos": photos, "time": d.group(1) if d else "", "video": video})
     return out
 
 
@@ -339,7 +347,10 @@ def backfill(spec, tag_re, channel_name, fetch, now=None):
     posts = []
     for p in sorted(picked, key=lambda p: p["id"]):
         if not p["photos"]:
-            posts.append(({"message_id": p["id"], "date": int(now), "text": p["text"]}, False))
+            m = {"message_id": p["id"], "date": int(now), "text": p["text"]}
+            if p.get("video"):
+                m = {"message_id": p["id"], "date": int(now), "caption": p["text"], "video": {"file_id": "-"}}
+            posts.append((m, False))
         for i, ph in enumerate(p["photos"]):   # альбом: подпись у первого фото, номера идут подряд
             m = {"message_id": p["id"] + i, "date": int(now), "photo": [{"file_id": ph, "file_unique_id": ph}]}
             if len(p["photos"]) > 1:
