@@ -79,7 +79,9 @@ def admin_call(method, params):
             return vk_call(user, method, params)
         except VkError as e:
             if e.code == 5:   # ключ не принят — повторять бессмысленно, пока его не заменят
-                raise NeedAdmin(f"{method} — ВК не принял ключ администратора ({e}); проверь секрет VK_USER_TOKEN")
+                # сам ключ в журнал не пишем — только тип (начало) и длину, чтобы понять, что вставлено
+                hint = f"ключ начинается с «{user[:6]}», длина {len(user)}; нужен «vk1.a.», около 200 символов"
+                raise NeedAdmin(f"{method} — ВК не принял ключ администратора ({e}); {hint}; проверь секрет VK_USER_TOKEN")
             raise
     try:
         return vk_call(os.environ["VK_TOKEN"], method, params)
