@@ -101,6 +101,14 @@ class UpdateContentTest(unittest.TestCase):
         self.assertEqual([m for m, _ in fake.wall.values()], ["Вечеринка\n#новости"])
         self.assertEqual(len(self.events()), 1, "сайт обновился как обычно")
 
+    def test_tags_any_case(self):
+        self.tg.push("channel_post", message_id=80, text="Вечеринка в субботу\n#НОВОСТИ")
+        self.tg.push("channel_post", message_id=81, text="Мастер-класс\n#Новости")
+        self.tg.push("channel_post", message_id=82, caption="#РАСПИСАНИЕ", photo=[{"file_id": "s1", "file_unique_id": "u1", "width": 800, "height": 800}])
+        self.run_script()
+        self.assertEqual(sorted(e["name"] for e in self.events()), ["Вечеринка в субботу", "Мастер-класс"])
+        self.assertEqual(self.meta().get("message_id"), 82)
+
     def test_news_tag_added_later(self):
         self.tg.push("channel_post", message_id=10, text="Вечеринка в субботу\nПриходите все")
         self.run_script()

@@ -25,6 +25,7 @@
 """
 
 import hashlib
+import html
 import json
 import os
 import re
@@ -278,3 +279,72 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
     if changed:
         save_state(state)
     return changed
+
+
+# ---------------------------------------------------------------------------
+# Разовая отправка постов, вышедших до включения (кнопка «Run workflow», поле vk_post):
+# номера или ссылки на посты через запятую, или «сегодня» — все посты с тегом за сегодня (по Москве).
+# Посты берутся с публичной страницы канала t.me/s/<канал>: Bot API старые посты не отдаёт.
+
+def parse_public(page, channel_name):
+    """Посты со страницы t.me/s: номер, дата, текст, все фото (у альбома — несколько)."""
+    out = []
+    for chunk in page.split('data-post="')[1:]:
+        post = chunk.split('"', 1)[0]
+        if not post.lower().startswith(channel_name.lower() + "/"):
+            continue
+        body = chunk.split('class="tgme_widget_message_wrap', 1)[0]
+        m = re.search(r'class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', body, re.S)
+        text = html.unescape(re.sub(r"<[^>]+>", "", re.sub(r"<br\s*/?>", "\n", m.group(1)))) if m else ""
+        photos = re.findall(r"tgme_widget_message_photo_wrap[^>]*background-image:url\('([^']+)'\)", body)
+        d = re.search(r'<time datetime="([^"]+)"', body)
+        out.append({"id": int(post.split("/")[-1]), "text": text.strip(), "photos": photos, "time": d.group(1) if d else ""})
+    return out
+
+
+def backfill(spec, tag_re, channel_name, fetch, now=None):
+    """spec — «сегодня» или номера/ссылки через запятую. Публикует, как обычный новый пост (с проверкой стены)."""
+    from datetime import datetime, timedelta, timezone
+    now = now or time.time()
+    spec = (spec or "").strip().lower()
+    want = {int(x) for x in re.findall(r"(\d+)", spec)} if spec not in ("сегодня", "today") else None
+    pages, url = [], f"https://t.me/s/{channel_name}"
+    for _ in range(3):
+        if want:
+            url = f"https://t.me/s/{channel_name}?before={max(want) + 1}"
+        page = parse_public(fetch(url).decode("utf-8", "replace"), channel_name)
+        pages += page
+        if want is not None or not page:
+            break
+        url = f"https://t.me/s/{channel_name}?before={min(p['id'] for p in page)}"
+    msk = timezone(timedelta(hours=3))
+    today = datetime.fromtimestamp(now, msk).date()
+    picked = []
+    for p in {p["id"]: p for p in pages}.values():
+        if want is not None and p["id"] not in want:
+            continue
+        if want is None:
+            try:
+                if datetime.fromisoformat(p["time"]).astimezone(msk).date() != today:
+                    continue
+            except ValueError:
+                continue
+        if not tag_re.search(p["text"]):
+            print(f"ВК: у поста {p['id']} нет тега #расписание или #Новости — пропускаю")
+            continue
+        picked.append(p)
+    if not picked:
+        print(f"ВК: на странице канала не нашёл постов для отправки ({spec})")
+        return False
+    posts = []
+    for p in sorted(picked, key=lambda p: p["id"]):
+        if not p["photos"]:
+            posts.append(({"message_id": p["id"], "date": int(now), "text": p["text"]}, False))
+        for i, ph in enumerate(p["photos"]):   # альбом: подпись у первого фото, номера идут подряд
+            m = {"message_id": p["id"] + i, "date": int(now), "photo": [{"file_id": ph, "file_unique_id": ph}]}
+            if len(p["photos"]) > 1:
+                m["media_group_id"] = f"b{p['id']}"
+            if i == 0:
+                m["caption"] = p["text"]
+            posts.append((m, False))
+    return crosspost(posts, tag_re, fetch, channel_name, now=now)
