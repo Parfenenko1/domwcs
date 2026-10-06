@@ -64,11 +64,23 @@ class NeedAdmin(RuntimeError):
     """Ключ сообщества этого не умеет (ошибка 27), а ключа администратора нет — повторять бессмысленно."""
 
 
+def clean_token(raw):
+    """Ключ могли вставить вместе с адресом страницы или пробелами — берём только сам ключ."""
+    raw = (raw or "").strip().strip('"\'')
+    m = re.search(r"access_token=([^&\s]+)", raw)
+    return m.group(1) if m else raw
+
+
 def admin_call(method, params):
     """Правка, удаление и чтение стены: ключ сообщества их не умеет — нужен ключ администратора (VK_USER_TOKEN)."""
-    user = os.environ.get("VK_USER_TOKEN")
+    user = clean_token(os.environ.get("VK_USER_TOKEN"))
     if user:
-        return vk_call(user, method, params)
+        try:
+            return vk_call(user, method, params)
+        except VkError as e:
+            if e.code == 5:   # ключ не принят — повторять бессмысленно, пока его не заменят
+                raise NeedAdmin(f"{method} — ВК не принял ключ администратора ({e}); проверь секрет VK_USER_TOKEN")
+            raise
     try:
         return vk_call(os.environ["VK_TOKEN"], method, params)
     except VkError as e:
@@ -161,7 +173,7 @@ def photo_key(photos, video=False):
 def upload_photos(photos, get_file):
     """Фото в альбом стены группы. Ключ сообщества может не уметь (ошибка 27) — тогда ключ администратора."""
     gid = group_id()
-    tokens = [t for t in (os.environ.get("VK_TOKEN"), os.environ.get("VK_USER_TOKEN")) if t]
+    tokens = [t for t in (os.environ.get("VK_TOKEN"), clean_token(os.environ.get("VK_USER_TOKEN"))) if t]
     last = None
     for token in tokens:
         try:
