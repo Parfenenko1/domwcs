@@ -116,6 +116,40 @@ class VkCrosspostTest(unittest.TestCase):
         self.run_vk((post(61, "Новый пост после включения\n#Новости", date=NOW + 600), False), now=NOW + 900)
         self.assertEqual(len(self.vk.wall), 1)
 
+    def test_tag_any_case(self):
+        for i, tag in enumerate(["#Расписание", "#РАСПИСАНИЕ", "#расписание", "#Новости", "#НОВОСТИ", "#новости", "#НоВоСтИ"]):
+            self.run_vk((post(70 + i, f"Пост номер {i} про танцы\n{tag}"), False))
+        self.assertEqual(len(self.vk.wall), 7)
+
+    def test_backfill_today_from_public_page(self):
+        page = (
+            '<div class="tgme_widget_message_wrap"><div data-post="domwcs/454" class="x">'
+            '<a class="tgme_widget_message_photo_wrap" style="width:1px;background-image:url(\'https://cdn/a.jpg\')"></a>'
+            '<a class="tgme_widget_message_photo_wrap" style="background-image:url(\'https://cdn/b.jpg\')"></a>'
+            '<div class="tgme_widget_message_text js-message_text" dir="auto">Расписание на неделю<br/><a href="?q=%23расписание">#Расписание</a></div>'
+            '<time datetime="2026-09-21T06:00:23+00:00" class="time">09:00</time></div></div>'
+            '<div class="tgme_widget_message_wrap"><div data-post="domwcs/460" class="x">'
+            '<div class="tgme_widget_message_text js-message_text" dir="auto">Сегодня вечеринка &amp; танцы до утра<br/>#НОВОСТИ</div>'
+            '<time datetime="' + "2026-09-21T15:00:00+00:00" + '" class="time">18:00</time></div></div>'
+            '<div class="tgme_widget_message_wrap"><div data-post="domwcs/461" class="x">'
+            '<div class="tgme_widget_message_text js-message_text" dir="auto">Просто пост без тега, сегодня</div>'
+            '<time datetime="2026-09-21T16:00:00+00:00" class="time">19:00</time></div></div>')
+        fetched = []
+        def fetch(url):
+            fetched.append(url)
+            return page.encode() if "t.me/s/" in url else url.encode()
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            vk.backfill("сегодня", TAG, "domwcs", fetch, now=NOW)   # NOW — 21.09.2026 по Москве
+        msgs = sorted(m for m, _ in self.vk.wall.values())
+        self.assertEqual(msgs, ["Расписание на неделю\n#Расписание", "Сегодня вечеринка & танцы до утра\n#НОВОСТИ"])
+        self.assertIn("photo-42_1,photo-42_2", [a for _, a in self.vk.wall.values()], "альбом — оба фото")
+        # тот же пост по номеру второй раз — не дублируется; правка настоящего поста потом правит запись
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            vk.backfill("https://t.me/domwcs/460", TAG, "domwcs", fetch, now=NOW + 60)
+        self.assertEqual(len(self.vk.wall), 2)
+        self.run_vk((post(460, "Сегодня вечеринка до утра!\n#НОВОСТИ", date=NOW - 3600), True), now=NOW + 120)
+        self.assertIn("Сегодня вечеринка до утра!\n#НОВОСТИ", [m for m, _ in self.vk.wall.values()])
+
     def test_only_tagged_posts(self):
         self.run_vk((post(1, "Просто пост"), False), (post(2, "Вечеринка\n#Новости"), False), (post(3, "#расписание", photo="sch"), False))
         msgs = sorted(m for m, _ in self.vk.wall.values())

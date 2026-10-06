@@ -490,7 +490,9 @@ def main():
     # те же посты (#расписание и #Новости) — в группу ВКонтакте; сбой ВК сайту не мешает
     try:
         import vk_crosspost
-        vk_crosspost.crosspost(list(latest.values()), VK_TAG_RE, lambda file_id: telegram_file(token, file_id), channel_name)
+        vk_crosspost.crosspost(list(latest.values()), VK_TAG_RE, lambda file_id: http_get(file_id) if file_id.startswith("http") else telegram_file(token, file_id), channel_name)
+        if os.environ.get("VK_BACKFILL", "").strip():   # разовая отправка старых постов (кнопка «Run workflow»)
+            vk_crosspost.backfill(os.environ["VK_BACKFILL"], VK_TAG_RE, channel_name, http_get)
     except Exception as e:
         print(f"ВК: дублирование не сработало: {e}", file=sys.stderr)
 

@@ -6,7 +6,12 @@ on:
     # Репозиторий публичный — запуски бесплатные. Сайт пересобирается, только когда в канале появилось
     # что-то для сайта: без изменений задача ничего не коммитит.
     - cron: "*/5 * * * *"
-  workflow_dispatch: {}   # кнопка "Run workflow" в интерфейсе GitHub — запустить вручную
+  workflow_dispatch:      # кнопка "Run workflow" в интерфейсе GitHub — запустить вручную
+    inputs:
+      vk_post:
+        description: "Отправить в ВК посты, вышедшие до включения: номера или ссылки через запятую, или «сегодня»"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -40,6 +45,7 @@ jobs:
           VK_TOKEN: ${{ secrets.VK_TOKEN }}
           VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}   # необязательно: группа берётся из ключа
           VK_USER_TOKEN: ${{ secrets.VK_USER_TOKEN }}
+          VK_BACKFILL: ${{ github.event.inputs.vk_post }}
         run: python scripts/update_content.py
 
       - name: Распознать расписание (неделя, группы, преподаватели)
