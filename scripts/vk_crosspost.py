@@ -9,6 +9,9 @@
 - Тег дописали позже → запись появляется в ВК (если посту не больше VK_MAX_AGE_DAYS дней).
 - Тег убрали → запись из ВК удаляется.
 - ВК не ответил → пост ждёт в очереди и уходит при следующем запуске (не дольше суток).
+- Без дублей: посты, вышедшие до включения дублирования, в ВК не трогаем (даже если их правят);
+  перед публикацией сверяемся с последними записями стены — если такой текст уже выложили
+  вручную, второй раз не публикуем, а ручную запись бот потом не правит и не удаляет.
 
 Связь «пост в Telegram → запись в ВК» хранится в scripts/vk_posts.json (только номера, без ключей).
 
@@ -24,6 +27,7 @@
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 import urllib.parse
@@ -176,12 +180,39 @@ def publish(it, rec, url, get_file):
             "ids": sorted(set(it["ids"]) | set((rec or {}).get("ids") or []))}
 
 
+def norm(text):
+    """Текст для сравнения с записями на стене: без тегов, ссылок, знаков и регистра."""
+    t = re.sub(r"#\w+|https?://\S+|t\.me/\S+", " ", (text or "").lower().replace("ё", "е"))
+    return re.sub(r"[^\w]+", "", t)
+
+
+def find_on_wall(text):
+    """Такая запись уже есть на стене (выложили вручную)? Сравниваем с последними 50 записями.
+    Стена недоступна ключу — не проверяем (лучше опубликовать, чем потерять пост)."""
+    want = norm(text)
+    if len(want) < 20:
+        return None
+    try:
+        wall = vk_call(os.environ["VK_TOKEN"], "wall.get", {"owner_id": f"-{group_id()}", "count": 50})
+    except Exception as e:
+        print(f"ВК: стену проверить не получилось ({e})", file=sys.stderr)
+        return None
+    for w in wall.get("items", []):
+        have = norm(w.get("text") or "".join(c.get("text") or "" for c in w.get("copy_history") or []))
+        if len(have) >= 20 and (want[:150] in have or have[:150] in want):
+            return w["id"]
+    return None
+
+
 def crosspost(posts, tag_re, get_file, channel_name, now=None):
     """posts — [(post, edited)] из getUpdates. Возвращает True, если что-то поменялось в ВК."""
     if not enabled():
         return False
     now = now or time.time()
     state = load_state()
+    # посты, вышедшие до включения дублирования, в ВК не трогаем: их могли выложить туда вручную
+    first = "since" not in state
+    state.setdefault("since", int(now) - 15 * 60)   # запас: пост мог выйти за несколько минут до первого запуска
     # в очереди — то, что не ушло в прошлый раз (ВК не отвечал); свежие версии из этого запуска главнее
     fresh = {(p.get("message_id"), p.get("media_group_id")) for p, _ in posts}
     queued = [(q["post"], q["edited"]) for q in state["queue"]
@@ -190,11 +221,15 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
     at = {q["post"].get("message_id"): q["at"] for q in state["queue"]}
     items = collect(all_posts, tag_re)
     by_msg = {str(m): k for k, r in state["posts"].items() for m in r.get("ids", [])}
-    retry, changed = [], False
+    retry, changed = [], first
     for key, it in sorted(items.items(), key=lambda kv: kv[1]["msg"]):
         known = key if key in state["posts"] else by_msg.get(str(it["msg"]))
         rec = state["posts"].get(known) if known else None
         url = f"https://t.me/{channel_name}/{it['msg']}"
+        if not rec and it["edited"] and it["date"] < state["since"]:
+            continue   # пост старше включения дублирования (его правка) — в ВК мог уйти вручную, не трогаем
+        if rec and rec.get("manual"):
+            continue   # запись на стене выложена вручную — бот её не правит и не удаляет
         partial = bool(rec) and key.startswith("g") and not set(rec.get("ids") or []) <= set(it["ids"])
         if partial and not it["text"]:
             continue   # исправили одно фото альбома без подписи — запись в ВК не трогаем
@@ -217,6 +252,12 @@ def crosspost(posts, tag_re, get_file, channel_name, now=None):
                 continue
             if it["edited"] and now - it["date"] > VK_MAX_AGE_DAYS * 86400:
                 print(f"ВК: тег дописали к старому посту — в ВК не публикую ({url})")
+                continue
+            same = find_on_wall(it["text"])
+            if same:
+                state["posts"][key] = {"vk": same, "manual": True, "ids": it["ids"]}
+                changed = True
+                print(f"ВК: такая запись уже есть на стене (выложили вручную) — не дублирую ({url})")
                 continue
             state["posts"][key] = publish(it, None, url, get_file)
             changed = True
