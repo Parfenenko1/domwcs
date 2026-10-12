@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "updated": "2026-10-05T06:59:49.079431+00:00",
-  "week_start": "2026-10-05",
-  "source_sha1": "46397c782ffa30c7e8564b7094dda7fe6a21e887",
+  "updated": "2026-10-12T14:13:05.328989+00:00",
+  "week_start": "2026-10-12",
+  "source_sha1": "310c04becac1abfebd686c5f1877642c29131be2",
   "days": [
     {
       "day": "Пн",
@@ -59,10 +59,9 @@
         },
         {
           "kind": "class",
-          "label": "Лаборатория",
+          "label": "Для всех",
           "time": "20:30",
-          "who": "Аня и Оля",
-          "tag": "Лаборатория"
+          "who": "Даша"
         },
         {
           "kind": "sampo",
@@ -128,6 +127,12 @@
     {
       "day": "Вс",
       "items": [
+        {
+          "kind": "note",
+          "label": "Вечеринка в Доме",
+          "time": "19:00",
+          "hot": true
+        },
         {
           "kind": "sampo",
           "label": "Сампо"
