@@ -83,6 +83,21 @@ def api_call(token, method, params=None):
     return data["result"]
 
 
+def get_updates(token, params, channel_name):
+    """Новые посты канала. Если задан CHANNEL_FEED_URL (адрес CRM), берём их у бота CRM: Telegram не даёт одному боту
+    и вебхук (так работает CRM), и getUpdates — второй бот не нужен. Ответ CRM — такой же, как у getUpdates."""
+    feed = (os.environ.get("CHANNEL_FEED_URL") or "").strip().rstrip("/")
+    if not feed:
+        return api_call(token, "getUpdates", params)
+    q = {"chat": channel_name}
+    if "offset" in params:
+        q["offset"] = params["offset"]
+    data = json.loads(http_get(f"{feed}/api/channel/updates?" + urllib.parse.urlencode(q)))
+    if not data.get("ok"):
+        raise RuntimeError(f"CRM: посты канала не получены: {data}")
+    return data["result"]
+
+
 def read_offset():
     if os.path.exists(OFFSET_FILE):
         with open(OFFSET_FILE, "r", encoding="utf-8") as f:
@@ -368,7 +383,7 @@ def main():
     if offset is not None:
         params["offset"] = offset + 1
 
-    updates = api_call(token, "getUpdates", params)
+    updates = get_updates(token, params, channel_name)
     if updates:
         write_offset(max(u["update_id"] for u in updates))
     else:
