@@ -5,6 +5,7 @@
 Главное — хештег, дописанный после публикации, подхватывается без перепоста.
 """
 import json
+import urllib.parse
 import os
 import shutil
 import sys
@@ -85,6 +86,30 @@ class UpdateContentTest(unittest.TestCase):
     def meta(self):
         p = os.path.join(self.dir, "schedule-meta.json")
         return read(p) if os.path.exists(p) else {}
+
+    def test_posts_from_crm_bot(self):
+        # CHANNEL_FEED_URL: посты берём у бота CRM (тот же ответ, что у getUpdates), getUpdates не вызываем
+        self.tg.push("channel_post", message_id=50, caption="#расписание", photo=[{"file_id": "s50", "file_unique_id": "u50"}])
+        asked = []
+        def feed(url, timeout=30):
+            asked.append(url)
+            q = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+            start = int(q.get("offset", ["0"])[0])
+            return json.dumps({"ok": True, "result": [u for u in self.tg.queue if u["update_id"] >= start]}).encode()
+        uc.http_get = feed
+        real = uc.api_call
+        uc.api_call = lambda token, method, params=None: (_ for _ in ()).throw(AssertionError("getUpdates при CHANNEL_FEED_URL")) if method == "getUpdates" else real(token, method, params)
+        os.environ["CHANNEL_FEED_URL"] = "https://crm.example/"
+        try:
+            self.run_script()
+            self.assertEqual(self.meta().get("file"), "u50")
+            self.assertTrue(asked[0].startswith("https://crm.example/api/channel/updates?chat=domwcs"))
+            self.tg.push("edited_channel_post", message_id=50, caption="#расписание", photo=[{"file_id": "s51", "file_unique_id": "u51"}])
+            self.run_script()
+            self.assertIn("offset=2", asked[-1])
+            self.assertEqual(self.meta().get("file"), "u51")
+        finally:
+            os.environ.pop("CHANNEL_FEED_URL")
 
     def test_vk_gets_tagged_posts(self):
         import vk_crosspost as vk
