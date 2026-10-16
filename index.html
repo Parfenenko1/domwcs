@@ -432,7 +432,7 @@
   /* ---------- pricing (paper) ---------- */
   .intro-prices{display:flex; flex-wrap:wrap; gap:12px; margin:-14px 0 40px;}
   .pill{display:inline-flex; gap:8px; align-items:baseline; padding:10px 16px; border-radius:999px; background:var(--paper-2); font-size:16px;}
-  .pill b{font-weight:400; color:var(--terra-on-paper); font-size:21px; white-space:nowrap;}
+  .pill b{font-weight:400; color:var(--terra-deep); font-size:21px; white-space:nowrap;}
   .pill span{color:var(--ink-dim);}
   .plans{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
   .plan{background:var(--paper-2); border-radius:var(--r); padding:30px 28px 28px; display:flex; flex-direction:column;}
@@ -459,10 +459,10 @@
   .bars .track{height:14px; position:relative;}
   .bars .fill{position:absolute; left:0; top:0; bottom:0; background:var(--terra-on-paper); border-radius:0 4px 4px 0; transition:filter .15s;}
   .bars .val{font-variant-numeric:tabular-nums; text-align:right; font-size:15.5px; color:var(--ink);}
-  .bars li:hover .fill, .bars li:focus-visible .fill{filter:brightness(1.18);}
+  .bars li:hover .fill, .bars li:focus .fill, .bars li:focus-visible .fill{filter:brightness(1.18);}
   .bars li:hover{background:rgba(36,24,18,.05);}
   .bars .tip{position:absolute; left:164px; bottom:calc(100% + 4px); z-index:5; background:var(--ink); color:var(--cream); font-size:14px; line-height:1.4; padding:10px 12px; border-radius:8px; width:max-content; max-width:280px; opacity:0; transform:translateY(4px); pointer-events:none; transition:opacity .15s, transform .15s;}
-  .bars li:hover .tip, .bars li:focus-visible .tip{opacity:1; transform:none;}
+  .bars li:hover .tip, .bars li:focus .tip, .bars li:focus-visible .tip{opacity:1; transform:none;}
   .chart .axis{display:grid; grid-template-columns:150px 1fr 70px; gap:14px; margin-top:6px; font-size:13px; color:var(--ink-faint);}
   .chart .axis span:nth-child(2){display:flex; justify-content:space-between;}
   .all{border-top:1.5px solid var(--ink);}
@@ -896,7 +896,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     <div class="price-lower">
       <figure class="chart" style="margin:0">
         <h3>Сколько стоит час занятий</h3>
-        <p class="sub">Чем длиннее абонемент, тем дешевле час. Наведите на строку — покажем, что входит.</p>
+        <p class="sub">Чем длиннее абонемент, тем дешевле час. Наведите или нажмите на строку — покажем, что входит.</p>
         <ol class="bars" id="bars" aria-label="Цена часа по тарифам, рублей"></ol>
         <div class="axis" aria-hidden="true"><span></span><span id="barsAxis"><span>0</span><span>600</span><span>1 200 ₽</span></span><span></span></div>
       </figure>
