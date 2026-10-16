@@ -11,6 +11,71 @@
       "vk": 233
     }
   },
-  "queue": [],
+  "queue": [
+    {
+      "at": 1792175108.8560474,
+      "edited": false,
+      "post": {
+        "caption": "Пятница! Время вспомнить, что завтра выходной, а это значит, можно танцевать в свое удовольствие и не думать о работе ✨\n\nЗавтра:\n\n14:30 Другие роли с Сашей и Леной 🕺💃 изучаем вторую роль, чтобы лучше понимать любимый танец\n\n16:30 Соло с Аней 🌊 футворки, волны, изоляции — все, чтобы наконец растанцеваться и почувствовать свое тело \n\nВсех ждём кайфовать!\n#новости",
+        "caption_entities": [
+          {
+            "custom_emoji_id": "5391060679564218506",
+            "length": 1,
+            "offset": 118,
+            "type": "custom_emoji"
+          },
+          {
+            "length": 8,
+            "offset": 358,
+            "type": "hashtag"
+          }
+        ],
+        "chat": {
+          "id": -1003288713045,
+          "title": "Дом танца WCS",
+          "type": "channel",
+          "username": "domwcs"
+        },
+        "date": 1792174247,
+        "message_id": 461,
+        "photo": [
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzWrSaKfXPN5OpGWdDb1B3pDA7RMDAAKVI2sbAh2QSspXjJAc3JYlAQADAgADcwADPQQ",
+            "file_size": 1581,
+            "file_unique_id": "AQADlSNrGwIdkEp4",
+            "height": 90,
+            "width": 60
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzWrSaKfXPN5OpGWdDb1B3pDA7RMDAAKVI2sbAh2QSspXjJAc3JYlAQADAgADbQADPQQ",
+            "file_size": 21070,
+            "file_unique_id": "AQADlSNrGwIdkEpy",
+            "height": 320,
+            "width": 213
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzWrSaKfXPN5OpGWdDb1B3pDA7RMDAAKVI2sbAh2QSspXjJAc3JYlAQADAgADeAADPQQ",
+            "file_size": 87499,
+            "file_unique_id": "AQADlSNrGwIdkEp9",
+            "height": 800,
+            "width": 533
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzWrSaKfXPN5OpGWdDb1B3pDA7RMDAAKVI2sbAh2QSspXjJAc3JYlAQADAgADeQADPQQ",
+            "file_size": 114644,
+            "file_unique_id": "AQADlSNrGwIdkEp-",
+            "height": 1280,
+            "width": 853
+          }
+        ],
+        "sender_chat": {
+          "id": -1003288713045,
+          "title": "Дом танца WCS",
+          "type": "channel",
+          "username": "domwcs"
+        }
+      }
+    }
+  ],
   "since": 1791284342
 }
