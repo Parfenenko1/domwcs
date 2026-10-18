@@ -11,13 +11,87 @@
       "vk": 233
     },
     "461": {
-      "vk": null,
-      "manual": true,
       "ids": [
         461
-      ]
+      ],
+      "manual": true,
+      "vk": null
     }
   },
-  "queue": [],
+  "queue": [
+    {
+      "at": 1792317462.1537147,
+      "edited": false,
+      "post": {
+        "caption": "Осень за окном — самое время греться танцами!\n\nЖдём вас на уютную домашнюю вечеринку: сначала Дом будет играть ровный, добрый вест-кост — идеальный старт для новичков, потом микс из общего плейлиста. А ещё у нас новость: первая вечеринка для тех, кто только начинает изучать WCS, — бесплатная!\n\nА дальше вечер разгоняется: \n🎧 С 20:30 — DJ PolliMolly (Полина Герасименко) \n🥂 За настроение в бокалах отвечает Миша\n\n\nПриходите танцевать, знакомиться и просто хорошо проводить время! \n\nВзнос: \n• 500 ₽ — стандартный взнос • 450 ₽ — для тех, кто танцует больше 2 лет \n• 400 ₽ — для тех, кто танцует больше 6 лет \n\nЖдём всех Дома — приходите за музыкой, движением и хорошей компанией! ✨\n\n📍 Мы находимся по адресу ул. Разъезжая 36, вход со двора код #1653\n\n\nУзнать о WCS подробнее и записаться на занятия ты можешь через наш сайт и социальные сети:\nсайт: wcshome.ru\nрабочий ТГ: +7(993)4753064\nВКонтакте: vk.com/wcs_spb\n#новости",
+        "caption_entities": [
+          {
+            "length": 10,
+            "offset": 851,
+            "type": "url"
+          },
+          {
+            "length": 14,
+            "offset": 874,
+            "type": "phone_number"
+          },
+          {
+            "length": 14,
+            "offset": 900,
+            "type": "url"
+          },
+          {
+            "length": 8,
+            "offset": 915,
+            "type": "hashtag"
+          }
+        ],
+        "chat": {
+          "id": -1003288713045,
+          "title": "Дом танца WCS",
+          "type": "channel",
+          "username": "domwcs"
+        },
+        "date": 1792315866,
+        "message_id": 462,
+        "photo": [
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADcwADPQQ",
+            "file_size": 1622,
+            "file_unique_id": "AQADjxlrG_TeoUp4",
+            "height": 90,
+            "width": 58
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADbQADPQQ",
+            "file_size": 19896,
+            "file_unique_id": "AQADjxlrG_TeoUpy",
+            "height": 320,
+            "width": 207
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADeAADPQQ",
+            "file_size": 77764,
+            "file_unique_id": "AQADjxlrG_TeoUp9",
+            "height": 800,
+            "width": 517
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADeQADPQQ",
+            "file_size": 105175,
+            "file_unique_id": "AQADjxlrG_TeoUp-",
+            "height": 1280,
+            "width": 828
+          }
+        ],
+        "sender_chat": {
+          "id": -1003288713045,
+          "title": "Дом танца WCS",
+          "type": "channel",
+          "username": "domwcs"
+        }
+      }
+    }
+  ],
   "since": 1791284342
 }
