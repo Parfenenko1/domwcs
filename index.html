@@ -1475,7 +1475,10 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   var img = document.getElementById('schedule-image');
   img.addEventListener('error', function () { document.getElementById('posterBtn').style.display = 'none'; document.getElementById('schedule-fallback').style.display = 'block'; });
   getJSON('schedule-meta.json').then(function (m) {
-    if (!m || !m.updated) return; var d = new Date(m.updated); if (isNaN(d)) return;
+    if (!m || !m.updated) return;
+    // адрес картинки всегда schedule.jpg — без метки браузер днями показывает старую из кэша
+    document.querySelectorAll('img[src="schedule.jpg"]').forEach(function (el) { el.src = 'schedule.jpg?v=' + encodeURIComponent(m.updated); });
+    var d = new Date(m.updated); if (isNaN(d)) return;
     document.getElementById('schedule-updated').textContent = 'Обновлено ' + d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) + ' в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   }).catch(function () {});
 
