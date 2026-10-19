@@ -54,29 +54,38 @@
           "username": "domwcs"
         },
         "date": 1792393399,
-        "document": {
-          "file_id": "BQACAgIAAyEFAATEBcdVAAIBz2rWM1rv8v2RtCHH2bwgid-szm6qAALAoQACJdWxSrUTs2qO0W6cPQQ",
-          "file_name": "file.png",
-          "file_size": 1774380,
-          "file_unique_id": "AgADwKEAAiXVsUo",
-          "mime_type": "image/png",
-          "thumb": {
-            "file_id": "AAMCAgADIQUABMQFx1UAAgHPatYzWu_y_ZG0IcfZvCCJ36zObqoAAsChAAIl1bFKtROzao7RbpwBAAdtAAM9BA",
-            "file_size": 17970,
-            "file_unique_id": "AQADwKEAAiXVsUpy",
+        "edit_date": 1792422799,
+        "message_id": 463,
+        "photo": [
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rWM497s6tR3FFixXSzowbq1fA8AALyIGsbJdWxSlf5KLIgtnh8AQADAgADcwADPQQ",
+            "file_size": 1316,
+            "file_unique_id": "AQAD8iBrGyXVsUp4",
+            "height": 63,
+            "width": 90
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rWM497s6tR3FFixXSzowbq1fA8AALyIGsbJdWxSlf5KLIgtnh8AQADAgADbQADPQQ",
+            "file_size": 20641,
+            "file_unique_id": "AQAD8iBrGyXVsUpy",
             "height": 225,
             "width": 320
           },
-          "thumbnail": {
-            "file_id": "AAMCAgADIQUABMQFx1UAAgHPatYzWu_y_ZG0IcfZvCCJ36zObqoAAsChAAIl1bFKtROzao7RbpwBAAdtAAM9BA",
-            "file_size": 17970,
-            "file_unique_id": "AQADwKEAAiXVsUpy",
-            "height": 225,
-            "width": 320
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rWM497s6tR3FFixXSzowbq1fA8AALyIGsbJdWxSlf5KLIgtnh8AQADAgADeAADPQQ",
+            "file_size": 84943,
+            "file_unique_id": "AQAD8iBrGyXVsUp9",
+            "height": 562,
+            "width": 800
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rWM497s6tR3FFixXSzowbq1fA8AALyIGsbJdWxSlf5KLIgtnh8AQADAgADeQADPQQ",
+            "file_size": 154292,
+            "file_unique_id": "AQAD8iBrGyXVsUp-",
+            "height": 900,
+            "width": 1280
           }
-        },
-        "edit_date": 1792422746,
-        "message_id": 463,
+        ],
         "sender_chat": {
           "id": -1003288713045,
           "title": "Дом танца WCS",

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "updated": "2026-10-19T11:57:31.918642+00:00",
+  "updated": "2026-10-19T15:14:14.901429+00:00",
   "week_start": "2026-10-19",
-  "source_sha1": "e1b309a80322d1df6fb57e2ffaca353d51dba650",
+  "source_sha1": "ddccaaee423999eb7c5920d2b37c80e2bcb7de7f",
   "days": [
     {
       "day": "Пн",
@@ -125,14 +125,6 @@
     {
       "day": "Вс",
       "items": [
-        {
-          "kind": "class",
-          "label": "Группа с нуля",
-          "time": "12:00",
-          "who": "Даша и Вова",
-          "new": true,
-          "hot": true
-        },
         {
           "kind": "class",
           "label": "Коллективка",
