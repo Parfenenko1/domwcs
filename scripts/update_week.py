@@ -21,6 +21,10 @@
 Слова «с нуля», «новая», «набор», «для начинающих» в подписи = группа открыта
 для новичков: сайт покажет её в плашке «Ближайшая новая группа» и в записи.
 
+Если генератор картинки положил данные недели в weeks/ГГГГ-ММ-ДД.json (неделя
+определяется по датам на ленточках), группы и преподаватели берутся из них
+точно, а распознавание текста карточек не используется.
+
 Если распознать уверенно не вышло — файлы не трогаются, сайт показывает
 прошлые данные или обычную неделю.
 
@@ -46,6 +50,7 @@ SCHEDULE_IMAGE = os.path.join(REPO_ROOT, "schedule.jpg")
 SCHEDULE_META = os.path.join(REPO_ROOT, "schedule-meta.json")
 WEEK_FILE = os.path.join(REPO_ROOT, "week.json")
 GROUPS_FILE = os.path.join(REPO_ROOT, "groups.json")
+WEEKS_DIR = os.path.join(REPO_ROOT, "weeks")       # точные данные недели от генератора картинки (ГГГГ-ММ-ДД.json)
 FORMAT_VERSION = 2
 
 # ---------------------------------------------------------------------------
@@ -184,7 +189,10 @@ def canon_who(raw):
     comp = compact(raw)
     if not comp:
         return ""
+    pair = re.search(r"\sи\s|[а-яё]и[А-ЯЁ]", raw)
     for short, groups in TEACHERS:
+        if pair and len(groups) == 1:                  # «Даша и Вова» — не одна Даша
+            continue
         if all(any(contains_name(comp, alt) for alt in alts) for alts in groups):
             return short
     for short, groups in TEACHERS:                     # «Аня и Опа»: одно имя точно, второе почти
@@ -634,6 +642,35 @@ def parse_card(card):
     return item
 
 
+def days_from_source(src):
+    """Данные генератора картинки (weeks/ГГГГ-ММ-ДД.json) → то же, что дал бы parse_image, но без ошибок распознавания.
+    Каждый слот превращаем в «строки карточки» с точным текстом и разбираем тем же parse_card."""
+    import html
+    def clean(t):
+        return re.sub(r"\s+", " ", html.unescape(re.sub(r"<br\s*/?>", " ", t or ""))).strip()
+    days = []
+    for d in src["days"]:
+        items = []
+        for s in d["slots"]:
+            if s["kind"] == "sampo":
+                items.append({"kind": "sampo", "label": "Сампо"})
+                continue
+            kind = "party" if s.get("foot") == "disco" else "text"
+            lines = [(s["time"], "text")] if s.get("time") else []
+            if s.get("tag"):
+                lines.append((s["tag"], "tag"))
+            lines += [(clean(t), kind) for t in (s.get("lines") or [s.get("title")]) if clean(t)]
+            if s.get("sub"):
+                lines.append((clean(s["sub"]), "text"))
+            item = parse_card([{"text": t, "src": k, "conf": 99} for t, k in lines])
+            if item and s.get("tag"):
+                item["tag"] = item["label"] = clean(s["tag"])
+            if item:
+                items.append({k: v for k, v in item.items() if v not in (None, "")})
+        days.append(items)
+    return days
+
+
 def read_dates(img):
     """С ленточек под названиями дней: [(числа, месяц или None)] × 7."""
     out = []
@@ -843,13 +880,18 @@ def main():
         return
 
     img, days = parse_image(args.image)
+    week_start, score = pick_week_start(read_dates(img), posted_date(SCHEDULE_META, args.posted))
+    # shortcut: файл недели ищется только при новой картинке; добавили его позже — запускать с --force
+    src = load_json(os.path.join(WEEKS_DIR, f"{week_start:%Y-%m-%d}.json"))
+    if src:
+        days = days_from_source(src)
+        print(f"Группы и преподаватели — из weeks/{week_start:%Y-%m-%d}.json (данные генератора картинки)")
     problems = validate(days)
     if problems:
         print("Не уверен в распознавании (" + "; ".join(problems) + ") — week.json не трогаю.")
         for i, d in enumerate(days):
             print(" ", DAY_SHORT[i], d)
         sys.exit(1)
-    week_start, score = pick_week_start(read_dates(img), posted_date(SCHEDULE_META, args.posted))
     week = to_week_json(days, week_start, sha1)
     with open(week_path, "w", encoding="utf-8") as f:
         json.dump(week, f, ensure_ascii=False, indent=2)

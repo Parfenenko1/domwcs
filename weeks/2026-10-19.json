@@ -1,0 +1,161 @@
+{
+  "month": "октябрь",
+  "days": [
+    {
+      "name": "ПОНЕДЕЛЬНИК",
+      "date": "19 октября",
+      "date_color": "orange",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Аня и Оля",
+          "sub": "(1,5 часа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Олег и Женя",
+          "sub": "(1,5 часа)"
+        }
+      ]
+    },
+    {
+      "name": "ВТОРНИК",
+      "date": "20 октября",
+      "date_color": "green",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, старшая группа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, младшая группа)"
+        }
+      ]
+    },
+    {
+      "name": "СРЕДА",
+      "date": "21 октября",
+      "date_color": "orange",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "WCS Switch",
+          "sub": "Дарья Комкина · (1,5 часа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Общая группа",
+          "sub": "Лена · (1,5&nbsp;часа,&nbsp;для&nbsp;всех)"
+        }
+      ]
+    },
+    {
+      "name": "ЧЕТВЕРГ",
+      "date": "22 октября",
+      "date_color": "green",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, младшая группа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, старшая группа)"
+        }
+      ]
+    },
+    {
+      "name": "ПЯТНИЦА",
+      "date": "23 октября",
+      "date_color": "orange",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "note",
+          "time": "19.30",
+          "title": "Закрыт<br>на мероприятие",
+          "foot": "bunting"
+        }
+      ]
+    },
+    {
+      "name": "СУББОТА",
+      "date": "24 октября",
+      "date_color": "green",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "class",
+          "time": "14.30",
+          "title": "Другие роли",
+          "sub": "(1,5 часа)"
+        },
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "note",
+          "time": "17.00",
+          "title": "Закрыт<br>на мероприятие",
+          "foot": "bunting"
+        }
+      ]
+    },
+    {
+      "name": "ВОСКРЕСЕНЬЕ",
+      "date": "25 октября",
+      "date_color": "orange",
+      "month_num": 10,
+      "slots": [
+        {
+          "kind": "class",
+          "time": "12.00",
+          "title": "Даша и Вова",
+          "sub": "(3&nbsp;часа, группа с&nbsp;нуля)"
+        },
+        {
+          "kind": "class",
+          "time": "16.00",
+          "tag": "Коллективка",
+          "title": "Новис-коллективка под&nbsp;присмотром",
+          "sub": "Лена Логашина · (2&nbsp;часа)"
+        },
+        {
+          "kind": "sampo"
+        }
+      ]
+    }
+  ]
+}
