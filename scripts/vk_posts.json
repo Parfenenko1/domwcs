@@ -20,29 +20,30 @@
   },
   "queue": [
     {
-      "at": 1792317462.1537147,
-      "edited": false,
+      "at": 1792409282.9778848,
+      "edited": true,
       "post": {
-        "caption": "Осень за окном — самое время греться танцами!\n\nЖдём вас на уютную домашнюю вечеринку: сначала Дом будет играть ровный, добрый вест-кост — идеальный старт для новичков, потом микс из общего плейлиста. А ещё у нас новость: первая вечеринка для тех, кто только начинает изучать WCS, — бесплатная!\n\nА дальше вечер разгоняется: \n🎧 С 20:30 — DJ PolliMolly (Полина Герасименко) \n🥂 За настроение в бокалах отвечает Миша\n\n\nПриходите танцевать, знакомиться и просто хорошо проводить время! \n\nВзнос: \n• 500 ₽ — стандартный взнос • 450 ₽ — для тех, кто танцует больше 2 лет \n• 400 ₽ — для тех, кто танцует больше 6 лет \n\nЖдём всех Дома — приходите за музыкой, движением и хорошей компанией! ✨\n\n📍 Мы находимся по адресу ул. Разъезжая 36, вход со двора код #1653\n\n\nУзнать о WCS подробнее и записаться на занятия ты можешь через наш сайт и социальные сети:\nсайт: wcshome.ru\nрабочий ТГ: +7(993)4753064\nВКонтакте: vk.com/wcs_spb\n#новости",
+        "author_signature": "Александр Парфененко",
+        "caption": "Листья под ногами шуршат громче музыки — значит, пора на паркет! 🍁\nЖдём всех на занятия!\n\n🍁 Понедельник — Аня и Оля (19:00), Олег и Женя (20:30)\n🍁 Вторник — Саша и Лена: старшая группа (19:00), младшая группа (20:30)\n🍁 Среда — WCS Switch с Дарьей Комкиной (19:00), в 20:30 — общая группа с Леной, приходить могут все желающие!\n🍁 Четверг — Саша и Лена: младшая группа (19:00), старшая группа (20:30)\n🍁 Пятница — сампо, с 19:30 зал закрыт на мероприятие\n🍁 Суббота — «Другие роли» (14:30), потом сампо, с 17:00 зал закрыт на мероприятие\n🍁 Воскресенье — Даша и Вова: группа с нуля (12:00), набор открыт! В 16:00 — новис-коллективка под присмотром Лены Логашиной, потом сампо\n\nМы находимся по адресу\nул. Разъезжая 36\nкод #1653\n\nУзнать о WCS подробнее и записаться на занятия ты можешь через наш сайт и социальные сети:\n• сайт: wcshome.ru\n• рабочий ТГ: +7(993)4753064\n• ВКонтакте: vk.com/wcs_spb\n\n#расписание",
         "caption_entities": [
           {
             "length": 10,
-            "offset": 851,
+            "offset": 830,
             "type": "url"
           },
           {
             "length": 14,
-            "offset": 874,
+            "offset": 855,
             "type": "phone_number"
           },
           {
             "length": 14,
-            "offset": 900,
+            "offset": 883,
             "type": "url"
           },
           {
-            "length": 8,
-            "offset": 915,
+            "length": 11,
+            "offset": 899,
             "type": "hashtag"
           }
         ],
@@ -52,36 +53,37 @@
           "type": "channel",
           "username": "domwcs"
         },
-        "date": 1792315866,
-        "message_id": 462,
+        "date": 1792393399,
+        "edit_date": 1792408847,
+        "message_id": 463,
         "photo": [
           {
-            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADcwADPQQ",
-            "file_size": 1622,
-            "file_unique_id": "AQADjxlrG_TeoUp4",
-            "height": 90,
-            "width": 58
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rV_Q_s3v0AATBDHfYRl4L4NXSdWQACfR9rGyXVsUq2l7QcOXgSEQEAAwIAA3MAAz0E",
+            "file_size": 1325,
+            "file_unique_id": "AQADfR9rGyXVsUp4",
+            "height": 63,
+            "width": 90
           },
           {
-            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADbQADPQQ",
-            "file_size": 19896,
-            "file_unique_id": "AQADjxlrG_TeoUpy",
-            "height": 320,
-            "width": 207
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rV_Q_s3v0AATBDHfYRl4L4NXSdWQACfR9rGyXVsUq2l7QcOXgSEQEAAwIAA20AAz0E",
+            "file_size": 21198,
+            "file_unique_id": "AQADfR9rGyXVsUpy",
+            "height": 225,
+            "width": 320
           },
           {
-            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADeAADPQQ",
-            "file_size": 77764,
-            "file_unique_id": "AQADjxlrG_TeoUp9",
-            "height": 800,
-            "width": 517
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rV_Q_s3v0AATBDHfYRl4L4NXSdWQACfR9rGyXVsUq2l7QcOXgSEQEAAwIAA3gAAz0E",
+            "file_size": 87096,
+            "file_unique_id": "AQADfR9rGyXVsUp9",
+            "height": 562,
+            "width": 800
           },
           {
-            "file_id": "AgACAgIAAyEFAATEBcdVAAIBzmrUkdpgpr7b5nlXS43LdGXfrT1qAAKPGWsb9N6hSshcpPjjmba9AQADAgADeQADPQQ",
-            "file_size": 105175,
-            "file_unique_id": "AQADjxlrG_TeoUp-",
-            "height": 1280,
-            "width": 828
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIBz2rV_Q_s3v0AATBDHfYRl4L4NXSdWQACfR9rGyXVsUq2l7QcOXgSEQEAAwIAA3kAAz0E",
+            "file_size": 158879,
+            "file_unique_id": "AQADfR9rGyXVsUp-",
+            "height": 900,
+            "width": 1280
           }
         ],
         "sender_chat": {

@@ -1,19 +1,17 @@
 {
   "version": 2,
-  "updated": "2026-10-12T14:13:05.328989+00:00",
-  "week_start": "2026-10-12",
-  "source_sha1": "310c04becac1abfebd686c5f1877642c29131be2",
+  "updated": "2026-10-19T11:28:32.006786+00:00",
+  "week_start": "2026-10-19",
+  "source_sha1": "e1b309a80322d1df6fb57e2ffaca353d51dba650",
   "days": [
     {
       "day": "Пн",
       "items": [
         {
           "kind": "class",
-          "label": "Группа с нуля",
+          "label": "Группа",
           "time": "19:00",
-          "who": "Аня и Оля",
-          "new": true,
-          "hot": true
+          "who": "Аня и Оля"
         },
         {
           "kind": "class",
@@ -61,7 +59,8 @@
           "kind": "class",
           "label": "Для всех",
           "time": "20:30",
-          "who": "Даша"
+          "who": "Лена",
+          "title": "Общая группа"
         },
         {
           "kind": "sampo",
@@ -95,7 +94,7 @@
       "items": [
         {
           "kind": "note",
-          "label": "Закрыт на мероприятие",
+          "label": "Закрыт а еропри е",
           "time": "19:30"
         },
         {
@@ -113,14 +112,12 @@
           "time": "14:30"
         },
         {
-          "kind": "class",
-          "label": "Соло",
-          "time": "16:30",
-          "who": "Аня"
-        },
-        {
           "kind": "sampo",
           "label": "Сампо"
+        },
+        {
+          "kind": "free",
+          "label": "Закрыт | Hа мероприятие"
         }
       ]
     },
@@ -128,10 +125,20 @@
       "day": "Вс",
       "items": [
         {
-          "kind": "note",
-          "label": "Вечеринка в Доме",
-          "time": "19:00",
+          "kind": "class",
+          "label": "З часа, группа с нуля",
+          "time": "12:00",
+          "who": "Даша",
+          "new": true,
           "hot": true
+        },
+        {
+          "kind": "class",
+          "label": "Практика",
+          "time": "16:00",
+          "who": "Лена Логашина",
+          "title": "Новис-коллективка под присмотром",
+          "tag": "Практика"
         },
         {
           "kind": "sampo",
