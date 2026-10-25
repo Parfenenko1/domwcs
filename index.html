@@ -500,17 +500,6 @@
   .channel:hover{background:var(--night-3);}
   .channel .num{font-size:26px; color:var(--cream); padding:0 4px;}
   .channel span{font-size:14.5px; color:var(--cream-dim); line-height:1.25;}
-  /* лента WCS — карусель: раздел не растёт от числа новостей, листается вбок */
-  .feed{display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; padding:2px 2px 12px; scrollbar-width:thin;}
-  .feed-item{flex:0 0 min(86%, 360px); scroll-snap-align:start; display:flex; flex-direction:column; padding:18px 20px; border-radius:var(--r); background:var(--card);}
-  .feed-item time{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-dim);}
-  .feed-item h3{margin:6px 0 8px; font-size:19px; line-height:1.3; color:var(--fg); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
-  .feed-item p{margin:0; height:6em; color:var(--fg-dim); font-size:16px; line-height:1.5; white-space:pre-line; overflow-wrap:anywhere; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
-  .feed-item.open p{display:block; overflow-y:auto; -webkit-line-clamp:unset;}   /* та же высота, текст прокручивается внутри */
-  .feed-item p a{color:var(--accent);}
-  .feed-row{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:auto; padding-top:12px; font-size:13px; letter-spacing:.1em; text-transform:uppercase;}
-  .feed-row a,.feed-row button{color:var(--accent); background:none; border:0; padding:0; font:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; text-decoration:none;}
-  .feed-hint{margin:-4px 0 14px; color:var(--fg-dim); font-size:14px;}
   .posts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;}
   .post{display:grid; grid-template-columns:168px minmax(0,1fr); gap:22px; padding:14px 22px 14px 14px; border-radius:var(--r); background:var(--night-2); text-decoration:none; transition:transform .2s, background .2s;}
   .post:hover{transform:translateY(-3px); background:var(--night-3);}
@@ -956,14 +945,13 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 </section>
 
 <!-- 7b. WCS news: посты канала с #новостиWCS (scripts/update_content.py → news/wcs.json) -->
-<section class="band paper" id="wcs-news" hidden>
+<section class="band night" id="wcs-news" style="padding-top:0" hidden>
   <div class="wrap">
     <div class="head">
       <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Мир вест-коста</p>
       <h2>Новости в мире WCS</h2>
     </div>
-    <p class="feed-hint" id="wcsHint" hidden>Листай вбок →</p>
-    <div class="feed" id="wcsList" role="region" aria-label="Новости в мире WCS" tabindex="0"></div>
+    <div class="posts" id="wcsList"></div>
   </div>
 </section>
 
@@ -1505,8 +1493,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     document.getElementById('schedule-updated').textContent = 'Обновлено ' + d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) + ' в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   }).catch(function () {});
 
-  function renderPosts(list) {
-    var box = document.getElementById('eventsList');
+  function renderPosts(list, boxId) {
+    var box = document.getElementById(boxId || 'eventsList');
     box.innerHTML = list.slice(0, 4).map(function (ev) {
       var url = /^https:\/\/t\.me\//.test(ev.url || '') ? ev.url : 'https://t.me/domwcs';
       var img = /^news\/[\w.-]+$/.test(ev.img || '') ? ev.img : '';
@@ -1528,26 +1516,16 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   var fallbackPosts = [{ day: '·', mon: 'скоро', name: 'Мастер-классы, опены и вечеринки', desc: 'Анонсы выходят в нашем Telegram-канале.' }];
   getJSON('events.json').then(function (e) { renderPosts(e && e.length ? e : fallbackPosts); }).catch(function () { renderPosts(fallbackPosts); });
 
-  // ---------- новости в мире WCS (карусель, до 30) ----------
+  // ---------- новости в мире WCS: посты с #новостиWCS, те же карточки, что у «Новостей Дома» ----------
   var MON_G = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  function linkify(t) { return esc(t).replace(/https:\/\/[^\s<]+[^\s<.,;:!?)»]/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener nofollow">' + u.replace(/^https:\/\//, '').slice(0, 40) + '</a>'; }); }
   getJSON('news/wcs.json').then(function (list) {
     list = (list || []).filter(function (n) { return n && n.title && /^https:\/\/t\.me\//.test(n.url || ''); });
     if (!list.length) return;
-    var box = document.getElementById('wcsList');
     document.getElementById('wcs-news').hidden = false;
-    document.getElementById('wcsHint').hidden = list.length < 2;
-    box.innerHTML = list.map(function (n) {
-      var d = /^(\d{4})-(\d\d)-(\d\d)$/.exec(n.date || '');
-      return '<article class="feed-item">' + (d ? '<time datetime="' + n.date + '">' + (+d[3]) + ' ' + MON_G[+d[2] - 1] + '</time>' : '') +
-        '<h3>' + esc(n.title) + '</h3>' + (n.text ? '<p>' + linkify(n.text) + '</p>' : '') +
-        '<div class="feed-row">' + (n.text && n.text.length > 160 ? '<button type="button" class="feed-open">Читать полностью</button>' : '') +
-        '<a href="' + esc(n.url) + '" target="_blank" rel="noopener">Обсудить в Telegram →</a></div></article>';
-    }).join('');
-    box.addEventListener('click', function (e) {
-      var b = e.target.closest('.feed-open'); if (!b) return;
-      var it = b.closest('.feed-item'); it.classList.toggle('open'); b.textContent = it.classList.contains('open') ? 'Свернуть' : 'Читать полностью';
-    });
+    renderPosts(list.map(function (n) {
+      var d = /^\d{4}-(\d\d)-(\d\d)$/.exec(n.date || '') || [0, 0, 0];
+      return { day: d[2] ? String(+d[2]) : '·', mon: d[1] ? MON_G[+d[1] - 1] : '', name: n.title, desc: String(n.text || '').replace(/\s+/g, ' ').slice(0, 160), url: n.url };
+    }), 'wcsList');
   });
 
   // ---------- price per hour (real tariffs) ----------
