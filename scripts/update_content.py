@@ -177,7 +177,7 @@ def update_wcs_news(channel, pages=2):
         if not lines:
             continue
         items[int(msg)] = {"id": int(msg), "url": f"https://t.me/{p['post']}", "date": p["date"],
-                           "title": lines[0][:120], "text": "\n".join(lines[1:])[:900]}
+                           "title": lines[0][:120], "text": "\n".join(lines[1:])[:1500]}  # подборка из нескольких новостей — до ~1200 знаков
     new = sorted(items.values(), key=lambda i: -i["id"])[:MAX_WCS]
     if new == old:
         return False
