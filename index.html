@@ -518,6 +518,8 @@
   .post h3{font-size:19px; line-height:1.32; color:var(--cream); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
   .post p{margin:0; color:var(--cream-faint); font-size:15.5px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
   .post .more{margin-top:auto; padding-top:6px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--terra-on-night);}
+  .post.full{grid-template-columns:1fr; padding:18px 22px;}
+  .post .date{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-dim);}
   .paper .post{background:var(--card);} .paper .post:hover{background:var(--card-2);} .paper .post h3{color:var(--fg);} .paper .post p{color:var(--fg-faint);} .paper .post .more{color:var(--accent);}   /* «Новости в мире WCS» на светлом */
   @media (max-width:980px){ .posts{grid-template-columns:1fr;} }
   @media (max-width:560px){
@@ -532,6 +534,7 @@
     .post-body{gap:6px; padding:2px 0 0;}
     .post h3{font-size:17px;}
     .post p{font-size:14.5px; -webkit-line-clamp:2;}
+    .post.full{padding:14px 16px;} .post.full p{-webkit-line-clamp:4;}
     .post .more{font-size:12px;}
   }
 
@@ -1505,6 +1508,9 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
         ? '<figure class="thumb" data-blank="' + esc(blank) + '"><img src="' + esc(img) + '" alt="" loading="lazy" decoding="async">' +
           '<span class="stamp"><b>' + esc(ev.day) + '</b><span>' + esc(mon.slice(0, 3)) + '</span></span></figure>'
         : '<figure class="thumb blank">' + blank + '</figure>';
+      if (ev.full && !img) return '<a class="post full" href="' + esc(url) + '" target="_blank" rel="noopener"><div class="post-body">' +   // нет фото — текст на всю карточку
+        '<span class="date">' + esc(ev.day) + ' ' + esc(mon) + '</span><h3>' + esc(ev.name) + '</h3>' + (ev.desc ? '<p>' + esc(ev.desc) + '</p>' : '') +
+        '<span class="more">Читать в Telegram →</span></div></a>';
       return '<a class="post" href="' + esc(url) + '" target="_blank" rel="noopener">' + thumb +
         '<div class="post-body"><h3>' + esc(ev.name) + '</h3>' + (ev.desc ? '<p>' + esc(ev.desc) + '</p>' : '') +
         '<span class="more">Читать в Telegram →</span></div></a>';
@@ -1525,7 +1531,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     document.getElementById('wcs-news').hidden = false;
     renderPosts(list.map(function (n) {
       var d = /^\d{4}-(\d\d)-(\d\d)$/.exec(n.date || '') || [0, 0, 0];
-      return { day: d[2] ? String(+d[2]) : '·', mon: d[1] ? MON_G[+d[1] - 1] : '', name: n.title, desc: String(n.text || '').replace(/\s+/g, ' ').slice(0, 160), url: n.url };
+      return { day: d[2] ? String(+d[2]) : '', mon: d[1] ? MON_G[+d[1] - 1] : '', name: n.title, desc: String(n.text || '').replace(/\s+/g, ' ').slice(0, 260), url: n.url, img: n.img, full: true };
     }), 'wcsList');
   });
 

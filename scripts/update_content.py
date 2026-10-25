@@ -167,6 +167,7 @@ def update_wcs_news(channel, pages=2):
     except (OSError, ValueError):
         old = []
     lo = min(ids)
+    prev = {i.get("id"): i for i in old if isinstance(i, dict)}
     items = {i["id"]: i for i in old if i.get("id", 0) < lo}   # старше окна — как были
     for p in posts:
         msg = p["post"].split("/")[-1]
@@ -176,14 +177,25 @@ def update_wcs_news(channel, pages=2):
         lines = [l for l in lines if l]
         if not lines:
             continue
-        items[int(msg)] = {"id": int(msg), "url": f"https://t.me/{p['post']}", "date": p["date"],
-                           "title": lines[0][:120], "text": "\n".join(lines[1:])[:1500]}  # подборка из нескольких новостей — до ~1200 знаков
+        item = {"id": int(msg), "url": f"https://t.me/{p['post']}", "date": p["date"],
+                "title": lines[0][:120], "text": "\n".join(lines[1:])[:1500]}  # подборка из нескольких новостей — до ~1200 знаков
+        if p.get("img"):   # фото как у «Новостей Дома» (backfill_from_public_page); нет — карточка без картинки
+            img = prev.get(int(msg), {}).get("img")
+            if not img:
+                try:
+                    img = save_thumb(http_get(p["img"]), f"wcs-{msg}")
+                except Exception as e:
+                    print(f"Не скачалось фото поста {p['post']}: {e}")
+            if img:
+                item["img"] = img
+        items[int(msg)] = item
     new = sorted(items.values(), key=lambda i: -i["id"])[:MAX_WCS]
     if new == old:
         return False
     os.makedirs(os.path.dirname(WCS_FILE), exist_ok=True)
     with open(WCS_FILE, "w", encoding="utf-8") as f:
         json.dump(new, f, ensure_ascii=False, indent=2)
+    cleanup_thumbs(load_events())   # превью ушедших из ленты постов
     print(f"Лента «Новости в мире WCS» обновлена: {len(new)} шт.")
     return True
 
@@ -234,7 +246,12 @@ def post_media_file_id(post):
 def cleanup_thumbs(events):
     if not os.path.isdir(NEWS_DIR):
         return
-    keep = {os.path.basename(e["img"]) for e in events if e.get("img")}
+    try:
+        with open(WCS_FILE, encoding="utf-8") as f:
+            wcs = json.load(f)
+    except (OSError, ValueError):
+        wcs = []
+    keep = {os.path.basename(e["img"]) for e in events + wcs if isinstance(e, dict) and e.get("img")}
     for fn in os.listdir(NEWS_DIR):
         if fn.endswith(".webp") and fn not in keep:   # в news/ лежит и лента WCS (wcs.json)
             os.remove(os.path.join(NEWS_DIR, fn))

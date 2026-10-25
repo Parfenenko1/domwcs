@@ -206,8 +206,11 @@ class UpdateContentTest(unittest.TestCase):
         def page(*posts):  # как t.me/s: data-post, текст, время
             return "".join(f'<div class="tgme_widget_message_wrap"><div data-post="domwcs/{i}"><div class="tgme_widget_message_text js-message_text">{t}</div>'
                            f'<time datetime="2026-10-{i:02d}T10:00:00+00:00"></time></div></div>' for i, t in posts).encode()
-        pages = [page((12, "Swing &amp; Snow<br>Ранняя цена до 31-го<br>#новостиWCS"), (11, "Вечеринка #новости"), (10, "Судейство WSDC<br>Текст #новостиWCS"))]
-        uc.http_get = lambda url, timeout=30: pages[0] if "before" not in url else b""
+        pages = [page((12, "Swing &amp; Snow<br>Ранняя цена до 31-го<br>#новостиWCS"), (11, "Вечеринка #новости"), (10, "Судейство WSDC<br>Текст #новостиWCS"))
+                 .replace(b'<div data-post="domwcs/12">', b'<div data-post="domwcs/12"><a class="tgme_widget_message_photo_wrap" style="background-image:url(\'https://cdn/p12.jpg\')"></a>')
+                 .replace(b'<div data-post="domwcs/10">', b'<div data-post="domwcs/10"><a class="link_preview_image" style="background-image:url(\'https://cdn/l10.jpg\')"></a>')]
+        uc.http_get = lambda url, timeout=30: b"jpg" if url.startswith("https://cdn/") else pages[0] if "before" not in url else b""
+        uc.save_thumb = lambda raw, name: write(os.path.join(self.dir, f"news/{name}.webp"), raw) or f"news/{name}.webp"
         os.makedirs(os.path.dirname(uc.WCS_FILE), exist_ok=True)
         write(uc.WCS_FILE, json.dumps([{"id": 5, "url": "https://t.me/domwcs/5", "date": "", "title": "Старая", "text": ""}]).encode())
         self.assertTrue(uc.update_wcs_news("@domwcs"))
@@ -215,9 +218,10 @@ class UpdateContentTest(unittest.TestCase):
             feed = json.load(f)
         self.assertEqual([i["id"] for i in feed], [12, 10, 5])   # старше окна — осталась, без тега — нет
         self.assertEqual((feed[0]["title"], feed[0]["text"], feed[0]["date"]), ("Swing & Snow", "Ранняя цена до 31-го", "2026-10-12"))
+        self.assertEqual((feed[0].get("img"), feed[1].get("img"), feed[2].get("img")), ("news/wcs-12.webp", "news/wcs-10.webp", None))
         self.assertFalse(uc.update_wcs_news("@domwcs"))           # без изменений файл не трогаем
-        uc.cleanup_thumbs([])                                     # уборка превью ленту не стирает
-        self.assertTrue(os.path.exists(uc.WCS_FILE))
+        uc.cleanup_thumbs([])                                     # уборка превью не стирает ни ленту, ни её фото
+        self.assertTrue(os.path.exists(uc.WCS_FILE) and os.path.exists(os.path.join(self.dir, "news/wcs-12.webp")))
         pages[0] = page((12, "Swing &amp; Snow<br>#новостиWCS"), (11, "x"), (10, "Судейство WSDC<br>тег убрали"))
         uc.update_wcs_news("@domwcs")
         with open(uc.WCS_FILE, encoding="utf-8") as f:
