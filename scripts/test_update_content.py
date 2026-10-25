@@ -60,7 +60,7 @@ class UpdateContentTest(unittest.TestCase):
         for name, path in [("OFFSET_FILE", "scripts/telegram_offset.txt"), ("SCHEDULE_IMAGE", "schedule.jpg"),
                            ("SCHEDULE_META", "schedule-meta.json"), ("EVENTS_FILE", "events.json"),
                            ("EVENTS_META", "events-meta.json"), ("SUBSCRIBERS_FILE", "subscribers.json"),
-                           ("NEWS_DIR", "news"), ("LOOKUPS_FILE", "scripts/news_lookups.json")]:
+                           ("NEWS_DIR", "news"), ("LOOKUPS_FILE", "scripts/news_lookups.json"), ("WCS_FILE", "wcs-news.json")]:
             setattr(uc, name, os.path.join(self.dir, path))
         uc.REPO_ROOT = self.dir
         self.tg = FakeTelegram()
@@ -106,7 +106,7 @@ class UpdateContentTest(unittest.TestCase):
             self.assertTrue(asked[0].startswith("https://crm.example/api/channel/updates?chat=domwcs"))
             self.tg.push("edited_channel_post", message_id=50, caption="#расписание", photo=[{"file_id": "s51", "file_unique_id": "u51"}])
             self.run_script()
-            self.assertIn("offset=2", asked[-1])
+            self.assertIn("offset=2", [u for u in asked if u.startswith("https://crm.example/")][-1])
             self.assertEqual(self.meta().get("file"), "u51")
         finally:
             os.environ.pop("CHANNEL_FEED_URL")
@@ -201,6 +201,24 @@ class UpdateContentTest(unittest.TestCase):
         self.run_script()
         self.assertNotIn("https://t.me/domwcs/5", [e.get("url") for e in self.events()])
 
+    def test_wcs_news_feed(self):
+        self.assertTrue(uc.NEWS_TAG_RE.search("Вечеринка #Новости.") and not uc.NEWS_TAG_RE.search("Фестиваль #новостиWCS"))
+        def page(*posts):  # как t.me/s: data-post, текст, время
+            return "".join(f'<div class="tgme_widget_message_wrap"><div data-post="domwcs/{i}"><div class="tgme_widget_message_text js-message_text">{t}</div>'
+                           f'<time datetime="2026-10-{i:02d}T10:00:00+00:00"></time></div></div>' for i, t in posts).encode()
+        pages = [page((12, "Swing &amp; Snow<br>Ранняя цена до 31-го<br>#новостиWCS"), (11, "Вечеринка #новости"), (10, "Судейство WSDC<br>Текст #новостиWCS"))]
+        uc.http_get = lambda url, timeout=30: pages[0] if "before" not in url else b""
+        write(uc.WCS_FILE, json.dumps([{"id": 5, "url": "https://t.me/domwcs/5", "date": "", "title": "Старая", "text": ""}]).encode())
+        self.assertTrue(uc.update_wcs_news("@domwcs"))
+        with open(uc.WCS_FILE, encoding="utf-8") as f:
+            feed = json.load(f)
+        self.assertEqual([i["id"] for i in feed], [12, 10, 5])   # старше окна — осталась, без тега — нет
+        self.assertEqual((feed[0]["title"], feed[0]["text"], feed[0]["date"]), ("Swing & Snow", "Ранняя цена до 31-го", "2026-10-12"))
+        self.assertFalse(uc.update_wcs_news("@domwcs"))           # без изменений файл не трогаем
+        pages[0] = page((12, "Swing &amp; Snow<br>#новостиWCS"), (11, "x"), (10, "Судейство WSDC<br>тег убрали"))
+        uc.update_wcs_news("@domwcs")
+        with open(uc.WCS_FILE, encoding="utf-8") as f:
+            self.assertEqual([i["id"] for i in json.load(f)], [12, 5])
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

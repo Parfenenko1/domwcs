@@ -23,7 +23,11 @@
 обновится её карточка; убрали #Новости — карточка уйдёт с сайта. Правка старого
 поста с расписанием не заменит более свежее расписание.
 
-5. Посты с #расписание и #Новости дублируются в группу ВКонтакте (scripts/vk_crosspost.py):
+5. Новости в мире WCS: посты с тегом #новостиWCS (их предлагает Hermes, публикует бот школы по кнопке
+   Александра в Добби) — отдельная лента wcs-news.json, в «Новости Дома» не попадают. Свои посты бот
+   в getUpdates не получает, поэтому ленту берём с публичной страницы t.me/s/<канал>.
+
+6. Посты с #расписание и #Новости дублируются в группу ВКонтакте (scripts/vk_crosspost.py):
    новый пост — запись в ВК, правка — правится и там, тег убрали — запись удаляется.
    Включается секретом VK_TOKEN (ключ сообщества).
 
@@ -47,7 +51,8 @@ from datetime import datetime, timezone
 
 API_BASE = "https://api.telegram.org/bot{token}"
 SCHEDULE_TAG_RE = re.compile(r"#расписание", re.IGNORECASE)
-NEWS_TAG_RE = re.compile(r"#новости", re.IGNORECASE)
+NEWS_TAG_RE = re.compile(r"#новости(?!\w)", re.IGNORECASE)   # не #новостиWCS
+WCS_TAG_RE = re.compile(r"#новостиwcs(?!\w)", re.IGNORECASE)
 VK_TAG_RE = re.compile(r"#(расписание|новости)", re.IGNORECASE)   # что дублируется в ВК
 TIME_RANGE_RE = re.compile(r"\d{1,2}[:.]\d{2}\s*[-–—]\s*\d{1,2}[:.]\d{2}")
 PRICE_RE = re.compile(r"\d[\d\s]{0,6}\s*(₽|руб\.?|рублей)", re.IGNORECASE)
@@ -61,7 +66,9 @@ EVENTS_META = os.path.join(REPO_ROOT, "events-meta.json")
 SUBSCRIBERS_FILE = os.path.join(REPO_ROOT, "subscribers.json")
 NEWS_DIR = os.path.join(REPO_ROOT, "news")
 LOOKUPS_FILE = os.path.join(REPO_ROOT, "scripts", "news_lookups.json")   # служебный, на сайт не влияет
+WCS_FILE = os.path.join(REPO_ROOT, "wcs-news.json")
 MAX_EVENTS = 6
+MAX_WCS = 30
 THUMB_SHORT_SIDE = 450      # превью: короткая сторона в пикселях (хватает для экранов ×2)
 THUMB_LONG_MAX = 900
 USER_AGENT = "Mozilla/5.0 (compatible; domwcs-site-bot/1.0; +https://domwcs.netlify.app)"
@@ -130,6 +137,54 @@ def telegram_file(token, file_id):
 def download_file(token, file_id, dest_path):
     with open(dest_path, "wb") as f:
         f.write(telegram_file(token, file_id))
+
+
+def fetch_channel_pages(channel, pages):
+    name, posts, url = channel.lstrip("@"), [], f"https://t.me/s/{channel.lstrip('@')}"
+    for _ in range(pages):
+        chunk = parse_channel_page(http_get(url).decode("utf-8", "replace"))
+        if not chunk:
+            break
+        posts += chunk
+        url = f"https://t.me/s/{name}?before={min(int(p['post'].split('/')[-1]) for p in chunk if p['post'].split('/')[-1].isdigit())}"
+    return posts
+
+
+def update_wcs_news(channel, pages=2):
+    """Лента «Новости в мире WCS» из постов с #новостиWCS на публичной странице канала.
+    Пост исправили — обновится; убрали тег или удалили пост (в просмотренном окне) — уйдёт из ленты."""
+    try:
+        posts = fetch_channel_pages(channel, pages)
+    except Exception as e:
+        print(f"Публичная страница канала недоступна ({e}) — лента WCS не обновлена.")
+        return False
+    ids = [int(p["post"].split("/")[-1]) for p in posts if p["post"].split("/")[-1].isdigit()]
+    if not ids:
+        return False
+    try:
+        with open(WCS_FILE, encoding="utf-8") as f:
+            old = json.load(f)
+    except (OSError, ValueError):
+        old = []
+    lo = min(ids)
+    items = {i["id"]: i for i in old if i.get("id", 0) < lo}   # старше окна — как были
+    for p in posts:
+        msg = p["post"].split("/")[-1]
+        if not msg.isdigit() or not WCS_TAG_RE.search(p["text"]):
+            continue
+        lines = [strip_hashtags(l) for l in p["text"].splitlines()]
+        lines = [l for l in lines if l]
+        if not lines:
+            continue
+        items[int(msg)] = {"id": int(msg), "url": f"https://t.me/{p['post']}", "date": p["date"],
+                           "title": lines[0][:120], "text": "\n".join(lines[1:])[:900]}
+    new = sorted(items.values(), key=lambda i: -i["id"])[:MAX_WCS]
+    if new == old:
+        return False
+    with open(WCS_FILE, "w", encoding="utf-8") as f:
+        json.dump(new, f, ensure_ascii=False, indent=2)
+    print(f"Лента «Новости в мире WCS» обновлена: {len(new)} шт.")
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +263,8 @@ def parse_channel_page(page):
             if mm:
                 img = mm.group(1)
                 break
-        posts.append({"post": post_id, "text": text, "img": img})
+        t = re.search(r'<time[^>]*datetime="([^"]+)"', body)
+        posts.append({"post": post_id, "text": text, "img": img, "date": t.group(1)[:10] if t else ""})
     return posts
 
 
@@ -501,6 +557,8 @@ def main():
     if changed:
         save_events(events)
         print(f"Новости обновлены: {EVENTS_FILE}")
+
+    update_wcs_news(channel)
 
     # те же посты (#расписание и #Новости) — в группу ВКонтакте; сбой ВК сайту не мешает
     try:

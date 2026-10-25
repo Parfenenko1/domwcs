@@ -500,6 +500,16 @@
   .channel:hover{background:var(--night-3);}
   .channel .num{font-size:26px; color:var(--cream); padding:0 4px;}
   .channel span{font-size:14.5px; color:var(--cream-dim); line-height:1.25;}
+  .feed{display:grid; gap:14px; max-width:760px;}
+  .feed-item{padding:18px 20px; border-radius:var(--r); background:var(--card);}
+  .feed-item time{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-dim);}
+  .feed-item h3{margin:6px 0 8px; font-size:20px; line-height:1.3; color:var(--fg);}
+  .feed-item p{margin:0; color:var(--fg-dim); font-size:16px; line-height:1.5; white-space:pre-line; overflow-wrap:anywhere;}
+  .feed-item:not(.open) p{display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
+  .feed-item p a{color:var(--accent);}
+  .feed-row{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:12px; font-size:13px; letter-spacing:.1em; text-transform:uppercase;}
+  .feed-row a,.feed-row button{color:var(--accent); background:none; border:0; padding:0; font:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; text-decoration:none;}
+  .feed-more{margin-top:18px; border:1.5px solid var(--rule); background:none; color:var(--fg); border-radius:999px; padding:11px 22px; font:inherit; font-size:15px; cursor:pointer;}
   .posts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;}
   .post{display:grid; grid-template-columns:168px minmax(0,1fr); gap:22px; padding:14px 22px 14px 14px; border-radius:var(--r); background:var(--night-2); text-decoration:none; transition:transform .2s, background .2s;}
   .post:hover{transform:translateY(-3px); background:var(--night-3);}
@@ -941,6 +951,18 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       <a class="channel" href="https://t.me/domwcs" target="_blank" rel="noopener"><span class="num" id="subscriberCount2">478</span><span>подписчиков<br>в канале @domwcs →</span></a>
     </div>
     <div class="posts" id="eventsList"></div>
+  </div>
+</section>
+
+<!-- 7b. WCS news: посты канала с #новостиWCS (scripts/update_content.py → wcs-news.json) -->
+<section class="band paper" id="wcs-news" hidden>
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Мир вест-коста</p>
+      <h2>Новости в мире WCS</h2>
+    </div>
+    <div class="feed" id="wcsList"></div>
+    <button class="feed-more" id="wcsMore" type="button" hidden>Показать ещё</button>
   </div>
 </section>
 
@@ -1504,6 +1526,31 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   }
   var fallbackPosts = [{ day: '·', mon: 'скоро', name: 'Мастер-классы, опены и вечеринки', desc: 'Анонсы выходят в нашем Telegram-канале.' }];
   getJSON('events.json').then(function (e) { renderPosts(e && e.length ? e : fallbackPosts); }).catch(function () { renderPosts(fallbackPosts); });
+
+  // ---------- новости в мире WCS (лента, по 5) ----------
+  var MON_G = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  function linkify(t) { return esc(t).replace(/https:\/\/[^\s<]+[^\s<.,;:!?)»]/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener nofollow">' + u.replace(/^https:\/\//, '').slice(0, 40) + '</a>'; }); }
+  getJSON('wcs-news.json').then(function (list) {
+    list = (list || []).filter(function (n) { return n && n.title && /^https:\/\/t\.me\//.test(n.url || ''); });
+    if (!list.length) return;
+    var box = document.getElementById('wcsList'), more = document.getElementById('wcsMore'), shown = 0;
+    document.getElementById('wcs-news').hidden = false;
+    function add() {
+      box.insertAdjacentHTML('beforeend', list.slice(shown, shown + 5).map(function (n) {
+        var d = /^(\d{4})-(\d\d)-(\d\d)$/.exec(n.date || '');
+        return '<article class="feed-item">' + (d ? '<time datetime="' + n.date + '">' + (+d[3]) + ' ' + MON_G[+d[2] - 1] + '</time>' : '') +
+          '<h3>' + esc(n.title) + '</h3>' + (n.text ? '<p>' + linkify(n.text) + '</p>' : '') +
+          '<div class="feed-row">' + (n.text && n.text.length > 220 ? '<button type="button" class="feed-open">Читать полностью</button>' : '') +
+          '<a href="' + esc(n.url) + '" target="_blank" rel="noopener">Обсудить в Telegram →</a></div></article>';
+      }).join(''));
+      shown += 5; more.hidden = shown >= list.length;
+    }
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('.feed-open'); if (!b) return;
+      var it = b.closest('.feed-item'); it.classList.toggle('open'); b.textContent = it.classList.contains('open') ? 'Свернуть' : 'Читать полностью';
+    });
+    more.addEventListener('click', add); add();
+  });
 
   // ---------- price per hour (real tariffs) ----------
   var PER_HOUR = [
