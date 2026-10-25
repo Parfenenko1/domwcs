@@ -518,6 +518,7 @@
   .post h3{font-size:19px; line-height:1.32; color:var(--cream); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
   .post p{margin:0; color:var(--cream-faint); font-size:15.5px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
   .post .more{margin-top:auto; padding-top:6px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--terra-on-night);}
+  .paper .post{background:var(--card);} .paper .post:hover{background:var(--card-2);} .paper .post h3{color:var(--fg);} .paper .post p{color:var(--fg-faint);} .paper .post .more{color:var(--accent);}   /* «Новости в мире WCS» на светлом */
   @media (max-width:980px){ .posts{grid-template-columns:1fr;} }
   @media (max-width:560px){
     .post{grid-template-columns:104px minmax(0,1fr); gap:14px; padding:12px 14px 12px 12px;}
@@ -945,7 +946,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 </section>
 
 <!-- 7b. WCS news: посты канала с #новостиWCS (scripts/update_content.py → news/wcs.json) -->
-<section class="band night" id="wcs-news" style="padding-top:0" hidden>
+<section class="band paper" id="wcs-news" hidden>
   <div class="wrap">
     <div class="head">
       <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Мир вест-коста</p>
