@@ -954,7 +954,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   </div>
 </section>
 
-<!-- 7b. WCS news: посты канала с #новостиWCS (scripts/update_content.py → wcs-news.json) -->
+<!-- 7b. WCS news: посты канала с #новостиWCS (scripts/update_content.py → news/wcs.json) -->
 <section class="band paper" id="wcs-news" hidden>
   <div class="wrap">
     <div class="head">
@@ -1530,7 +1530,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   // ---------- новости в мире WCS (лента, по 5) ----------
   var MON_G = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   function linkify(t) { return esc(t).replace(/https:\/\/[^\s<]+[^\s<.,;:!?)»]/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener nofollow">' + u.replace(/^https:\/\//, '').slice(0, 40) + '</a>'; }); }
-  getJSON('wcs-news.json').then(function (list) {
+  getJSON('news/wcs.json').then(function (list) {
     list = (list || []).filter(function (n) { return n && n.title && /^https:\/\/t\.me\//.test(n.url || ''); });
     if (!list.length) return;
     var box = document.getElementById('wcsList'), more = document.getElementById('wcsMore'), shown = 0;

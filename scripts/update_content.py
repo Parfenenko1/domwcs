@@ -24,7 +24,7 @@
 поста с расписанием не заменит более свежее расписание.
 
 5. Новости в мире WCS: посты с тегом #новостиWCS (их предлагает Hermes, публикует бот школы по кнопке
-   Александра в Добби) — отдельная лента wcs-news.json, в «Новости Дома» не попадают. Свои посты бот
+   Александра в Добби) — отдельная лента news/wcs.json, в «Новости Дома» не попадают. Свои посты бот
    в getUpdates не получает, поэтому ленту берём с публичной страницы t.me/s/<канал>.
 
 6. Посты с #расписание и #Новости дублируются в группу ВКонтакте (scripts/vk_crosspost.py):
@@ -66,7 +66,7 @@ EVENTS_META = os.path.join(REPO_ROOT, "events-meta.json")
 SUBSCRIBERS_FILE = os.path.join(REPO_ROOT, "subscribers.json")
 NEWS_DIR = os.path.join(REPO_ROOT, "news")
 LOOKUPS_FILE = os.path.join(REPO_ROOT, "scripts", "news_lookups.json")   # служебный, на сайт не влияет
-WCS_FILE = os.path.join(REPO_ROOT, "wcs-news.json")
+WCS_FILE = os.path.join(REPO_ROOT, "news", "wcs.json")   # в news/: её воркфлоу коммитит целиком (сам воркфлоу ключом сервера не поправить)
 MAX_EVENTS = 6
 MAX_WCS = 30
 THUMB_SHORT_SIDE = 450      # превью: короткая сторона в пикселях (хватает для экранов ×2)
@@ -181,6 +181,7 @@ def update_wcs_news(channel, pages=2):
     new = sorted(items.values(), key=lambda i: -i["id"])[:MAX_WCS]
     if new == old:
         return False
+    os.makedirs(os.path.dirname(WCS_FILE), exist_ok=True)
     with open(WCS_FILE, "w", encoding="utf-8") as f:
         json.dump(new, f, ensure_ascii=False, indent=2)
     print(f"Лента «Новости в мире WCS» обновлена: {len(new)} шт.")
@@ -235,7 +236,7 @@ def cleanup_thumbs(events):
         return
     keep = {os.path.basename(e["img"]) for e in events if e.get("img")}
     for fn in os.listdir(NEWS_DIR):
-        if fn not in keep:
+        if fn.endswith(".webp") and fn not in keep:   # в news/ лежит и лента WCS (wcs.json)
             os.remove(os.path.join(NEWS_DIR, fn))
             print(f"Удалено старое превью: news/{fn}")
 
