@@ -18,6 +18,88 @@
       "vk": null
     }
   },
-  "queue": [],
+  "queue": [
+    {
+      "at": 1793001731.9464178,
+      "edited": false,
+      "post": {
+        "author_signature": "Александр Парфененко",
+        "caption": "Октябрь передаёт ключи ноябрю — а мы продолжаем танцевать 🍁\nЖдём всех на занятия!\n\n🍁 Понедельник — группу Ани и Оли на этой неделе ведут Саша и Женя (19:00), Олег и Женя (20:30)\n🍁 Вторник — Саша и Лена: старшая группа (19:00), младшая группа (20:30)\n🍁 Среда — WCS Switch с Дашей (19:00), а в 20:30 — общая группа с Дашей, приходить могут все желающие\n🍁 Четверг — Саша и Лена: младшая группа (19:00), старшая группа (20:30)\n🍁 Пятница — сампо, с 19:30 зал закрыт на мероприятие\n🍁 Суббота — «Другие роли» с Леной (14:30), «Соло» с Аней (16:30), потом сампо\n🍁 Воскресенье — сампо\n\nК группе Ани и Оли ещё можно присоединиться — напиши администратору, подскажем, как влиться.\n\nМы находимся по адресу\nул. Разъезжая 36\nкод #1653\n\nУзнать о WCS подробнее и записаться на занятия ты можешь через наш сайт и социальные сети:\n• сайт: wcshome.ru\n• рабочий ТГ: +7(993)4753064\n• ВКонтакте: vk.com/wcs_spb\n\n#расписание",
+        "caption_entities": [
+          {
+            "length": 10,
+            "offset": 829,
+            "type": "url"
+          },
+          {
+            "length": 14,
+            "offset": 854,
+            "type": "phone_number"
+          },
+          {
+            "length": 14,
+            "offset": 882,
+            "type": "url"
+          },
+          {
+            "length": 11,
+            "offset": 898,
+            "type": "hashtag"
+          }
+        ],
+        "chat": {
+          "id": -1003288713045,
+          "title": "Дом танца WCS",
+          "type": "channel",
+          "username": "domwcs"
+        },
+        "date": 1793001695,
+        "message_id": 466,
+        "photo": [
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIB0mrfCN8mAAEOfmLN4j2UyhCZ0hCPoQACfhtrGwrt-Eo_x8AiTlw_igEAAwIAA3MAAz0E",
+            "file_size": 1306,
+            "file_unique_id": "AQADfhtrGwrt-Ep4",
+            "height": 63,
+            "width": 90
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIB0mrfCN8mAAEOfmLN4j2UyhCZ0hCPoQACfhtrGwrt-Eo_x8AiTlw_igEAAwIAA20AAz0E",
+            "file_size": 20901,
+            "file_unique_id": "AQADfhtrGwrt-Epy",
+            "height": 225,
+            "width": 320
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIB0mrfCN8mAAEOfmLN4j2UyhCZ0hCPoQACfhtrGwrt-Eo_x8AiTlw_igEAAwIAA3gAAz0E",
+            "file_size": 82482,
+            "file_unique_id": "AQADfhtrGwrt-Ep9",
+            "height": 562,
+            "width": 800
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIB0mrfCN8mAAEOfmLN4j2UyhCZ0hCPoQACfhtrGwrt-Eo_x8AiTlw_igEAAwIAA3kAAz0E",
+            "file_size": 163572,
+            "file_unique_id": "AQADfhtrGwrt-Ep-",
+            "height": 900,
+            "width": 1280
+          },
+          {
+            "file_id": "AgACAgIAAyEFAATEBcdVAAIB0mrfCN8mAAEOfmLN4j2UyhCZ0hCPoQACfhtrGwrt-Eo_x8AiTlw_igEAAwIAA3cAAz0E",
+            "file_size": 424884,
+            "file_unique_id": "AQADfhtrGwrt-Ep8",
+            "height": 1800,
+            "width": 2560
+          }
+        ],
+        "sender_chat": {
+          "id": -1003288713045,
+          "title": "Дом танца WCS",
+          "type": "channel",
+          "username": "domwcs"
+        }
+      }
+    }
+  ],
   "since": 1791284342
 }
