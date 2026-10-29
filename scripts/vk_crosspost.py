@@ -224,6 +224,7 @@ def upload_photos(photos, get_file):
                 out += [f"photo{p['owner_id']}_{p['id']}" for p in saved]
             return out
         except Exception as e:   # пробуем следующий ключ
+            print(f"ВК: фото, ключ {token[:6]}…: {e}", file=sys.stderr)
             last = e
     print(f"ВК: фото не загрузились ({last}) — вместо фото будет ссылка на пост в Telegram", file=sys.stderr)
     return None
@@ -262,6 +263,7 @@ def publish(it, rec, url, get_file):
                 vk_id = vk_call(token, "wall.post", dict(params, from_group=1))["post_id"]
                 break
             except VkError as e:
+                print(f"ВК: wall.post, ключ {token[:6]}…: {e}", file=sys.stderr)
                 last = e
         if vk_id is None:
             raise last
