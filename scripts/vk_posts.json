@@ -18,6 +18,22 @@
       "vk": null
     }
   },
-  "queue": [],
+  "queue": [
+    {
+      "at": 1793275875.3600085,
+      "edited": false,
+      "post": {
+        "caption": "Занятие для всех в среду в 20:30 с Дашей Комкиной!\n\n\nWCS: Поймай настроение 🎶\nБит, паузы, акценты — музыка подскажет больше, чем кажется! \n\nБудем экспериментировать с настроением, искать характер в движении и учиться слышать музыку с первых шагов, чтобы знакомые фигуры зазвучали по-новому, и даже блюз стал понятным и увлекательным 😉\n\n#новости",
+        "date": 1793275875,
+        "message_id": 469,
+        "photo": [
+          {
+            "file_id": "https://cdn4.telesco.pe/file/RxBmp8P4wjgFIWeSUUIs8oQNZydtB-nc8Az4UWDkxrC7cC_XV_dVbIxqJcWEVBUCgN9ZvN_PAXnMcc2JwMOkkPw9cwfC5EWUsdQ8XJBRVG1esbI2yvipIGKcWuVPVJdOJ-E024Wm5CduZelSt55pjR6H1334NEaDa7OfHbwza7J24ZIUjK_T9Al2aGcPEZ4Db3lKqaC0d7_SXkVNa48FUrSkqIjmi-9fufPlzJlCsYFrM4lLzMeKpDph9Ntg_KZv5bMT_r2PNuS8udzrr-waLxH4REwhxQUPKtblUkO5RLMTLi35lSaEh4R3nr3F83aFNewP--Nl4Mnol1aRRwa7aA.jpg",
+            "file_unique_id": "https://cdn4.telesco.pe/file/RxBmp8P4wjgFIWeSUUIs8oQNZydtB-nc8Az4UWDkxrC7cC_XV_dVbIxqJcWEVBUCgN9ZvN_PAXnMcc2JwMOkkPw9cwfC5EWUsdQ8XJBRVG1esbI2yvipIGKcWuVPVJdOJ-E024Wm5CduZelSt55pjR6H1334NEaDa7OfHbwza7J24ZIUjK_T9Al2aGcPEZ4Db3lKqaC0d7_SXkVNa48FUrSkqIjmi-9fufPlzJlCsYFrM4lLzMeKpDph9Ntg_KZv5bMT_r2PNuS8udzrr-waLxH4REwhxQUPKtblUkO5RLMTLi35lSaEh4R3nr3F83aFNewP--Nl4Mnol1aRRwa7aA.jpg"
+          }
+        ]
+      }
+    }
+  ],
   "since": 1791284342
 }
