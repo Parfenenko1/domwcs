@@ -397,7 +397,22 @@ def parse_public(page, channel_name):
     return out
 
 
+def diag():
+    """Run workflow → vk_post: diag — какие простые методы ВК принимают каждый ключ (ответы без ключей)."""
+    print("ВК diag: IP", urllib.request.urlopen("https://api.ipify.org", timeout=15).read().decode())
+    for name, t in (("админ", clean_token(os.environ.get("VK_USER_TOKEN"))), ("сообщество", os.environ.get("VK_TOKEN") or "")):
+        for m, p in (("users.get", {}), ("groups.getById", {}), ("utils.getServerTime", {}), ("wall.get", {"owner_id": f"-{group_id()}", "count": 1})):
+            try:
+                r = "ok"; vk_call(t, m, p)
+            except Exception as e:
+                r = str(e)
+            print(f"ВК diag: ключ {name} ({t[:6]}, {len(t)}) {m}: {r}")
+            time.sleep(4)
+
+
 def backfill(spec, tag_re, channel_name, fetch, now=None):
+    if spec.strip() == "diag":
+        return diag()
     """spec — «сегодня» или номера/ссылки через запятую. Публикует, как обычный новый пост (с проверкой стены)."""
     from datetime import datetime, timedelta, timezone
     now = now or time.time()
