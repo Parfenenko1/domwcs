@@ -47,6 +47,15 @@ MAX_PHOTOS = 10              # больше ВК к записи не прикр
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vk_posts.json")
 
 
+# Ключ администратора (VK_USER_TOKEN) выключен: с 29.10.2026 ВК отвечает на пользовательские ключи ошибкой 9 «Flood control»
+# (и при выпуске через VK ID прав на стену и фото нет). Включить обратно — True, когда появится рабочий ключ.
+USE_ADMIN_KEY = False
+
+
+def admin_key():
+    return clean_token(os.environ.get("VK_USER_TOKEN")) if USE_ADMIN_KEY else ""
+
+
 class VkError(RuntimeError):
     def __init__(self, method, err):
         self.code = (err or {}).get("error_code")
@@ -75,7 +84,7 @@ def clean_token(raw):
 
 def admin_call(method, params):
     """Правка, удаление и чтение стены: ключ сообщества их не умеет — нужен ключ администратора (VK_USER_TOKEN)."""
-    user = clean_token(os.environ.get("VK_USER_TOKEN"))
+    user = admin_key()
     if user:
         try:
             return vk_call(user, method, params)
@@ -105,7 +114,7 @@ def vk_upload(url, filename, raw, field="photo", ctype="image/jpeg"):
 
 def tokens():
     """Ключи по порядку: сначала администратора (умеет всё), потом сообщества (запасной — только новые записи)."""
-    return [t for t in (clean_token(os.environ.get("VK_USER_TOKEN")), os.environ.get("VK_TOKEN")) if t]
+    return [t for t in (admin_key(), os.environ.get("VK_TOKEN")) if t]
 
 
 def load_state():
@@ -193,7 +202,7 @@ TG_FILE_LIMIT = 20 * 1024 * 1024   # больше этого бот Telegram ф�
 
 def upload_video(file_id, size, get_file, title):
     """Видео в видеозаписи группы (ключом администратора). Не вышло — None (будет ссылка на пост)."""
-    user = clean_token(os.environ.get("VK_USER_TOKEN"))
+    user = admin_key()
     if not user or not file_id:
         return None
     if size and size > TG_FILE_LIMIT and not file_id.startswith("http"):
@@ -234,6 +243,7 @@ def publish(it, rec, url, get_file):
     """Создать или исправить запись. rec — что уже есть в ВК по этому посту (или None)."""
     gid = group_id()
     pkey = media_key(it)
+    need_link = False
     if rec and rec.get("photos") == pkey and rec.get("att") is not None:
         att = rec["att"]              # фото и видео не менялись — не загружаем заново
     else:
@@ -249,10 +259,13 @@ def publish(it, rec, url, get_file):
                 att.append(v)
             else:
                 need_link = True
-        if need_link and url:          # что не загрузилось — ссылкой на пост в Telegram (ВК покажет превью)
+        if need_link and url and admin_key():   # что не загрузилось — ссылкой на пост в Telegram (ВК покажет превью)
             att = att[:MAX_PHOTOS - 1] + [url]
         att = att[:MAX_PHOTOS]
-    params = {"owner_id": f"-{gid}", "message": it["text"], "attachments": ",".join(att)}
+    message = it["text"]
+    if need_link and url and not admin_key():
+        message += "\n\n" + url   # ключ сообщества не прикрепляет ссылку-вложение без картинки — ссылка идёт текстом
+    params = {"owner_id": f"-{gid}", "message": message, "attachments": ",".join(att)}
     if rec:
         admin_call("wall.edit", dict(params, post_id=rec["vk"]))
         vk_id = rec["vk"]

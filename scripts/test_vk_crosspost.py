@@ -89,10 +89,20 @@ class VkCrosspostTest(unittest.TestCase):
         vk.vk_call, vk.vk_upload = self.vk.call, self.vk.upload
         os.environ.update(VK_TOKEN="group", VK_GROUP_ID="42")
         os.environ.pop("VK_USER_TOKEN", None)
+        vk.USE_ADMIN_KEY = True   # пути с ключом администратора проверяем; выключенный по умолчанию — в test_admin_key_off
 
     def run_vk(self, *posts, now=NOW):
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             return vk.crosspost(list(posts), TAG, lambda fid: fid.encode(), "domwcs", now=now)
+
+    def test_admin_key_off(self):
+        vk.USE_ADMIN_KEY = False
+        self.vk.group_photos = False   # ключ сообщества фото не загружает (ошибка 27)
+        os.environ["VK_USER_TOKEN"] = "admin"
+        self.run_vk((post(120, "Вечеринка\n#Новости", photo="ph"), False))
+        self.assertEqual(list(self.vk.wall.values()), [("Вечеринка\n#Новости\n\nhttps://t.me/domwcs/120", "")],
+                         "публикует ключ сообщества, фото нет — ссылка на пост в тексте, не вложением")
+        self.assertTrue(all(c[0] == "group" for c in self.vk.calls), "ключ администратора не используется")
 
     def test_off_without_secrets(self):
         os.environ.pop("VK_TOKEN")
@@ -167,7 +177,7 @@ class VkCrosspostTest(unittest.TestCase):
         p = post(90, "Соло с Аней! В эту субботу!\n#Новости")
         p["caption"] = p.pop("text"); p["video"] = {"file_id": "v", "thumbnail": {"file_id": "t"}}
         self.run_vk((p, False))
-        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней! В эту субботу!\n#Новости", "https://t.me/domwcs/90")])
+        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней! В эту субботу!\n#Новости\n\nhttps://t.me/domwcs/90", "")])
 
     def test_backfill_adds_video_link_to_text_only_record(self):
         # запись ушла без видео (как было до правки) — повторная отправка поста добавляет ссылку
@@ -176,7 +186,7 @@ class VkCrosspostTest(unittest.TestCase):
                 '<div class="tgme_widget_message_text js-message_text">Соло с Аней!<br/>#Новости</div><time datetime="2026-09-21T06:00:00+00:00"></time></div>')
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             vk.backfill("91", TAG, "domwcs", lambda url: page.encode(), now=NOW)
-        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней!\n#Новости", "https://t.me/domwcs/91")])
+        self.assertEqual(list(self.vk.wall.values()), [("Соло с Аней!\n#Новости\n\nhttps://t.me/domwcs/91", "")])
 
     def test_edit_needs_admin_key(self):
         self.vk.group_admin = False
@@ -281,7 +291,7 @@ class VkCrosspostTest(unittest.TestCase):
         self.assertEqual(list(self.vk.wall.values())[0][1], "photo-42_1", "ключ сообщества не смог — загрузил ключ администратора")
         os.environ.pop("VK_USER_TOKEN")
         self.run_vk((post(21, "#расписание", photo="b"), False))
-        self.assertEqual(self.vk.wall[102][1], "https://t.me/domwcs/21", "без ключа администратора — ссылка на пост")
+        self.assertEqual(self.vk.wall[102], ("#расписание\n\nhttps://t.me/domwcs/21", ""), "без ключа администратора — ссылка на пост в тексте")
 
     def test_vk_down_retried_next_run(self):
         self.vk.down = True
