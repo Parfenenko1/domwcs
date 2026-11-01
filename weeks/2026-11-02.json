@@ -1,0 +1,142 @@
+{
+  "month": "ноябрь",
+  "days": [
+    {
+      "name": "ПОНЕДЕЛЬНИК",
+      "date": "2 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Аня и Оля",
+          "sub": "(1,5 часа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Олег и Женя",
+          "sub": "(1,5 часа)"
+        }
+      ]
+    },
+    {
+      "name": "ВТОРНИК",
+      "date": "3 ноября",
+      "date_color": "green",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, старшая группа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, младшая группа)"
+        }
+      ]
+    },
+    {
+      "name": "СРЕДА",
+      "date": "4 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "WCS Switch",
+          "sub": "Дарья Комкина · (1,5 часа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Общая группа",
+          "sub": "Дарья Комкина · (1,5&nbsp;часа,&nbsp;для&nbsp;всех)"
+        }
+      ]
+    },
+    {
+      "name": "ЧЕТВЕРГ",
+      "date": "5 ноября",
+      "date_color": "green",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, младшая группа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, старшая группа)"
+        }
+      ]
+    },
+    {
+      "name": "ПЯТНИЦА",
+      "date": "6 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "note",
+          "time": "19.30",
+          "title": "Закрыт<br>на мероприятие",
+          "foot": "bunting"
+        }
+      ]
+    },
+    {
+      "name": "СУББОТА",
+      "date": "7 ноября",
+      "date_color": "green",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        }
+      ]
+    },
+    {
+      "name": "ВОСКРЕСЕНЬЕ",
+      "date": "8 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "note",
+          "time": "19.00",
+          "title": "Вечеринка<br>в Доме",
+          "foot": "disco"
+        }
+      ]
+    }
+  ]
+}
