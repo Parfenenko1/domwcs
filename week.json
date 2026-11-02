@@ -1,17 +1,17 @@
 {
   "version": 2,
-  "updated": "2026-10-26T08:02:32.535183+00:00",
-  "week_start": "2026-10-26",
-  "source_sha1": "2c2a6c7a49247d1bc90bb778746e59d3a173f417",
+  "updated": "2026-11-02T08:02:32.722346+00:00",
+  "week_start": "2026-11-02",
+  "source_sha1": "a1c7d6643bc948ebc40ff61e3bca428ad30019ec",
   "days": [
     {
       "day": "Пн",
       "items": [
         {
           "kind": "class",
-          "label": "Группа Ани и Роли",
+          "label": "Группа",
           "time": "19:00",
-          "who": "Саша и Женя"
+          "who": "Аня и Оля"
         },
         {
           "kind": "class",
@@ -107,18 +107,6 @@
       "day": "Сб",
       "items": [
         {
-          "kind": "class",
-          "label": "Другие роли",
-          "time": "14:30",
-          "who": "Лена"
-        },
-        {
-          "kind": "class",
-          "label": "Соло",
-          "time": "16:30",
-          "who": "Аня"
-        },
-        {
           "kind": "sampo",
           "label": "Сампо"
         }
@@ -127,6 +115,12 @@
     {
       "day": "Вс",
       "items": [
+        {
+          "kind": "note",
+          "label": "Вечеринка в Доме",
+          "time": "19:00",
+          "hot": true
+        },
         {
           "kind": "sampo",
           "label": "Сампо"
