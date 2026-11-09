@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "updated": "2026-11-02T08:02:32.722346+00:00",
-  "week_start": "2026-11-02",
-  "source_sha1": "a1c7d6643bc948ebc40ff61e3bca428ad30019ec",
+  "updated": "2026-11-09T09:20:59.110675+00:00",
+  "week_start": "2026-11-09",
+  "source_sha1": "10ce80049cd2b398b21db04104d611ba71adc2b5",
   "days": [
     {
       "day": "Пн",
@@ -56,13 +56,6 @@
           "who": "Даша"
         },
         {
-          "kind": "class",
-          "label": "Для всех",
-          "time": "20:30",
-          "who": "Даша",
-          "title": "Общая группа"
-        },
-        {
           "kind": "sampo",
           "label": "Сампо"
         }
@@ -107,6 +100,18 @@
       "day": "Сб",
       "items": [
         {
+          "kind": "class",
+          "label": "Другие роли",
+          "time": "14:30",
+          "who": "Саша и Лена"
+        },
+        {
+          "kind": "class",
+          "label": "Соло",
+          "time": "16:30",
+          "who": "Аня"
+        },
+        {
           "kind": "sampo",
           "label": "Сампо"
         }
@@ -115,12 +120,6 @@
     {
       "day": "Вс",
       "items": [
-        {
-          "kind": "note",
-          "label": "Вечеринка в Доме",
-          "time": "19:00",
-          "hot": true
-        },
         {
           "kind": "sampo",
           "label": "Сампо"
