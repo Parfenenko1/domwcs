@@ -1,0 +1,142 @@
+{
+  "month": "ноябрь",
+  "days": [
+    {
+      "name": "ПОНЕДЕЛЬНИК",
+      "date": "9 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Аня и Оля",
+          "sub": "(1,5 часа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Олег и Женя",
+          "sub": "(1,5 часа)"
+        }
+      ]
+    },
+    {
+      "name": "ВТОРНИК",
+      "date": "10 ноября",
+      "date_color": "green",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, старшая группа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, младшая группа)"
+        }
+      ]
+    },
+    {
+      "name": "СРЕДА",
+      "date": "11 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "WCS Switch",
+          "sub": "Дарья Комкина · (1,5 часа)"
+        }
+      ]
+    },
+    {
+      "name": "ЧЕТВЕРГ",
+      "date": "12 ноября",
+      "date_color": "green",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "class",
+          "time": "19.00",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, младшая группа)"
+        },
+        {
+          "kind": "class",
+          "time": "20.30",
+          "title": "Саша и Лена",
+          "sub": "(1,5 часа, старшая группа)"
+        }
+      ]
+    },
+    {
+      "name": "ПЯТНИЦА",
+      "date": "13 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        },
+        {
+          "kind": "note",
+          "time": "19.30",
+          "title": "Закрыт<br>на мероприятие",
+          "foot": "bunting"
+        }
+      ]
+    },
+    {
+      "name": "СУББОТА",
+      "date": "14 ноября",
+      "date_color": "green",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "class",
+          "time": "14.30",
+          "title": "Другие роли",
+          "sub": "Саша и Лена · (1,5 часа)"
+        },
+        {
+          "kind": "class",
+          "time": "16.30",
+          "title": "Соло",
+          "sub": "Аня · (1,5 часа)"
+        },
+        {
+          "kind": "sampo"
+        }
+      ]
+    },
+    {
+      "name": "ВОСКРЕСЕНЬЕ",
+      "date": "15 ноября",
+      "date_color": "orange",
+      "month_num": 11,
+      "slots": [
+        {
+          "kind": "sampo"
+        }
+      ]
+    }
+  ]
+}
