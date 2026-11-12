@@ -135,6 +135,12 @@
       "slots": [
         {
           "kind": "sampo"
+        },
+        {
+          "kind": "note",
+          "time": "19.00",
+          "title": "Вечеринка<br>в Доме",
+          "foot": "disco"
         }
       ]
     }
