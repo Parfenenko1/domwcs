@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "updated": "2026-11-09T09:20:59.110675+00:00",
+  "updated": "2026-11-12T13:12:05.938322+00:00",
   "week_start": "2026-11-09",
-  "source_sha1": "10ce80049cd2b398b21db04104d611ba71adc2b5",
+  "source_sha1": "1ee156b29e86d005b0e6d3d4334679c2df8324be",
   "days": [
     {
       "day": "Пн",
@@ -120,6 +120,12 @@
     {
       "day": "Вс",
       "items": [
+        {
+          "kind": "note",
+          "label": "Вечеринка в Доме",
+          "time": "19:00",
+          "hot": true
+        },
         {
           "kind": "sampo",
           "label": "Сампо"
