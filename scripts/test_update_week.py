@@ -23,6 +23,7 @@ class SourceWeek(unittest.TestCase):
                 src = {"days": [{"slots": [{"kind": "free", "lines": ["Квартирник", time_range]}]}]}
                 item = u.days_from_source(src)[0][0]
                 self.assertEqual(item["time"], "18:00")
+                self.assertEqual(item["to"], "22:00")
                 self.assertEqual(item["label"], "Квартирник")
 
     def test_slots(self):

@@ -118,6 +118,9 @@
       "month_num": 11,
       "slots": [
         {
+          "kind": "sampo"
+        },
+        {
           "kind": "class",
           "time": "14.30",
           "title": "Другие роли",

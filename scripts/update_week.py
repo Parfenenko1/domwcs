@@ -666,6 +666,9 @@ def days_from_source(src):
             if s.get("sub"):
                 lines.append((clean(s["sub"]), "text"))
             item = parse_card([{"text": t, "src": k, "conf": 99} for t, k in lines])
+            interval = re.search(r"\d{1,2}[:.]\d{2}\s*[-–—]\s*(\d{1,2}[:.]\d{2})", " ".join(t for t, _ in lines))
+            if item and interval:
+                item["to"] = parse_time(interval.group(1))
             if item and s.get("tag"):
                 item["tag"] = item["label"] = clean(s["tag"])
             if item:
@@ -769,7 +772,7 @@ def to_week_json(days, week_start, sha1):
         cleaned = []
         for it in items:
             e = {"kind": it["kind"], "label": it["label"]}
-            for k in ("time", "who", "title", "tag"):
+            for k in ("time", "to", "who", "title", "tag"):
                 if it.get(k):
                     e[k] = it[k]
             if it.get("new"):
