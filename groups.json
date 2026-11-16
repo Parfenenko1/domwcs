@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-11-16T13:57:40.659683+00:00",
+  "updated": "2026-11-16T13:59:53.149299+00:00",
   "week_start": "2026-11-16",
   "groups": [
     {
@@ -34,7 +34,7 @@
     {
       "day": 2,
       "time": "19:00",
-      "label": "\\/С5 Switch",
+      "label": "WCS Switch",
       "who": "Даша",
       "seen": "2026-11-16"
     },
@@ -360,7 +360,7 @@
       "day": 2,
       "time": "19:00",
       "who": "Даша",
-      "label": "\\/С5 Switch",
+      "label": "WCS Switch",
       "title": "",
       "new": false
     },

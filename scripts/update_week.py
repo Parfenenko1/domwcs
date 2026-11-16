@@ -225,6 +225,9 @@ def looks_like_people(text):
 # Время: шрифт Nauryz рисует «1» с флажком, Tesseract читает её как «7»
 
 def parse_time(text):
+    interval = re.search(r"(\d{1,2}\s*[:.,]\s*\d{2})\s*[-–—]\s*\d{1,2}\s*[:.,]\s*\d{2}", text)
+    if interval:
+        text = interval.group(1)          # диапазон 18:00–22:00: начало, а не конец
     digits = re.sub(r"\D", "", text)
     if len(digits) < 3:
         return None
@@ -793,10 +796,11 @@ def update_groups(week, old):
             and (start - dt.date.fromisoformat(o["week"])).days <= MEMORY_DAYS]
     for di, d in enumerate(week["days"]):
         for it in d["items"]:
-            if it["kind"] != "class" or not it.get("time") or it.get("tag"):
+            new_group = it.get("tag") == "Открытое занятие" and it.get("new")
+            if it["kind"] != "class" or not it.get("time") or (it.get("tag") and not new_group):
                 continue
             seen.append({"week": week["week_start"], "day": di, "time": it["time"],
-                         "who": it.get("who", ""), "label": it["label"],
+                         "who": it.get("who", ""), "label": "Группа с нуля" if new_group else it["label"],
                          "title": it.get("title", ""), "new": bool(it.get("new"))})
     groups = []
     for key in sorted({(o["day"], o["time"]) for o in seen}):

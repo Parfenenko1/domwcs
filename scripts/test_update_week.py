@@ -9,6 +9,22 @@ import update_week as u
 
 
 class SourceWeek(unittest.TestCase):
+    def test_open_lesson_keeps_new_group(self):
+        src = {"days": [{"slots": [{"kind": "class", "time": "20.30", "tag": "Открытое занятие",
+                "title": "Аня и Оля", "sub": "(1,5 часа, группа с нуля)"}]}]}
+        week = u.to_week_json(u.days_from_source(src), u.dt.date(2026, 11, 16), 'test')
+        group = u.update_groups(week, None)['groups'][0]
+        self.assertEqual((group['time'], group['who'], group['label'], group['new']),
+                         ('20:30', 'Аня и Оля', 'Группа с нуля', True))
+
+    def test_event_time_range_uses_start(self):
+        for time_range in ("18:00–22:00", "18.00-22.00", "18:00 — 22:00"):
+            with self.subTest(time_range=time_range):
+                src = {"days": [{"slots": [{"kind": "free", "lines": ["Квартирник", time_range]}]}]}
+                item = u.days_from_source(src)[0][0]
+                self.assertEqual(item["time"], "18:00")
+                self.assertEqual(item["label"], "Квартирник")
+
     def test_slots(self):
         src = {"days": [{"slots": [
             {"kind": "sampo"},
