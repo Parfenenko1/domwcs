@@ -45,6 +45,10 @@ import json
 import os
 import re
 import sys
+import tempfile
+import time
+import http.client
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -79,12 +83,28 @@ MONTHS_RU = [
 ]
 
 
+def request_bytes(url, timeout=30):
+    """Повторяем временные сетевые ошибки; адрес может содержать токен — не печатаем его."""
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(url, timeout=timeout) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code not in (408, 429, 500, 502, 503, 504) or attempt == 3:
+                raise
+        except (urllib.error.URLError, ConnectionError, TimeoutError, http.client.IncompleteRead):
+            if attempt == 3:
+                raise
+        delay = 2 ** (attempt + 1)
+        print(f"Временный сбой сети. Повтор {attempt + 1}/3 через {delay} с.", file=sys.stderr)
+        time.sleep(delay)
+
+
 def api_call(token, method, params=None):
     url = API_BASE.format(token=token) + "/" + method
     if params:
         url += "?" + urllib.parse.urlencode(params)
-    with urllib.request.urlopen(url, timeout=30) as resp:
-        data = json.load(resp)
+    data = json.loads(request_bytes(url))
     if not data.get("ok"):
         raise RuntimeError(f"Telegram API error on {method}: {data}")
     return data["result"]
@@ -125,8 +145,7 @@ def normalize_channel(channel):
 
 def http_get(url, timeout=30):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+    return request_bytes(req, timeout=timeout)
 
 
 def telegram_file(token, file_id):
@@ -135,8 +154,19 @@ def telegram_file(token, file_id):
 
 
 def download_file(token, file_id, dest_path):
-    with open(dest_path, "wb") as f:
-        f.write(telegram_file(token, file_id))
+    raw = telegram_file(token, file_id)
+    if not raw:
+        raise ValueError("Telegram вернул пустой файл")
+    # Старую картинку заменяем только после успешного скачивания и записи.
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=os.path.dirname(dest_path), delete=False) as f:
+            tmp = f.name
+            f.write(raw)
+        os.replace(tmp, dest_path)
+    finally:
+        if tmp and os.path.exists(tmp):
+            os.unlink(tmp)
 
 
 def fetch_channel_pages(channel, pages):
@@ -458,9 +488,7 @@ def main():
         params["offset"] = offset + 1
 
     updates = get_updates(token, params, channel_name)
-    if updates:
-        write_offset(max(u["update_id"] for u in updates))
-    else:
+    if not updates:
         print("Новых постов нет.")
 
     # один пост мог прийти несколько раз (опубликован, потом исправлен) — берём последнюю версию
@@ -586,6 +614,10 @@ def main():
             vk_crosspost.backfill(os.environ["VK_BACKFILL"], VK_TAG_RE, channel_name, http_get)
     except Exception as e:
         print(f"ВК: дублирование не сработало: {e}", file=sys.stderr)
+
+    # При сбое скачивания пост должен остаться для следующего запуска.
+    if updates:
+        write_offset(max(u["update_id"] for u in updates))
 
 
 if __name__ == "__main__":
