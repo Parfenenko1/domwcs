@@ -23,9 +23,8 @@
 обновится её карточка; убрали #Новости — карточка уйдёт с сайта. Правка старого
 поста с расписанием не заменит более свежее расписание.
 
-5. Новости в мире WCS: посты с тегом #новостиWCS (их предлагает Hermes, публикует бот школы по кнопке
-   Александра в Добби) — отдельная лента news/wcs.json, в «Новости Дома» не попадают. Свои посты бот
-   в getUpdates не получает, поэтому ленту берём с публичной страницы t.me/s/<канал>.
+5. Новости в мире WCS: посты с тегом #новостиWCS с публичной страницы t.me/s/wcs_base
+   попадают в отдельную ленту news/wcs.json. Ранее импортированные карточки остаются в архиве ленты.
 
 6. Посты с #расписание и #Новости дублируются в группу ВКонтакте (scripts/vk_crosspost.py):
    новый пост — запись в ВК, правка — правится и там, тег убрали — запись удаляется.
@@ -57,6 +56,7 @@ API_BASE = "https://api.telegram.org/bot{token}"
 SCHEDULE_TAG_RE = re.compile(r"#расписание", re.IGNORECASE)
 NEWS_TAG_RE = re.compile(r"#новости(?!\w)", re.IGNORECASE)   # не #новостиWCS
 WCS_TAG_RE = re.compile(r"#новостиwcs(?!\w)", re.IGNORECASE)
+WCS_NEWS_CHANNEL = "wcs_base"
 VK_TAG_RE = re.compile(r"#(расписание|новости)", re.IGNORECASE)   # что дублируется в ВК
 TIME_RANGE_RE = re.compile(r"\d{1,2}[:.]\d{2}\s*[-–—]\s*\d{1,2}[:.]\d{2}")
 PRICE_RE = re.compile(r"\d[\d\s]{0,6}\s*(₽|руб\.?|рублей)", re.IGNORECASE)
@@ -170,13 +170,16 @@ def download_file(token, file_id, dest_path):
 
 
 def fetch_channel_pages(channel, pages):
-    name, posts, url = channel.lstrip("@"), [], f"https://t.me/s/{channel.lstrip('@')}"
+    name = channel.lstrip("@").lower()
+    posts, url = [], f"https://t.me/s/{name}"
     for _ in range(pages):
         chunk = parse_channel_page(http_get(url).decode("utf-8", "replace"))
+        chunk = [p for p in chunk if p["post"].lower().startswith(f"{name}/")
+                 and p["post"].split("/")[-1].isdigit()]
         if not chunk:
             break
         posts += chunk
-        url = f"https://t.me/s/{name}?before={min(int(p['post'].split('/')[-1]) for p in chunk if p['post'].split('/')[-1].isdigit())}"
+        url = f"https://t.me/s/{name}?before={min(int(p['post'].split('/')[-1]) for p in chunk)}"
     return posts
 
 
@@ -188,38 +191,41 @@ def update_wcs_news(channel, pages=2):
     except Exception as e:
         print(f"Публичная страница канала недоступна ({e}) — лента WCS не обновлена.")
         return False
-    ids = [int(p["post"].split("/")[-1]) for p in posts if p["post"].split("/")[-1].isdigit()]
-    if not ids:
+    if not posts:
         return False
     try:
         with open(WCS_FILE, encoding="utf-8") as f:
             old = json.load(f)
     except (OSError, ValueError):
         old = []
-    lo = min(ids)
-    prev = {i.get("id"): i for i in old if isinstance(i, dict)}
-    items = {i["id"]: i for i in old if i.get("id", 0) < lo}   # старше окна — как были
+    lo = min(int(p["post"].split("/")[-1]) for p in posts)
+    name = channel.lstrip("@").lower()
+    prefix = f"https://t.me/{name}/"
+    prev = {i["url"].lower(): i for i in old}
+    # Номера постов действуют только внутри канала. Архив другого канала не сверяем с этим окном.
+    items = {url: i for url, i in prev.items() if not url.startswith(prefix) or i["id"] < lo}
     for p in posts:
         msg = p["post"].split("/")[-1]
-        if not msg.isdigit() or not WCS_TAG_RE.search(p["text"]):
+        if not WCS_TAG_RE.search(p["text"]):
             continue
         lines = [strip_hashtags(l) for l in p["text"].splitlines()]
         lines = [l for l in lines if l]
         if not lines:
             continue
-        item = {"id": int(msg), "url": f"https://t.me/{p['post']}", "date": p["date"],
+        url = f"{prefix}{msg}"
+        item = {"id": int(msg), "url": url, "date": p["date"],
                 "title": lines[0][:120], "text": "\n".join(lines[1:])[:1500]}  # подборка из нескольких новостей — до ~1200 знаков
         if p.get("img"):   # фото как у «Новостей Дома» (backfill_from_public_page); нет — карточка без картинки
-            img = prev.get(int(msg), {}).get("img")
+            img = prev.get(url, {}).get("img")
             if not img:
                 try:
-                    img = save_thumb(http_get(p["img"]), f"wcs-{msg}")
+                    img = save_thumb(http_get(p["img"]), f"wcs-{name}-{msg}")
                 except Exception as e:
                     print(f"Не скачалось фото поста {p['post']}: {e}")
             if img:
                 item["img"] = img
-        items[int(msg)] = item
-    new = sorted(items.values(), key=lambda i: -i["id"])[:MAX_WCS]
+        items[url] = item
+    new = sorted(items.values(), key=lambda i: (i["date"], i["id"]), reverse=True)[:MAX_WCS]
     if new == old:
         return False
     os.makedirs(os.path.dirname(WCS_FILE), exist_ok=True)
@@ -604,7 +610,7 @@ def main():
         save_events(events)
         print(f"Новости обновлены: {EVENTS_FILE}")
 
-    update_wcs_news(channel)
+    update_wcs_news(WCS_NEWS_CHANNEL)
 
     # те же посты (#расписание и #Новости) — в группу ВКонтакте; сбой ВК сайту не мешает
     try:
