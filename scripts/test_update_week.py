@@ -1,14 +1,56 @@
 #!/usr/bin/env python3
 """Проверка разбора данных генератора картинки (weeks/*.json) без Tesseract: python3 scripts/test_update_week.py"""
+import io
+import json
 import os
 import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import update_week as u
 
 
 class SourceWeek(unittest.TestCase):
+    def test_ocr_schedule_is_replaced_when_source_arrives(self):
+        week_start = u.dt.date(2026, 11, 23)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            image = root / "schedule.jpg"
+            image.write_bytes(b"Telegram schedule")
+            src = root / f"{week_start}.json"
+            out = root / "week.json"
+            ocr_items = [{"kind": "class", "label": "Группа", "time": "19:00"},
+                         {"kind": "free", "label": "Саmi"}]
+            args = ["update_week.py", "--image", str(image), "--out-dir", tmp]
+            with patch.object(u, "WEEKS_DIR", tmp), patch.object(u, "read_dates"), \
+                    patch.object(u, "pick_week_start", return_value=(week_start, 7)), \
+                    patch.object(u, "parse_image", return_value=(None, [ocr_items] * 7)) as ocr:
+                def run(*flags):
+                    stdout = io.StringIO()
+                    with patch.object(sys, "argv", args + list(flags)), redirect_stdout(stdout):
+                        u.main()
+                    return stdout.getvalue().strip()
+
+                self.assertEqual(run("--need"), "yes")
+                run("--source-only")
+                self.assertFalse(out.exists())
+                run()
+                self.assertEqual(json.loads(out.read_text())["days"][0]["items"][-1]["label"], "Саmi")
+                self.assertEqual(run("--need"), "no")
+
+                slots = [{"kind": "class", "time": "19:00", "title": "Аня и Оля"}, {"kind": "sampo"}]
+                src.write_text(json.dumps({"days": [{"slots": slots}] * 7}))
+                self.assertEqual(run("--need"), "yes")
+                run("--source-only")
+                monday = json.loads(out.read_text())["days"][0]["items"]
+                self.assertEqual(monday[-1], {"kind": "sampo", "label": "Сампо"})
+                self.assertEqual(run("--need"), "no")
+                ocr.assert_called_once()
+
     def test_open_lesson_keeps_new_group(self):
         src = {"days": [{"slots": [{"kind": "class", "time": "20.30", "tag": "Открытое занятие",
                 "title": "Аня и Оля", "sub": "(1,5 часа, группа с нуля)"}]}]}

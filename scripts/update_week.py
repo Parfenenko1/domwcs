@@ -31,6 +31,7 @@
 Запуск:
   python scripts/update_week.py            — распознать, если картинка поменялась
   python scripts/update_week.py --need     — напечатать yes/no: нужно ли распознавать
+  python scripts/update_week.py --source-only — обновить уже распознанную неделю из JSON
   python scripts/update_week.py --force    — распознать в любом случае
   python scripts/update_week.py --image X.jpg --out-dir DIR --posted 2026-09-28  — для проверки
 """
@@ -848,6 +849,16 @@ def load_json(path):
         return None
 
 
+def load_week_source(week_start):
+    path = os.path.join(WEEKS_DIR, f"{week_start}.json")
+    try:
+        with open(path, "rb") as f:
+            raw = f.read()
+    except FileNotFoundError:
+        return None, None
+    return json.loads(raw), hashlib.sha1(raw).hexdigest()
+
+
 def posted_date(meta_path, override=None):
     if override:
         return dt.date.fromisoformat(override)
@@ -866,6 +877,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--need", action="store_true")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--source-only", action="store_true")
     ap.add_argument("--image", default=SCHEDULE_IMAGE)
     ap.add_argument("--out-dir", default=REPO_ROOT)
     ap.add_argument("--posted")
@@ -878,19 +890,25 @@ def main():
         return
     sha1 = sha1_of(args.image)
     old = load_json(week_path) or {}
-    fresh = old.get("source_sha1") == sha1 and old.get("version") == FORMAT_VERSION
+    fresh = old.get("source_sha1") == sha1 and old.get("version") == FORMAT_VERSION and old.get("week_start")
+    src, source_sha1 = load_week_source(old["week_start"]) if fresh else (None, None)
+    source_changed = src is not None and old.get("source_week_sha1") != source_sha1
     if args.need:
-        print("no" if fresh else "yes")
+        print("yes" if not fresh or source_changed else "no")
         return
-    if fresh and not args.force:
-        print("Картинка расписания не менялась.")
+    if args.source_only and not source_changed:
         return
-
-    img, days = parse_image(args.image)
-    week_start, score = pick_week_start(read_dates(img), posted_date(SCHEDULE_META, args.posted))
-    # shortcut: файл недели ищется только при новой картинке; добавили его позже — запускать с --force
-    src = load_json(os.path.join(WEEKS_DIR, f"{week_start:%Y-%m-%d}.json"))
-    if src:
+    if fresh and (args.source_only or not args.force):
+        if not source_changed:
+            print("Картинка и данные недели не менялись.")
+            return
+        week_start = dt.date.fromisoformat(old["week_start"])
+        score = None
+    else:
+        img, days = parse_image(args.image)
+        week_start, score = pick_week_start(read_dates(img), posted_date(SCHEDULE_META, args.posted))
+        src, source_sha1 = load_week_source(week_start)
+    if src is not None:
         days = days_from_source(src)
         print(f"Группы и преподаватели — из weeks/{week_start:%Y-%m-%d}.json (данные генератора картинки)")
     problems = validate(days)
@@ -900,13 +918,16 @@ def main():
             print(" ", DAY_SHORT[i], d)
         sys.exit(1)
     week = to_week_json(days, week_start, sha1)
+    if source_sha1 is not None:
+        week["source_week_sha1"] = source_sha1
     with open(week_path, "w", encoding="utf-8") as f:
         json.dump(week, f, ensure_ascii=False, indent=2)
     groups = update_groups(week, load_json(groups_path))
     with open(groups_path, "w", encoding="utf-8") as f:
         json.dump(groups, f, ensure_ascii=False, indent=2)
 
-    print(f"Неделя с {week_start:%d.%m.%Y} (совпало дат на ленточках: {score} из 7):")
+    date_check = f" (совпало дат на ленточках: {score} из 7)" if score is not None else ""
+    print(f"Неделя с {week_start:%d.%m.%Y}{date_check}:")
     for d in week["days"]:
         print(" ", d["day"], " | ".join(
             (it.get("time", "") + " " + it["label"] + (" — " + it["who"] if it.get("who") else "")
