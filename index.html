@@ -263,9 +263,11 @@
   .eyebrow{display:flex; align-items:center; gap:10px; margin:0 0 26px; color:var(--cream-dim); font-size:15px; letter-spacing:.04em;}
   .eyebrow i{width:8px; height:8px; border-radius:50%; background:var(--olive-on-night); box-shadow:0 0 0 4px rgba(185,182,83,.16);}
   .hero h1{font-size:clamp(58px,10.5vw,148px); line-height:.9; letter-spacing:-.005em;}
-  .hero h1 span{display:block; animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
-  .hero h1 span:nth-child(2){animation-delay:.08s;}
-  .hero h1 span:nth-child(3){animation-delay:.16s; color:var(--terra-on-night);}
+  .hero h1 .w{display:block; animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
+  .hero h1 .w:nth-child(3){animation-delay:.08s;}
+  .hero h1 .w:nth-child(4){animation-delay:.16s; color:var(--terra-on-night);}
+  /* подпись над заголовком — часть H1 для поисковиков, но выглядит как раньше */
+  .hero h1 .eyebrow{font-family:var(--text); font-weight:400; line-height:1.5; text-wrap:wrap;}
   .hero-lede{margin:30px 0 34px; font-size:20px; color:var(--cream-dim); max-width:36ch;}
   .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
   .hero-mark{margin:0; justify-self:end; width:min(470px,100%); animation:rise 1s .12s cubic-bezier(.2,.7,.2,1) both;}
@@ -355,6 +357,7 @@
   .week .e{font-size:15.5px; line-height:1.3; color:var(--cream-dim);}
   .week .e.hot{color:var(--terra-on-night);}
   .week .e small{display:block; margin-top:1px; font-size:13.5px; color:var(--cream-faint);}
+  .week .e .tm{color:var(--cream); font-variant-numeric:tabular-nums;}
   .week .e.off{opacity:.6;}
   .week .e.off s{text-decoration-thickness:1px;}
   .week li.today{background:linear-gradient(180deg, rgba(188,88,0,.30), var(--night-2)); box-shadow:inset 0 0 0 1.5px rgba(224,122,36,.55);}
@@ -623,6 +626,462 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
 </script>
 <!-- /Yandex.Metrika counter -->
+<!-- static-ld:start (генерирует scripts/render_static.py из groups.json) -->
+<script type="application/ld+json" id="ld-schedule">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: группа (Аня и Оля)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, пн 19:00, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Monday",
+     "startTime": "19:00",
+     "endTime": "20:30",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Анна Данилова"
+     },
+     {
+      "@type": "Person",
+      "name": "Ольга Михеева"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: группа (Олег и Женя)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, пн 20:30, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Monday",
+     "startTime": "20:30",
+     "endTime": "22:00",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Олег Фабрицкий"
+     },
+     {
+      "@type": "Person",
+      "name": "Евгения Земскова"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: старшая группа (Саша и Лена)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, вт 19:00, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Tuesday",
+     "startTime": "19:00",
+     "endTime": "20:30",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Александр Парфененко"
+     },
+     {
+      "@type": "Person",
+      "name": "Елена Логашина"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: младшая группа (Саша и Лена)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, вт 20:30, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Tuesday",
+     "startTime": "20:30",
+     "endTime": "22:00",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Александр Парфененко"
+     },
+     {
+      "@type": "Person",
+      "name": "Елена Логашина"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: wcs switch (Даша)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, ср 19:00, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Wednesday",
+     "startTime": "19:00",
+     "endTime": "20:30",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Дарья Комкина"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: группа с нуля (Аня и Оля)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, ср 20:30, 1,5 часа. Идёт набор с нуля.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Wednesday",
+     "startTime": "20:30",
+     "endTime": "22:00",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Анна Данилова"
+     },
+     {
+      "@type": "Person",
+      "name": "Ольга Михеева"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: младшая группа (Саша и Лена)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, чт 19:00, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Thursday",
+     "startTime": "19:00",
+     "endTime": "20:30",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Александр Парфененко"
+     },
+     {
+      "@type": "Person",
+      "name": "Елена Логашина"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: старшая группа (Саша и Лена)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, чт 20:30, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Thursday",
+     "startTime": "20:30",
+     "endTime": "22:00",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Александр Парфененко"
+     },
+     {
+      "@type": "Person",
+      "name": "Елена Логашина"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: другие роли (Саша и Лена)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, сб 14:30, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Saturday",
+     "startTime": "14:30",
+     "endTime": "16:00",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Александр Парфененко"
+     },
+     {
+      "@type": "Person",
+      "name": "Елена Логашина"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Course",
+   "name": "West Coast Swing: соло (Аня)",
+   "description": "Групповые занятия по вест-кост свингу (West Coast Swing) в Санкт-Петербурге, сб 16:30, 1,5 часа.",
+   "inLanguage": "ru",
+   "provider": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "onsite",
+    "location": {
+     "@type": "Place",
+     "name": "Дом танца WCS",
+     "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Разъезжая, 36",
+      "addressLocality": "Санкт-Петербург",
+      "addressCountry": "RU"
+     }
+    },
+    "courseSchedule": {
+     "@type": "Schedule",
+     "repeatFrequency": "P1W",
+     "byDay": "https://schema.org/Saturday",
+     "startTime": "16:30",
+     "endTime": "18:00",
+     "duration": "PT1H30M",
+     "scheduleTimezone": "Europe/Moscow"
+    },
+    "instructor": [
+     {
+      "@type": "Person",
+      "name": "Аня"
+     }
+    ]
+   }
+  },
+  {
+   "@type": "Event",
+   "name": "Вечеринка West Coast Swing в Доме танца WCS",
+   "description": "Танцевальный вечер вест-кост свинга по воскресеньям, 3 часа. Можно прийти без пары.",
+   "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+   "eventStatus": "https://schema.org/EventScheduled",
+   "location": {
+    "@type": "Place",
+    "name": "Дом танца WCS",
+    "address": {
+     "@type": "PostalAddress",
+     "streetAddress": "ул. Разъезжая, 36",
+     "addressLocality": "Санкт-Петербург",
+     "addressCountry": "RU"
+    }
+   },
+   "organizer": {
+    "@id": "https://wcshome.ru/#school"
+   },
+   "eventSchedule": {
+    "@type": "Schedule",
+    "repeatFrequency": "P1W",
+    "byDay": "https://schema.org/Sunday",
+    "startTime": "19:00",
+    "endTime": "22:00",
+    "duration": "PT3H",
+    "scheduleTimezone": "Europe/Moscow"
+   },
+   "offers": {
+    "@type": "Offer",
+    "price": "500",
+    "priceCurrency": "RUB",
+    "url": "https://wcshome.ru/#pricing"
+   }
+  }
+ ]
+}
+</script>
+<!-- static-ld:end -->
 </head>
 <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/113254414" style="position:absolute;left:-9999px" alt=""></div></noscript>
@@ -656,8 +1115,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow"><i></i>Школа West Coast Swing* · Санкт-Петербург</p>
-        <h1><span>Здесь</span><span>живёт</span><span>танец</span></h1>
+        <h1><span class="eyebrow"><i></i>Школа вест-кост свинга (West Coast Swing*) · Санкт-Петербург</span> <span class="w">Здесь</span> <span class="w">живёт</span> <span class="w">танец</span></h1>
         <p class="hero-lede">Дом танца WCS на Разъезжей, 36. Учим вест-кост свинг с нуля, танцуем парами, а по воскресеньям собираемся на вечеринки.</p>
         <div class="hero-actions" id="heroActions">
           <button class="btn btn-terra" type="button" data-signup><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на пробное</button>
@@ -764,15 +1222,17 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     </div>
     <div class="week-wrap">
     <p class="week-title" id="weekTitle">Обычная неделя в Доме</p>
+        <!-- static-week:start (генерирует scripts/render_static.py из groups.json) -->
         <ul class="week" id="week" lang="ru">
-          <li><span class="d">Пн</span><span class="e">Группа<small>Аня и Оля</small></span><span class="e">Группа<small>Олег и Женя</small></span></li>
-          <li><span class="d">Вт</span><span class="e">Старшая группа<small>Саша и Лена</small></span><span class="e">Младшая группа<small>Саша и Лена</small></span></li>
-          <li><span class="d">Ср</span><span class="e">WCS Switch<small>Даша</small></span><span class="e">Общая группа</span></li>
-          <li><span class="d">Чт</span><span class="e">Младшая группа<small>Саша и Лена</small></span><span class="e">Старшая группа<small>Саша и Лена</small></span></li>
-          <li><span class="d">Пт</span><span class="e">Сампо до 19:30</span><span class="e">Мероприятие</span></li>
-          <li><span class="d">Сб</span><span class="e">Другие роли<small>Саша и Лена</small></span><span class="e">Сампо</span></li>
-          <li><span class="d">Вс</span><span class="e hot">Вечеринка</span><span class="e">Сампо</span></li>
+          <li><span class="d">Пн</span><span class="e"><span class="tm">19:00</span> Группа<small>Аня и Оля</small></span><span class="e"><span class="tm">20:30</span> Группа<small>Олег и Женя</small></span></li>
+          <li><span class="d">Вт</span><span class="e"><span class="tm">19:00</span> Старшая группа<small>Саша и Лена</small></span><span class="e"><span class="tm">20:30</span> Младшая группа<small>Саша и Лена</small></span></li>
+          <li><span class="d">Ср</span><span class="e"><span class="tm">19:00</span> WCS Switch<small>Даша</small></span><span class="e hot"><span class="tm">20:30</span> Группа с нуля<small>Аня и Оля</small></span></li>
+          <li><span class="d">Чт</span><span class="e"><span class="tm">19:00</span> Младшая группа<small>Саша и Лена</small></span><span class="e"><span class="tm">20:30</span> Старшая группа<small>Саша и Лена</small></span></li>
+          <li><span class="d">Пт</span><span class="e">Сампо до 19:30</span></li>
+          <li><span class="d">Сб</span><span class="e"><span class="tm">14:30</span> Другие роли<small>Саша и Лена</small></span><span class="e"><span class="tm">16:30</span> Соло<small>Аня</small></span></li>
+          <li><span class="d">Вс</span><span class="e hot"><span class="tm">19:00</span> Вечеринка в Доме</span></li>
         </ul>
+        <!-- static-week:end -->
     </div>
     <div class="facts">
       <div class="fact"><span class="num" id="subscriberCount">478</span><span>человек в нашем телеграм-канале</span></div>
@@ -848,7 +1308,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     </div>
     <div class="poster-wrap">
       <button class="poster" id="posterBtn" type="button" aria-label="Открыть расписание крупно">
-        <img id="schedule-image" src="schedule.jpg" alt="Расписание занятий по West Coast Swing в Доме танца WCS на неделю" width="1280" height="900" loading="lazy" decoding="async">
+        <img id="schedule-image" src="schedule.webp" alt="Расписание занятий по West Coast Swing в Доме танца WCS на неделю" width="1280" height="900" loading="lazy" decoding="async">
         <span class="zoom">Открыть крупно</span>
       </button>
       <p class="sched-fallback" id="schedule-fallback">Не получилось загрузить картинку расписания. Актуальное расписание — в нашем <a href="https://t.me/domwcs" target="_blank" rel="noopener">Telegram-канале</a>.</p>
@@ -1058,7 +1518,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
 
 <div class="lightbox" id="lightbox" hidden>
   <div class="lb-bar"><span>Расписание недели · листайте в стороны</span><button class="btn btn-line btn-sm" type="button" id="lbClose" style="--rule:rgba(242,231,211,.3)">Закрыть</button></div>
-  <div class="lb-scroll"><img src="schedule.jpg" alt="Расписание занятий по West Coast Swing в Доме танца WCS на неделю, крупно" loading="lazy" decoding="async"></div>
+  <div class="lb-scroll"><img src="schedule.webp" alt="Расписание занятий по West Coast Swing в Доме танца WCS на неделю, крупно" loading="lazy" decoding="async"></div>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1205,7 +1665,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       return '<li' + (today ? ' class="today"' : '') + '><span class="d">' + DAY_SHORT[i] + (today ? '<i class="today-tag">сегодня</i>' : '') + '</span>' +
         stripItems(items).map(function (it) {
           var second = it.cancel ? (it.movedTo ? 'перенос на ' + it.movedTo : 'отменено') : (it.title || it.who || (it.kind === 'class' && it.time ? baseWho(i, it.time) : '')) + (it.sub && !it.cancel ? ' · замена' : '') + (it.moved && !it.cancel ? ' · перенос' : '');
-          return '<span class="e' + (it.cancel ? ' off' : (it.hot || it['new'] ? ' hot' : '')) + '">' + (it.cancel ? '<s>' + esc(it.label) + '</s>' : esc(it.label)) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
+          var tm = it.time ? '<span class="tm">' + esc(it.time) + '</span> ' : '';
+          return '<span class="e' + (it.cancel ? ' off' : (it.hot || it['new'] ? ' hot' : '')) + '">' + tm + (it.cancel ? '<s>' + esc(it.label) + '</s>' : esc(it.label)) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
         }).join('') + '</li>';
     }).join('');
   }
@@ -1491,8 +1952,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   img.addEventListener('error', function () { document.getElementById('posterBtn').style.display = 'none'; document.getElementById('schedule-fallback').style.display = 'block'; });
   getJSON('schedule-meta.json').then(function (m) {
     if (!m || !m.updated) return;
-    // адрес картинки всегда schedule.jpg — без метки браузер днями показывает старую из кэша
-    document.querySelectorAll('img[src="schedule.jpg"]').forEach(function (el) { el.src = 'schedule.jpg?v=' + encodeURIComponent(m.updated); });
+    // адрес картинки всегда schedule.webp (сжатая копия schedule.jpg) — без метки браузер днями показывает старую из кэша
+    document.querySelectorAll('img[src="schedule.webp"]').forEach(function (el) { el.src = 'schedule.webp?v=' + encodeURIComponent(m.updated); });
     var d = new Date(m.updated); if (isNaN(d)) return;
     document.getElementById('schedule-updated').textContent = 'Обновлено ' + d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) + ' в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   }).catch(function () {});

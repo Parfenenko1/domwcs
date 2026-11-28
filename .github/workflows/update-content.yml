@@ -69,11 +69,16 @@ jobs:
             echo "Картинка расписания не менялась — распознавать нечего."
           fi
 
+      - name: Вписать расписание в HTML и сжать картинку (для поисковиков и скорости)
+        run: |
+          python scripts/optimize_schedule.py
+          python scripts/render_static.py || echo "Не получилось вписать расписание в HTML — сайт работает как раньше."
+
       - name: Закоммитить изменения, если они есть
         run: |
           git config user.name "content-bot"
           git config user.email "content-bot@users.noreply.github.com"
-          for f in schedule.jpg schedule-meta.json week.json groups.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt scripts/news_lookups.json scripts/vk_posts.json; do
+          for f in schedule.jpg schedule.webp index.html schedule-meta.json week.json groups.json events.json events-meta.json subscribers.json scripts/telegram_offset.txt scripts/news_lookups.json scripts/vk_posts.json; do
             if [ -f "$f" ]; then
               git add "$f"
             fi
