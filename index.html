@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Вест-кост свинг (West Coast Swing) в Петербурге — Дом танца WCS</title>
-<meta name="description" content="Школа вест-кост свинга (West Coast Swing) в Петербурге: группы с нуля, можно без пары, вечеринки по воскресеньям. Пробное 400 ₽. Разъезжая, 36, м. Лиговский пр.">
+<meta name="description" content="Школа вест-кост свинга (West Coast Swing) в Петербурге: группы с нуля, можно без пары, вечеринки по воскресеньям. Можно без опыта. Разъезжая, 36, м. Лиговский пр.">
 <link rel="canonical" href="https://wcshome.ru/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta property="og:title" content="Дом танца WCS — здесь живёт танец">
@@ -28,7 +28,7 @@
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
- "@type": "DanceSchool",
+ "@type": "LocalBusiness",
  "@id": "https://wcshome.ru/#school",
  "name": "Дом танца WCS",
  "alternateName": [
@@ -262,10 +262,11 @@
   .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:40px; align-items:center; position:relative;}
   .eyebrow{display:flex; align-items:center; gap:10px; margin:0 0 26px; color:var(--cream-dim); font-size:15px; letter-spacing:.04em;}
   .eyebrow i{width:8px; height:8px; border-radius:50%; background:var(--olive-on-night); box-shadow:0 0 0 4px rgba(185,182,83,.16);}
-  .hero h1{font-size:clamp(58px,10.5vw,148px); line-height:.9; letter-spacing:-.005em;}
-  .hero h1 span{display:block; animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
-  .hero h1 span:nth-child(2){animation-delay:.08s;}
-  .hero h1 span:nth-child(3){animation-delay:.16s; color:var(--terra-on-night);}
+  .hero .eyebrow{font-family:var(--text); font-weight:400; line-height:inherit; text-wrap:wrap;}
+  .hero .hero-slogan{font-family:var(--display); font-weight:700; margin:0; text-wrap:balance; font-size:clamp(58px,10.5vw,148px); line-height:.9; letter-spacing:-.005em;}
+  .hero .hero-slogan span{display:block; animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
+  .hero .hero-slogan span:nth-child(2){animation-delay:.08s;}
+  .hero .hero-slogan span:nth-child(3){animation-delay:.16s; color:var(--terra-on-night);}
   .hero-lede{margin:30px 0 34px; font-size:20px; color:var(--cream-dim); max-width:36ch;}
   .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
   .hero-mark{margin:0; justify-self:end; width:min(470px,100%); animation:rise 1s .12s cubic-bezier(.2,.7,.2,1) both;}
@@ -656,8 +657,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow"><i></i>Школа West Coast Swing* · Санкт-Петербург</p>
-        <h1><span>Здесь</span><span>живёт</span><span>танец</span></h1>
+        <h1 class="eyebrow"><i aria-hidden="true"></i>Школа West Coast Swing (вест-кост свинг) · Санкт-Петербург</h1>
+        <p class="hero-slogan"><span>Здесь</span> <span>живёт</span> <span>танец</span></p>
         <p class="hero-lede">Дом танца WCS на Разъезжей, 36. Учим вест-кост свинг с нуля, танцуем парами, а по воскресеньям собираемся на вечеринки.</p>
         <div class="hero-actions" id="heroActions">
           <button class="btn btn-terra" type="button" data-signup><svg class="roof-i" viewBox="0 0 34 15" aria-hidden="true"><use href="#roof"/></svg>Записаться на пробное</button>
@@ -765,13 +766,13 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
     <div class="week-wrap">
     <p class="week-title" id="weekTitle">Обычная неделя в Доме</p>
         <ul class="week" id="week" lang="ru">
-          <li><span class="d">Пн</span><span class="e">Группа<small>Аня и Оля</small></span><span class="e">Группа<small>Олег и Женя</small></span></li>
-          <li><span class="d">Вт</span><span class="e">Старшая группа<small>Саша и Лена</small></span><span class="e">Младшая группа<small>Саша и Лена</small></span></li>
-          <li><span class="d">Ср</span><span class="e">WCS Switch<small>Даша</small></span><span class="e">Общая группа</span></li>
-          <li><span class="d">Чт</span><span class="e">Младшая группа<small>Саша и Лена</small></span><span class="e">Старшая группа<small>Саша и Лена</small></span></li>
+          <li><span class="d">Пн</span><span class="e">19:00 Группа<small>Аня и Оля</small></span><span class="e">20:30 Группа<small>Олег и Женя</small></span></li>
+          <li><span class="d">Вт</span><span class="e">19:00 Старшая группа<small>Саша и Лена</small></span><span class="e">20:30 Младшая группа<small>Саша и Лена</small></span></li>
+          <li><span class="d">Ср</span><span class="e">19:00 WCS Switch<small>Даша</small></span><span class="e">20:30 Общая группа</span></li>
+          <li><span class="d">Чт</span><span class="e">19:00 Младшая группа<small>Саша и Лена</small></span><span class="e">20:30 Старшая группа<small>Саша и Лена</small></span></li>
           <li><span class="d">Пт</span><span class="e">Сампо до 19:30</span><span class="e">Мероприятие</span></li>
-          <li><span class="d">Сб</span><span class="e">Другие роли<small>Саша и Лена</small></span><span class="e">Сампо</span></li>
-          <li><span class="d">Вс</span><span class="e hot">Вечеринка</span><span class="e">Сампо</span></li>
+          <li><span class="d">Сб</span><span class="e">14:30 Другие роли<small>Саша и Лена</small></span><span class="e">Сампо</span></li>
+          <li><span class="d">Вс</span><span class="e hot">19:00 Вечеринка</span><span class="e">Сампо</span></li>
         </ul>
     </div>
     <div class="facts">
@@ -844,7 +845,8 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
   <div class="wrap">
     <div class="head">
       <p class="kicker"><svg aria-hidden="true"><use href="#roof"/></svg>Каждую неделю</p>
-      <h2>Расписание недели</h2>
+      <h2>Расписание занятий West Coast Swing</h2>
+      <p class="lede">Занятия для начинающих и продолжающих, практика и вечеринки в Санкт-Петербурге. <a href="#weekTitle">Текстовый план недели</a> — с временем занятий; свежие изменения смотрите в расписании ниже и в Telegram.</p>
     </div>
     <div class="poster-wrap">
       <button class="poster" id="posterBtn" type="button" aria-label="Открыть расписание крупно">
@@ -1205,7 +1207,7 @@ ym(113254414, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true,
       return '<li' + (today ? ' class="today"' : '') + '><span class="d">' + DAY_SHORT[i] + (today ? '<i class="today-tag">сегодня</i>' : '') + '</span>' +
         stripItems(items).map(function (it) {
           var second = it.cancel ? (it.movedTo ? 'перенос на ' + it.movedTo : 'отменено') : (it.title || it.who || (it.kind === 'class' && it.time ? baseWho(i, it.time) : '')) + (it.sub && !it.cancel ? ' · замена' : '') + (it.moved && !it.cancel ? ' · перенос' : '');
-          return '<span class="e' + (it.cancel ? ' off' : (it.hot || it['new'] ? ' hot' : '')) + '">' + (it.cancel ? '<s>' + esc(it.label) + '</s>' : esc(it.label)) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
+          return '<span class="e' + (it.cancel ? ' off' : (it.hot || it['new'] ? ' hot' : '')) + '">' + (it.cancel ? '<s>' + esc((it.time ? it.time + ' ' : '') + it.label) + '</s>' : esc((it.time ? it.time + ' ' : '') + it.label)) + (second ? '<small>' + esc(second) + '</small>' : '') + '</span>';
         }).join('') + '</li>';
     }).join('');
   }
